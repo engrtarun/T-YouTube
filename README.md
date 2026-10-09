@@ -38,20 +38,27 @@ startup ad/promo popups removed — nothing else added, nothing else touched.
 
 ## 📸 Screenshots
 
-> These are designed placeholder tiles. Replace the `.png` files in
-> `assets/screenshots/` with your real captures (same filenames, `.jpg` is fine).
+**Player** — one frame that shows three working features at once: the download
+button, SponsorBlock, and Return-YouTube-Dislike.
 
-| Home | Player |
-|:--:|:--:|
-| <img src="assets/screenshots/home.png" width="230" alt="Home screen"> | <img src="assets/screenshots/player.png" width="230" alt="Player screen"> |
+<img src="assets/screenshots/player.jpg" width="100%" alt="Player screen with download, SponsorBlock and dislike controls">
 
-| Settings | Downloads |
-|:--:|:--:|
-| <img src="assets/screenshots/settings.png" width="230" alt="Settings showing T YouTube Settings"> | <img src="assets/screenshots/downloader.png" width="230" alt="Downloads screen"> |
-
-**The money shot** — fresh install, first launch, no promo dialog:
-
-<img src="assets/screenshots/no-popup.png" width="260" alt="First launch with no promo popup">
+<table>
+<tr>
+<td align="center" width="33%">
+  <img src="assets/screenshots/settings.jpg" width="230" alt="Settings screen titled T YouTube">
+  <br><sub><b>Settings — the rebrand proof</b><br>The toolbar reads <b>T YouTube</b>, and the entire<br>YT Pro patch menu is intact underneath.</sub>
+</td>
+<td align="center" width="33%">
+  <img src="assets/screenshots/download.jpg" width="230" alt="Download dialog with quality picker">
+  <br><sub><b>Downloader</b><br>Quality picker, 144p → 1080p60.<br>Proves the base build still works.</sub>
+</td>
+<td align="center" width="33%">
+  <img src="assets/screenshots/browse.jpg" width="230" alt="Watch screen with music player">
+  <br><sub><b>Watch screen</b><br>Playback, comments and the<br>music player all working.</sub>
+</td>
+</tr>
+</table>
 
 ---
 
@@ -63,7 +70,7 @@ This is **not** a feature-addition fork. It is a *cleanup and rebrand* of
 | # | Change | Details |
 |:-:|:--|:--|
 | 1 | 🧹 **Startup ad/promo popup removed** | The mod fetches a remote JSON from a third-party server and pops an affiliate/promo dialog on every launch. Both code paths are stubbed to `return-void` at the entry point — no network request, no dialog, no background thread. |
-| 2 | ✏️ **Full rebrand** | Every `YouTube Pro` string replaced with `T YouTube` across **all 82 locales**, plus settings screens and the launcher label. Zero occurrences of the old branding remain in the APK. |
+| 2 | ✏️ **Full rebrand** | Every `YouTube Pro` string replaced with `T YouTube` across **all 82 locales**, plus settings screens and the launcher label — **and** the in-app wordmark images (40 PNG/WebP assets across five densities) where the old name was baked into *pixels*, which no text search can find. Zero occurrences remain. |
 | 3 | 🎨 **New icon set** | Purpose-built launcher icon built to the official Android adaptive-icon spec. |
 
 **Not changed:** the package name, version code, or any patch/feature logic.
@@ -233,7 +240,7 @@ endorsed by Google. See [Legal](#-legal--disclaimer).
 | Version code | `2147483647` |
 | Min SDK | 29 (Android 10) |
 | Target SDK | 37 |
-| APK size | 224,578,294 bytes (214 MB) |
+| APK size | 224,566,006 bytes (214 MB) |
 | Entry count | 16,830 |
 | Signature scheme | APK Signature Scheme **v3** |
 | Signing certificate | AOSP `testkey` — `CN=Android, O=Android, L=Mountain View, ST=California, C=US` |
@@ -253,7 +260,7 @@ Get-FileHash T-YouTube-v1.0.0.apk -Algorithm SHA256
 **SHA-256 for v1.0.0**
 
 ```
-82146CDBDE17D5213C5CFF75415DCCCA4C3C5A1A19D2B4DF347E07A5C7A42A71
+3DD2E57BCF683B36A9A1DF8BE31AA69A2380D16E96DCA9DE5009B49221B2F005
 ```
 
 ---
@@ -272,6 +279,8 @@ YT Pro v59 (original APK)
         ├─ patch ③  res/values*/strings.xml  →  83 files, "YouTube Pro" → "T YouTube"
         ├─ patch ④  adaptive + legacy + themed icons rebuilt to spec
         ├─ patch ⑤  in-app action-bar logo → T mark
+        ├─ patch ⑥  40 wordmark PNG/WebP rebuilt (the app header still said
+        │            "YouTube Pro" because that text lives inside images)
         │
         ├─ apktool 2.9.3  b  →  rebuild
         ├─ zipalign -p -f 4
