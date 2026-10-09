@@ -36,8 +36,6 @@
 
 </div>
 
----
-
 ## 📹 Install Tutorial
 
 **New here and just want it working?** Watch the screen recording, follow the
@@ -50,6 +48,7 @@ step-by-step, and check what each screen should look like.
 </div>
 
 <sub>› video · step-by-step · screenshots · troubleshooting · one-click downloads</sub>
+
 ---
 
 <img src="assets/feature-strip.png" width="100%" alt="Startup popup removed · 82 locales rebranded · 5 densities icon rebuilt">
