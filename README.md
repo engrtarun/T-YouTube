@@ -40,18 +40,16 @@
 
 ## 📹 Install Tutorial
 
-**New here?** There is a full page with a **screen recording**, every step
-written out, and what each screen should look like — built for people who just
-need it working:
+**New here and just want it working?** Watch the screen recording, follow the
+step-by-step, and check what each screen should look like.
 
 <div align="center">
-
-### 👉 **[Open the install tutorial →](https://engrtarun.github.io/T-YouTube/)**
-
-<sub>video · step-by-step · screenshots · troubleshooting · one-click downloads</sub>
-
+  <a href="https://engrtarun.github.io/T-YouTube/">
+    <img src="https://img.shields.io/badge/%F0%9F%93%AC%20Open%20the%20Install%20Tutorial-FF1744?style=for-the-badge&logo=youtube&logoColor=white" alt="Open the install tutorial">
+  </a>
 </div>
 
+<sub>› video · step-by-step · screenshots · troubleshooting · one-click downloads</sub>
 ---
 
 <img src="assets/feature-strip.png" width="100%" alt="Startup popup removed · 82 locales rebranded · 5 densities icon rebuilt">
