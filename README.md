@@ -4,18 +4,21 @@
 
   ### 📦 Download
 
-  <a href="https://github.com/engrtarun/T-YouTube/releases/download/v1.0.0/T-YouTube-v1.0.0.apk">
-    <img src="https://img.shields.io/badge/%F0%9F%93%A6%20Download%20T%20YouTube%20v1.0.0-FF1744?style=for-the-badge&logo=android&logoColor=white" alt="Download T YouTube APK">
+**① microG first** — then **② T YouTube**. Both buttons go straight to the file.
+
+  <a href="https://github.com/microg/GmsCore/releases/download/v0.3.17.252432/com.google.android.gms-252432034.apk">
+    <img src="https://img.shields.io/badge/1%C2%B7%20Download%20microG%20GmsCore%20(103%20MB)-3DDC84?style=for-the-badge&logo=google-play&logoColor=white" alt="Download microG GmsCore">
   </a>
 
-  <a href="https://github.com/microg/GmsCore/releases/latest">
-    <img src="https://img.shields.io/badge/%F0%9F%93%A6%20microG%20GmsCore%20(required)-3DDC84?style=for-the-badge&logo=google-play&logoColor=white" alt="microG GmsCore download">
+  <a href="https://github.com/engrtarun/T-YouTube/releases/download/v1.0.0/T-YouTube-v1.0.0.apk">
+    <img src="https://img.shields.io/badge/2%C2%B7%20Download%20T%20YouTube%20(214%20MB)-FF1744?style=for-the-badge&logo=android&logoColor=white" alt="Download T YouTube APK">
   </a>
 
   <br>
   <sub>
-    One click straight to the file — no extra page, no hunting. 214&nbsp;MB, Android&nbsp;10+.<br>
-    Android will ask you to allow <b>"Install unknown apps"</b> for your browser the first time.
+    <b>⚠️ Install order matters:</b> microG <b>pehle</b>, phir T YouTube.<br>
+    Android will ask you to allow <b>"Install unknown apps"</b> for your browser the first time.<br>
+    T YouTube will not run without microG — it cannot use Google Play Services.
   </sub>
 
   <br><br>
@@ -140,17 +143,18 @@ app.revanced.android.gms.SPOOFED_PACKAGE_NAME      = com.google.android.youtube
 app.revanced.android.gms.SPOOFED_PACKAGE_SIGNATURE = 24bb24c0…
 ```
 
-Install GmsCore from the official releases (don't take APKs from random sites):
+Grab it straight from the button above, or from the official release page —
+never from a random APK site:
 
 > **https://github.com/microg/GmsCore/releases/latest**
 >
-> On a stock device grab **`com.google.android.gms-*.apk`**.
-> Huawei/EMUI devices use the `-hw` variant. microG is **GPLv3** — if you
-> redistribute it, you must also offer its source.
+> On a normal phone take **`com.google.android.gms-*.apk`**.
+> Huawei/EMUI devices take the `-hw` variant instead.
+> microG is **GPLv3** — this repo links to it, it does not re-host it.
 
 > ⚠️ Already using **Google Play Services**? It must be **disabled/uninstalled**
-> first. microG will not install alongside it, and it will not work if Play
-> Services is still active.
+> first. microG will not install alongside it, and T YouTube will not work while
+> Play Services is still active.
 
 ### Step 2 — Enable signature spoofing
 
