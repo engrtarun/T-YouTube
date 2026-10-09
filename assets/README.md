@@ -19,6 +19,7 @@ Everything here is referenced from [`README.md`](../README.md).
 |:--|:--|:--|
 | `screenshots/player.jpg` | 1640×720 | Landscape player — download button, SponsorBlock and Return-YouTube-Dislike all visible in one frame |
 | `screenshots/settings.jpg` | 720×1640 | **Rebrand proof** — toolbar reads *T YouTube*; full YT Pro patch menu intact |
+| `screenshots/music.jpg` | 720×1640 | **Rebrand proof** — app header shows the rebuilt T logo + *T YouTube*. On the base build this spot said *"YouTube Pro"* because that text lives inside the header **images** |
 | `screenshots/download.jpg` | 720×1640 | Downloader works — quality picker from 144p to 1080p60 |
 | `screenshots/browse.jpg` | 720×1640 | Watch screen — playback, comments, music player |
 

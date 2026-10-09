@@ -43,19 +43,29 @@ button, SponsorBlock, and Return-YouTube-Dislike.
 
 <img src="assets/screenshots/player.jpg" width="100%" alt="Player screen with download, SponsorBlock and dislike controls">
 
+**The rebrand, caught in the act** — both of these were taken on the v1.0.0
+build, and both headers read **T YouTube**. On the base build this spot said
+*"YouTube Pro"*, because the old name was baked into the app's header images.
+
 <table>
 <tr>
-<td align="center" width="33%">
-  <img src="assets/screenshots/settings.jpg" width="230" alt="Settings screen titled T YouTube">
-  <br><sub><b>Settings — the rebrand proof</b><br>The toolbar reads <b>T YouTube</b>, and the entire<br>YT Pro patch menu is intact underneath.</sub>
+<td align="center" width="50%">
+  <img src="assets/screenshots/settings.jpg" width="250" alt="Settings screen titled T YouTube">
+  <br><sub><b>Settings</b><br>Toolbar reads <b>T YouTube</b>;<br>the whole YT Pro patch menu is intact.</sub>
 </td>
-<td align="center" width="33%">
-  <img src="assets/screenshots/download.jpg" width="230" alt="Download dialog with quality picker">
-  <br><sub><b>Downloader</b><br>Quality picker, 144p → 1080p60.<br>Proves the base build still works.</sub>
+<td align="center" width="50%">
+  <img src="assets/screenshots/music.jpg" width="250" alt="Music tab with T YouTube header">
+  <br><sub><b>Music tab</b><br>Rebuilt in-app wordmark —<br>T logo + “T YouTube” in the header.</sub>
 </td>
-<td align="center" width="33%">
-  <img src="assets/screenshots/browse.jpg" width="230" alt="Watch screen with music player">
-  <br><sub><b>Watch screen</b><br>Playback, comments and the<br>music player all working.</sub>
+</tr>
+<tr>
+<td align="center" width="50%">
+  <img src="assets/screenshots/download.jpg" width="250" alt="Download dialog with quality picker">
+  <br><sub><b>Downloader</b><br>Quality picker, 144p → 1080p60.</sub>
+</td>
+<td align="center" width="50%">
+  <img src="assets/screenshots/browse.jpg" width="250" alt="Watch screen with music player">
+  <br><sub><b>Watch screen</b><br>Playback, comments,<br>music player.</sub>
 </td>
 </tr>
 </table>
