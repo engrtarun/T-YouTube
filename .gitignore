@@ -21,9 +21,11 @@ debug.keystore
 local.properties
 
 # ---- large media ----
-# The tutorial recording is ~150 MB. GitHub blocks any file over 100 MiB in
-# git, so the MP4 ships as a Release asset and the page streams it from there.
-docs/assets/video/
+# docs/assets/video/tutorial.mp4 IS committed on purpose (~13 MB, under the
+# 100 MiB git limit). Serving it same-origin avoids the 302 redirect to the
+# release CDN, which several browsers refuse to follow for <video> - that
+# produced "No video with supported format and MIME type found".
+# Only ever put files here that stay under 100 MiB.
 
 # ---- build output ----
 build/
