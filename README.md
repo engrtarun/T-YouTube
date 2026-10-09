@@ -38,8 +38,21 @@
 
 ---
 
-**YouTube, minus the noise.** A cleaned-up, fully rebranded build with the
-startup ad/promo popups removed — nothing else added, nothing else touched.
+## 📹 Install Tutorial
+
+**New here?** There is a full page with a **screen recording**, every step
+written out, and what each screen should look like — built for people who just
+need it working:
+
+<div align="center">
+
+### 👉 **[Open the install tutorial →](https://engrtarun.github.io/T-YouTube/)**
+
+<sub>video · step-by-step · screenshots · troubleshooting · one-click downloads</sub>
+
+</div>
+
+---
 
 <img src="assets/feature-strip.png" width="100%" alt="Startup popup removed · 82 locales rebranded · 5 densities icon rebuilt">
 

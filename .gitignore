@@ -20,6 +20,11 @@ testkey.pk8
 debug.keystore
 local.properties
 
+# ---- large media ----
+# The tutorial recording is ~150 MB. GitHub blocks any file over 100 MiB in
+# git, so the MP4 ships as a Release asset and the page streams it from there.
+docs/assets/video/
+
 # ---- build output ----
 build/
 dist/

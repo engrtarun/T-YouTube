@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Install Tutorial · T YouTube</title>
+<meta name="description" content="Step-by-step video and screenshot tutorial for installing T YouTube with microG-RE.">
+<meta property="og:title" content="T YouTube — Install Tutorial">
+<meta property="og:description" content="Video + screenshots + links. Get T YouTube running in about five minutes.">
+<meta property="og:image" content="assets/og-image.png">
+<link rel="icon" href="assets/logo.png">
+<style>
+  :root{
+    --bg:#05060a; --bg2:#0b0d14; --card:#11141d; --line:#1e2330;
+    --txt:#e8ebf2; --dim:#98a0b3; --dim2:#6b7488;
+    --cyan:#00e5ff; --pink:#ff2d78; --ok:#22c55e; --warn:#f59e0b;
+    --max:1120px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg); color:var(--txt); font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  }
+  a{color:var(--cyan);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 20px}
+
+  /* ---------- nav ---------- */
+  header.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);
+    background:rgba(5,6,10,.82);border-bottom:1px solid var(--line)}
+  .nav .wrap{display:flex;align-items:center;gap:14px;height:62px}
+  .nav img{width:30px;height:30px;border-radius:8px}
+  .nav b{font-size:15px;letter-spacing:.2px}
+  .nav .sp{margin-left:auto;display:flex;gap:6px}
+  .nav .sp a{font-size:13.5px;color:var(--dim);padding:7px 11px;border-radius:8px}
+  .nav .sp a:hover{background:var(--card);color:var(--txt);text-decoration:none}
+
+  /* ---------- hero ---------- */
+  .hero{padding:60px 0 40px;position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;width:820px;height:820px;left:-260px;top:-420px;
+    background:radial-gradient(circle,rgba(0,229,255,.20),transparent 62%);pointer-events:none}
+  .hero::after{content:"";position:absolute;width:820px;height:820px;right:-280px;top:-360px;
+    background:radial-gradient(circle,rgba(255,45,120,.18),transparent 62%);pointer-events:none}
+  .hero .wrap{position:relative;z-index:1}
+  .badge{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--cyan);border:1px solid rgba(0,229,255,.35);
+    background:rgba(0,229,255,.07);padding:6px 13px;border-radius:999px;margin-bottom:20px}
+  .badge i{width:6px;height:6px;border-radius:50%;background:var(--cyan);
+    box-shadow:0 0 10px var(--cyan);font-style:normal}
+  h1{font-size:clamp(30px,5.6vw,54px);line-height:1.12;font-weight:800;letter-spacing:-.5px}
+  h1 span{background:linear-gradient(92deg,var(--cyan),var(--pink));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--dim);font-size:clamp(15px,2vw,18px);max-width:62ch;margin-top:16px}
+  .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;
+    font-weight:700;font-size:15px;padding:14px 24px;border-radius:12px;border:1px solid transparent;
+    transition:transform .12s ease,filter .12s ease}
+  .btn:hover{transform:translateY(-2px);filter:brightness(1.08);text-decoration:none}
+  .btn-p{background:linear-gradient(95deg,var(--pink),#ff5a3d);color:#fff}
+  .btn-s{background:var(--card);border-color:var(--line);color:var(--txt)}
+  .meta{display:flex;flex-wrap:wrap;gap:22px;margin-top:34px;color:var(--dim2);font-size:13.5px}
+  .meta b{color:var(--txt);font-weight:600}
+
+  /* ---------- video ---------- */
+  section{padding:52px 0;border-top:1px solid var(--line)}
+  h2{font-size:clamp(21px,3.2vw,30px);font-weight:750;letter-spacing:-.2px;margin-bottom:6px}
+  .kicker{color:var(--cyan);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    font-weight:700;margin-bottom:8px}
+  .lede{color:var(--dim);max-width:66ch;margin-bottom:26px}
+
+  .player{position:relative;aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;
+    border:1px solid var(--line);box-shadow:0 22px 60px rgba(0,0,0,.55)}
+  .player video{width:100%;height:100%;display:block;background:#000}
+  .player .hint{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:12px;text-align:center;padding:24px;
+    background:linear-gradient(180deg,#0a0c12,#05060a)}
+  .player .hint .ico{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;
+    background:linear-gradient(95deg,var(--pink),#ff5a3d);color:#fff;font-size:26px}
+  .player .hint p{color:var(--dim);font-size:14px;max-width:52ch}
+  .player .hint code{background:var(--card);border:1px solid var(--line);border-radius:6px;
+    padding:2px 7px;font-size:13px;color:var(--cyan)}
+  .vbar{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px;color:var(--dim2);font-size:13.5px}
+  .vbar a{color:var(--dim)}
+  .vbar a:hover{color:var(--cyan)}
+
+  /* ---------- steps ---------- */
+  .steps{display:grid;gap:16px;margin-top:26px}
+  .step{display:grid;grid-template-columns:78px 1fr;gap:24px;align-items:start;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;
+    transition:border-color .15s ease}
+  .step:hover{border-color:#2c3346}
+  .num{font-size:34px;font-weight:800;line-height:1;color:var(--line);letter-spacing:-1px}
+  .step h3{font-size:17px;font-weight:700;margin-bottom:7px}
+  .step p{color:var(--dim);font-size:14.6px}
+  .step .note{margin-top:12px;font-size:13.5px;padding:12px 14px;border-radius:10px;
+    background:rgba(255,45,120,.08);border:1px solid rgba(255,45,120,.28);color:#ffc9dc}
+  .step .note.ok{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.3);color:#b6f0c9}
+  .step .note.warn{background:rgba(245,158,11,.09);border-color:rgba(245,158,11,.32);color:#ffe0a3}
+  code,.k{font-family:"Cascadia Code",Consolas,monospace;font-size:.92em;background:#0a0c12;
+    border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--cyan)}
+
+  /* ---------- gallery ---------- */
+  .shot{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    transition:transform .14s ease,border-color .14s ease}
+  .shot:hover{transform:translateY(-3px);border-color:#2c3346}
+  .shot figcaption{padding:15px 17px;font-size:13.5px;color:var(--dim)}
+  .shot figcaption b{color:var(--txt);display:block;margin-bottom:4px;font-size:15px}
+
+  /* device-style frame so tall screenshots never dominate the page */
+  .frame{background:#07080d;border:1px solid #262c3b;border-radius:20px;padding:7px;
+    box-shadow:0 10px 28px rgba(0,0,0,.45)}
+  .frame img{width:100%;display:block;border-radius:14px;object-fit:cover;object-position:top;
+    aspect-ratio:720/1640}
+  /* the landscape capture is 1640x720 - wider than 16:9, so never crop it */
+  .frame.wide img{aspect-ratio:auto;max-height:560px;object-fit:contain}
+
+  .phones{display:grid;grid-template-columns:repeat(auto-fit,minmax(186px,1fr));gap:16px;margin-top:18px}
+  .phones figure{margin:0}
+  .phones .cap{padding:13px 3px 0;font-size:12.8px;color:var(--dim);line-height:1.5}
+  .phones .cap b{color:var(--txt);display:block;font-size:13.6px;margin-bottom:4px;font-weight:650}
+  @media(max-width:560px){.phones{grid-template-columns:repeat(2,1fr);gap:12px}}
+
+  /* ---------- dl ---------- */
+  .dl{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));margin-top:24px}
+  .dcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;
+    display:flex;flex-direction:column;gap:9px}
+  .dcard .n{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim2);font-weight:700}
+  .dcard h4{font-size:19px;font-weight:750}
+  .dcard p{color:var(--dim);font-size:13.6px;flex:1}
+  .dcard .sz{font-size:12.5px;color:var(--dim2)}
+
+  /* ---------- troubleshooting ---------- */
+  details{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:10px}
+  summary{cursor:pointer;padding:16px 20px;font-weight:650;font-size:15px;list-style:none;
+    display:flex;align-items:center;gap:11px}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"+";color:var(--cyan);font-size:19px;font-weight:700;width:16px}
+  details[open] summary::before{content:"\2212"}
+  details[open] summary{border-bottom:1px solid var(--line)}
+  .db{padding:16px 20px;color:var(--dim);font-size:14.4px}
+  .db ol,.db ul{padding-left:20px;margin-top:8px}
+  .db li{margin:5px 0}
+
+  footer{border-top:1px solid var(--line);padding:36px 0;color:var(--dim2);font-size:13px}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+
+  @media(max-width:760px){
+    .step{grid-template-columns:1fr;gap:10px;padding:20px}
+    .num{font-size:26px}
+    .nav .sp a:not(.keep){display:none}
+    section{padding:40px 0}
+  }
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <img src="assets/logo.png" alt="">
+    <b>T YouTube · Install Tutorial</b>
+    <nav class="sp">
+      <a href="#video">Video</a>
+      <a href="#steps">Steps</a>
+      <a href="#shots">Screenshots</a>
+      <a href="#dl">Download</a>
+      <a href="#fix">Fix errors</a>
+      <a class="keep" href="https://github.com/engrtarun/T-YouTube">GitHub ↗</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <span class="badge"><i></i> ~5 minute setup</span>
+    <h1>Get <span>T YouTube</span><br>running on your phone</h1>
+    <p class="sub">
+      Most people get stuck on one thing only: this app needs <b>microG-RE</b> instead of
+      Google Play Services, and it must be installed <b>first</b>. This page shows the whole
+      thing — a screen recording, every step, and what each screen should look like.
+    </p>
+    <div class="cta">
+      <a class="btn btn-p" href="#video">▶ Watch the tutorial</a>
+      <a class="btn btn-s" href="#dl">⬇ Get the APKs</a>
+      <a class="btn btn-s" href="#steps">Skip to written steps</a>
+    </div>
+    <div class="meta">
+      <span><b>Android 10+</b> required</span>
+      <span><b>214 MB</b> APK</span>
+      <span><b>107 MB</b> microG-RE</span>
+      <span>Works on <b>arm64 + 32-bit</b></span>
+    </div>
+  </div>
+</div>
+
+<section id="video">
+  <div class="wrap">
+    <div class="kicker">Watch it</div>
+    <h2>Screen recording</h2>
+    <p class="lede">The whole install, start to finish. If the video is still processing,
+      the written steps below are complete on their own.</p>
+
+    <div class="player">
+      <video id="vid" controls preload="metadata" playsinline
+             poster="assets/screenshots/settings.jpg">
+        <!-- ▼▼▼ DROP THE RECORDING IN: docs/assets/video/tutorial.mp4 ▼▼▼ -->
+        <source src="https://github.com/engrtarun/T-YouTube/releases/download/v1.0.0/tutorial.mp4" type="video/mp4">
+        Your browser cannot play this video.
+      </video>
+      <div class="hint" id="vidHint">
+        <div class="ico">▶</div>
+        <div>
+          <p><b>Loading the recording…</b><br>
+          The video is 153&nbsp;MB, so give it a moment. If it never appears,
+          the steps below are complete on their own.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vbar">
+      <span>Prefer reading?</span>
+      <a href="#steps">Jump to the steps ↓</a>
+    </div>
+  </div>
+</section>
+
+<section id="steps">
+  <div class="wrap">
+    <div class="kicker">Do this</div>
+    <h2>The steps</h2>
+    <p class="lede">Follow in order. Skipping step 1 or 2 is the #1 reason nothing works.</p>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="num">01</div>
+        <div>
+          <h3>Download microG-RE</h3>
+          <p>Tap the first button below. It lands the official <b>MicroG RE</b> APK straight into
+             your downloads — 107&nbsp;MB, works on every phone.</p>
+          <div class="note warn">
+            <b>Before you start:</b> if Google Play Services is installed on this phone,
+            disable or uninstall it first. microG and Play Services cannot run together,
+            and T YouTube will not start while Play Services is active.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">02</div>
+        <div>
+          <h3>Install it</h3>
+          <p>Open the downloaded <span class="k">microg-7.2.1.apk</span> and tap <b>Install</b>.
+             Android will ask you to allow <b>"Install unknown apps"</b> for your browser or
+             file manager — tap <b>Allow</b> and come back. This prompt only appears once.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">03</div>
+        <div>
+          <h3>Turn on signature spoofing</h3>
+          <p>Open <b>microG-RE</b> → <b>Settings → Signature spoofing</b> → switch on
+             <b>T YouTube</b>. Then go back.</p>
+          <div class="note">
+            This is the step almost everyone forgets. Without it the app installs fine but
+            sign-in and video playback silently fail.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">04</div>
+        <div>
+          <h3>Install T YouTube</h3>
+          <p>Tap the second button, open <span class="k">T-YouTube-v1.0.0.apk</span>, tap
+             <b>Install</b>. Allow the unknown-app prompt if it appears.</p>
+          <div class="note ok">
+            Already have YouTube Pro v59 on the phone? It installs straight on top —
+            no uninstall, and your logins and watch history stay.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">05</div>
+        <div>
+          <h3>Open it — and that's it</h3>
+          <p>Launch <b>T YouTube</b> from your app drawer. Sign in, and it plays.</p>
+          <div class="note ok">
+            Two things to look for: the launcher icon is the <b>T</b> mark, and the in-app
+            header reads <b>T YouTube</b> — not "YouTube Pro".
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="shots">
+  <div class="wrap">
+    <div class="kicker">Verify</div>
+    <h2>What each screen should look like</h2>
+    <p class="lede">Real captures from the v1.0.0 build. Use them to confirm you did each step right.</p>
+
+    <figure class="shot">
+      <div class="frame wide">
+        <img src="assets/screenshots/player.jpg" alt="Player screen with download, SponsorBlock and dislike controls">
+      </div>
+      <figcaption><b>Player</b>Download button, SponsorBlock and Return-YouTube-Dislike — all three visible in one frame.</figcaption>
+    </figure>
+
+    <div class="phones">
+      <figure>
+        <div class="frame"><img src="assets/screenshots/settings.jpg" alt="Settings screen titled T YouTube"></div>
+        <div class="cap"><b>Settings — rebrand proof</b>Toolbar reads <b>T YouTube</b>, full patch menu intact.</div>
+      </figure>
+      <figure>
+        <div class="frame"><img src="assets/screenshots/music.jpg" alt="Music tab with T YouTube header"></div>
+        <div class="cap"><b>Music tab — rebrand proof</b>Rebuilt in-app wordmark: T logo + “T YouTube”.</div>
+      </figure>
+      <figure>
+        <div class="frame"><img src="assets/screenshots/download.jpg" alt="Download dialog with quality picker"></div>
+        <div class="cap"><b>Downloader</b>Quality picker, 144p → 1080p60.</div>
+      </figure>
+      <figure>
+        <div class="frame"><img src="assets/screenshots/browse.jpg" alt="Watch screen with music player"></div>
+        <div class="cap"><b>Watch screen</b>Playback, comments, music player.</div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="dl">
+  <div class="wrap">
+    <div class="kicker">Get the files</div>
+    <h2>Download</h2>
+    <p class="lede">Both buttons go straight to the file — one tap, no extra page.</p>
+    <div class="dl">
+      <div class="dcard">
+        <span class="n">Step 1 · Required</span>
+        <h4>microG-RE</h4>
+        <p>The Google Play Services replacement T YouTube runs on. Install this first.</p>
+        <span class="sz">107 MB · universal · Apache-2.0</span>
+        <a class="btn btn-s" href="https://github.com/MorpheApp/MicroG-RE/releases/download/7.2.1/microg-7.2.1.apk">Download microG-RE</a>
+      </div>
+      <div class="dcard">
+        <span class="n">Step 4</span>
+        <h4>T YouTube v1.0.0</h4>
+        <p>The app. Installs over YouTube Pro v59 without touching your data.</p>
+        <span class="sz">214 MB · Android 10+ · universal</span>
+        <a class="btn btn-p" href="https://github.com/engrtarun/T-YouTube/releases/download/v1.0.0/T-YouTube-v1.0.0.apk">Download T YouTube</a>
+      </div>
+    </div>
+    <p class="lede" style="margin-top:22px;font-size:13.6px">
+      Checksum for the APK ·
+      <span class="k">3DD2E57BCF683B36A9A1DF8BE31AA69A2380D16E96DCA9DE5009B49221B2F005</span>
+    </p>
+  </div>
+</section>
+
+<section id="fix">
+  <div class="wrap">
+    <div class="kicker">Stuck?</div>
+    <h2>Common problems</h2>
+    <p class="lede">These cover almost every failure. Try them in order.</p>
+
+    <details>
+      <summary>“App not installed as package conflicts with an existing package”</summary>
+      <div class="db">
+        A <b>differently-signed</b> copy of the same package is already installed, so Android
+        refuses to replace it.
+        <ul>
+          <li>Uninstall the existing YouTube Pro build — ⚠️ this clears its app data.</li>
+          <li>Then install <b>T YouTube</b>. From now on, always update from this build and
+              the error will not come back.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>App installs, but it says “MicroG Not Installed”</summary>
+      <div class="db">
+        microG-RE is not running, or signature spoofing is off.
+        <ul>
+          <li>Open microG-RE once so it finishes setting up.</li>
+          <li>Then <b>Settings → Signature spoofing → enable T YouTube</b>.</li>
+          <li>If Play Services is still installed, disable it.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Android says “for your security, your phone is not allowed to install unknown apps”</summary>
+      <div class="db">
+        Expected on first install. Tap <b>Settings</b> on that screen, allow
+        <b>Install unknown apps</b> for the app you downloaded from (browser or file manager),
+        then press back and tap <b>Install</b> again.
+      </div>
+    </details>
+
+    <details>
+      <summary>Videos will not play / everything is blank</summary>
+      <div class="db">
+        microG needs background permission on some phones. In microG-RE settings, exclude it
+        from battery optimisation, and check <b>Settings → Signature spoofing</b> is enabled.
+      </div>
+    </details>
+
+    <details>
+      <summary>Can I keep the official YouTube too?</summary>
+      <div class="db">
+        Yes — the packages differ, so both can be installed side by side. But since T YouTube
+        needs microG and Play Services cannot coexist with it, in practice you will want
+        only one.
+      </div>
+    </details>
+
+    <details>
+      <summary>Does it remove in-video ads?</summary>
+      <div class="db">
+        It removes the <b>mod's own startup promo popup</b>. In-stream advertising is served
+        by YouTube's servers and is a separate matter.
+      </div>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>T YouTube — an unofficial community modification. Not affiliated with Google.</span>
+    <span>
+      <a href="https://github.com/engrtarun/T-YouTube">Source &amp; releases</a> ·
+      <a href="https://github.com/MorpheApp/MicroG-RE">microG-RE</a>
+    </span>
+  </div>
+</footer>
+
+<script>
+  // Hide the "video coming soon" hint if a recording has actually been added.
+  (function () {
+    var v = document.getElementById('vid'), hint = document.getElementById('vidHint');
+    if (!v || !hint) return;
+    var probe = document.createElement('video');
+    probe.preload = 'metadata';
+    probe.onloadedmetadata = function () {
+      if (probe.duration && probe.duration > 1) { hint.style.display = 'none'; }
+    };
+    probe.onerror = function () { /* no file yet - keep the hint */ };
+    probe.src = v.querySelector('source').src;
+  })();
+</script>
+</body>
+</html>
