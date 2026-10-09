@@ -1,4 +1,7 @@
-# ---- never commit binaries: upload APKs as GitHub Release assets ----
+# ---- never commit binaries ----
+# The APK is 214 MB and GitHub HARD-BLOCKS any file over 100 MiB in git.
+# This is not a style choice: removing these lines makes `git push` fail.
+# The APK ships as a GitHub *Release* asset instead - see README.
 *.apk
 *.idsig
 *.apks
@@ -11,9 +14,9 @@
 *.pk8
 
 # ---- signing material: NEVER commit ----
-*.pk8
 *.x509.pem
 testkey.p12
+testkey.pk8
 debug.keystore
 local.properties
 

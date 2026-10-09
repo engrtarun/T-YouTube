@@ -4,13 +4,19 @@
 
   ### 📦 Download
 
-  <a href="https://github.com/engrtarun/T-YouTube/releases/latest">
+  <a href="https://github.com/engrtarun/T-YouTube/releases/download/v1.0.0/T-YouTube-v1.0.0.apk">
     <img src="https://img.shields.io/badge/%F0%9F%93%A6%20Download%20T%20YouTube%20v1.0.0-FF1744?style=for-the-badge&logo=android&logoColor=white" alt="Download T YouTube APK">
   </a>
 
   <a href="https://github.com/microg/GmsCore/releases/latest">
     <img src="https://img.shields.io/badge/%F0%9F%93%A6%20microG%20GmsCore%20(required)-3DDC84?style=for-the-badge&logo=google-play&logoColor=white" alt="microG GmsCore download">
   </a>
+
+  <br>
+  <sub>
+    One click straight to the file — no extra page, no hunting. 214&nbsp;MB, Android&nbsp;10+.<br>
+    Android will ask you to allow <b>"Install unknown apps"</b> for your browser the first time.
+  </sub>
 
   <br><br>
 
@@ -22,7 +28,7 @@
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](#-contributing)
 
   <sub>
-    <a href="https://github.com/engrtarun/T-YouTube/releases/latest/download/T-YouTube-v1.0.0.apk">Direct download · T-YouTube-v1.0.0.apk</a>
+    <a href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.0.0">Release notes &amp; checksums</a>
   </sub>
 
 </div>
