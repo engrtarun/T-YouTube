@@ -4,10 +4,10 @@
 
   ### 📦 Download
 
-**① microG first** — then **② T YouTube**. Both buttons go straight to the file.
+**① microG-RE first** — then **② T YouTube**. Both buttons go straight to the file.
 
-  <a href="https://github.com/microg/GmsCore/releases/download/v0.3.17.252432/com.google.android.gms-252432034.apk">
-    <img src="https://img.shields.io/badge/1%C2%B7%20Download%20microG%20GmsCore%20(103%20MB)-3DDC84?style=for-the-badge&logo=google-play&logoColor=white" alt="Download microG GmsCore">
+  <a href="https://github.com/MorpheApp/MicroG-RE/releases/download/7.2.1/microg-7.2.1.apk">
+    <img src="https://img.shields.io/badge/1%C2%B7%20Download%20microG-RE%20(107%20MB)-3DDC84?style=for-the-badge&logo=google-play&logoColor=white" alt="Download microG-RE">
   </a>
 
   <a href="https://github.com/engrtarun/T-YouTube/releases/download/v1.0.0/T-YouTube-v1.0.0.apk">
@@ -16,9 +16,9 @@
 
   <br>
   <sub>
-    <b>⚠️ Install order matters:</b> microG <b>pehle</b>, phir T YouTube.<br>
+    <b>⚠️ Install order matters:</b> microG-RE <b>pehle</b>, phir T YouTube.<br>
     Android will ask you to allow <b>"Install unknown apps"</b> for your browser the first time.<br>
-    T YouTube will not run without microG — it cannot use Google Play Services.
+    T YouTube will not run without it — it cannot use Google Play Services.
   </sub>
 
   <br><br>
@@ -27,7 +27,7 @@
   [![Downloads](https://img.shields.io/github/downloads/engrtarun/T-YouTube/total?style=flat-square&label=Downloads&color=2563EB)](https://github.com/engrtarun/T-YouTube/releases)
   [![Android](https://img.shields.io/badge/Android-10%2B-3DDC84?style=flat-square&logo=android&logoColor=white)](https://developer.android.com/)
   [![Size](https://img.shields.io/badge/APK-214%20MB-8B5CF6?style=flat-square)](https://github.com/engrtarun/T-YouTube/releases/latest)
-  [![microG](https://img.shields.io/badge/powered%20by-microG-34A853?style=flat-square&logo=google-play&logoColor=white)](https://github.com/microg/GmsCore)
+  [![microG-RE](https://img.shields.io/badge/powered%20by-microG--RE-34A853?style=flat-square&logo=google-play&logoColor=white)](https://github.com/MorpheApp/MicroG-RE)
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](#-contributing)
 
   <sub>
@@ -124,33 +124,36 @@ Android 13+ **themed icon** (previously still showing the YouTube play glyph).
 |:--|:--|
 | **Android** | 10.0 (API 29) or newer |
 | **Architecture** | `arm64-v8a`, `armeabi-v7a`, `x86`, `x86_64` — universal APK |
-| **Google Play Services** | ❌ **Not required — and must not be active.** T YouTube runs on **microG**, which cannot coexist with Google Play Services. |
-| **microG** | ✅ **Required.** See below. |
+| **Google Play Services** | ❌ **Not required — and must not be active.** T YouTube runs on **microG-RE**, which cannot coexist with Google Play Services. |
+| **microG-RE** | ✅ **Required.** A GmsCore fork — see below. |
 | **Free storage** | ~350 MB (app + data) |
 
 ---
 
 ## 📥 Installation
 
-### Step 1 — Install microG first
+### Step 1 — Install microG-RE first
 
-microG **GmsCore** provides the Google Play Services APIs YouTube needs.
-T YouTube declares these in its manifest, and microG reads them to grant the
-app its identity:
+microG-RE is a **GmsCore fork** that supplies the Google Play Services APIs
+YouTube needs. T YouTube declares these in its manifest, and microG reads them
+to grant the app its identity:
 
 ```
 app.revanced.android.gms.SPOOFED_PACKAGE_NAME      = com.google.android.youtube
 app.revanced.android.gms.SPOOFED_PACKAGE_SIGNATURE = 24bb24c0…
 ```
 
-Grab it straight from the button above, or from the official release page —
-never from a random APK site:
+Grab it with the **①** button above, or from the official releases — never from
+a random APK site:
 
-> **https://github.com/microg/GmsCore/releases/latest**
+> **https://github.com/MorpheApp/MicroG-RE/releases/latest**
 >
-> On a normal phone take **`com.google.android.gms-*.apk`**.
-> Huawei/EMUI devices take the `-hw` variant instead.
-> microG is **GPLv3** — this repo links to it, it does not re-host it.
+> The **universal** `microg-*.apk` (≈107 MB) works on every phone — that's what
+> the button gives you. Slimmer per-ABI builds (`-arm64-v8a`, `-armeabi-v7a`,
+> ≈42 MB) are also there if you want to save data.
+>
+> microG-RE is **Apache-2.0** licensed and this repo links to it rather than
+> re-hosting it.
 
 > ⚠️ Already using **Google Play Services**? It must be **disabled/uninstalled**
 > first. microG will not install alongside it, and T YouTube will not work while
@@ -159,7 +162,7 @@ never from a random APK site:
 ### Step 2 — Enable signature spoofing
 
 ```
-microG Settings → Signature spoofing → enable for T YouTube
+microG-RE Settings → Signature spoofing → enable for T YouTube
 ```
 
 Without this the app installs but sign-in, playback and most API calls fail.
@@ -207,8 +210,8 @@ updates, avoids the problem entirely.
 
 Yes. T YouTube uses the package `com.gold.android.youtube`, while the official
 YouTube is `com.google.android.youtube`. Different packages — both can be
-installed side by side. In practice though, YouTube needs microG and Play
-Services cannot coexist with microG, so you will usually want only one.
+installed side by side. In practice though, YouTube needs microG-RE and Play
+Services cannot coexist with it, so you will usually want only one.
 </details>
 
 <details>
@@ -221,7 +224,7 @@ advertising is served by YouTube's servers and is a separate matter.
 <details>
 <summary><b>Why does it say "MicroG Not Installed"?</b></summary>
 
-microG GmsCore is not running, or signature spoofing is off. Go back to
+microG-RE is not running, or signature spoofing is off. Go back to
 Steps 1–2 above.
 </details>
 
@@ -344,9 +347,9 @@ otherwise connected to Google LLC or YouTube.
   interoperability purposes only.
 - **No source code is provided for the YouTube client itself.** The original
   authors and copyright holders retain all rights to it.
-- microG is a separate project licensed under **GPLv3** and is *not* bundled or
-  redistributed here — you download it from
-  [microg/GmsCore](https://github.com/microg/GmsCore).
+- microG-RE is a separate project (a GmsCore fork, **Apache-2.0**) and is *not*
+  bundled or redistributed here — you download it from
+  [MorpheApp/MicroG-RE](https://github.com/MorpheApp/MicroG-RE).
 - You are responsible for complying with the laws in your jurisdiction.
 
 ---
@@ -356,7 +359,7 @@ otherwise connected to Google LLC or YouTube.
 | | |
 |:--|:--|
 | **YT Pro v59** | The base build this is forked from — the patch set, downloader and feature work are theirs |
-| **microG** | The open-source Google Play Services replacement this runs on — [microg/GmsCore](https://github.com/microg/GmsCore) |
+| **microG-RE** | The Google Play Services replacement this runs on — [MorpheApp/MicroG-RE](https://github.com/MorpheApp/MicroG-RE) |
 | **apktool** | Used for decode / patch / rebuild — [iBotPeaches/Apktool](https://github.com/iBotPeaches/Apktool) |
 | **Android Open Source Project** | The `testkey` signing certificate is a publicly published AOSP test certificate |
 | **You** | For the bug reports and translations |
