@@ -353,6 +353,37 @@ server-side / microG-side concerns.
 
 ---
 
+## Support this project
+
+If T YouTube saved you a download or some time, a star genuinely helps -
+it is the only signal GitHub uses to rank a repository, and it is what this
+project has instead of ad revenue.
+
+<div align="center">
+
+[![Star this repo](https://img.shields.io/github/stars/engrtarun/T-YouTube?style=for-the-badge&label=Star%20%E2%98%85&logo=github&logoColor=white)](https://github.com/engrtarun/T-YouTube/stargazers)
+[![Fork this repo](https://img.shields.io/github/forks/engrtarun/T-YouTube?style=for-the-badge&label=Fork%20%E2%98%85&logo=github&logoColor=white)](https://github.com/engrtarun/T-YouTube/fork)
+[![Watch this repo](https://img.shields.io/github/watchers/engrtarun/T-YouTube?style=for-the-badge&label=Watch&logo=github&logoColor=white)](https://github.com/engrtarun/T-YouTube/watchers)
+
+</div>
+
+**Why it matters**
+
+| Instead of | Try this |
+|:--|:--|
+| Nothing | Press **Star** - takes one click, costs nothing |
+| Spreading a link that dies | Press **Fork** - you get your own copy to change freely |
+| Reporting a bug later | Press **Watch** - you get notified when v1.0.1 ships |
+
+**Share it with one person who got stuck installing.** That is worth more than
+a hundred stars: it is the difference between someone giving up and someone
+getting it working. The hardest part of this project is not the code, it is
+that nobody finds modified YouTube builds unless somebody tells them.
+
+<sub>Star if it helped. Fork if you want to make it yours.</sub>
+
+---
+
 ## Legal & Disclaimer
 
 T YouTube is an **unofficial, community-made modification** of the YouTube
