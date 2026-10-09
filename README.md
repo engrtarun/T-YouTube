@@ -1,5 +1,19 @@
-<div align="center">
+## 📹 Install Tutorial
 
+**New here and just want it working?** Watch the screen recording, follow the
+step-by-step, and check what each screen should look like.
+
+<div align="center">
+  <a href="https://engrtarun.github.io/T-YouTube/">
+    <img src="https://img.shields.io/badge/%F0%9F%93%AC%20Open%20the%20Install%20Tutorial-FF1744?style=for-the-badge&logo=youtube&logoColor=white" alt="Open the install tutorial">
+  </a>
+</div>
+
+<sub>› video · step-by-step · screenshots · troubleshooting · one-click downloads</sub>
+
+---
+
+<div align="center">
   <img src="assets/banner.png" width="100%" alt="T YouTube">
 
   ### 📦 Download
@@ -33,21 +47,15 @@
   <sub>
     <a href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.0.0">Release notes &amp; checksums</a>
   </sub>
-
 </div>
 
-## 📹 Install Tutorial
 
-**New here and just want it working?** Watch the screen recording, follow the
-step-by-step, and check what each screen should look like.
+---
 
-<div align="center">
-  <a href="https://engrtarun.github.io/T-YouTube/">
-    <img src="https://img.shields.io/badge/%F0%9F%93%AC%20Open%20the%20Install%20Tutorial-FF1744?style=for-the-badge&logo=youtube&logoColor=white" alt="Open the install tutorial">
-  </a>
-</div>
 
-<sub>› video · step-by-step · screenshots · troubleshooting · one-click downloads</sub>
+---
+
+
 
 ---
 
