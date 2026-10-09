@@ -4,7 +4,7 @@
 
   ### 📦 Download
 
-  <a href="https://github.com/engrtarundilwal/T-YouTube/releases/latest">
+  <a href="https://github.com/engrtarun/T-YouTube/releases/latest">
     <img src="https://img.shields.io/badge/%F0%9F%93%A6%20Download%20T%20YouTube%20v1.0.0-FF1744?style=for-the-badge&logo=android&logoColor=white" alt="Download T YouTube APK">
   </a>
 
@@ -14,15 +14,15 @@
 
   <br><br>
 
-  [![Version](https://img.shields.io/github/v/release/engrtarundilwal/T-YouTube?style=flat-square&label=Version&color=FF1744)](https://github.com/engrtarundilwal/T-YouTube/releases/latest)
-  [![Downloads](https://img.shields.io/github/downloads/engrtarundilwal/T-YouTube/total?style=flat-square&label=Downloads&color=2563EB)](https://github.com/engrtarundilwal/T-YouTube/releases)
+  [![Version](https://img.shields.io/github/v/release/engrtarun/T-YouTube?style=flat-square&label=Version&color=FF1744)](https://github.com/engrtarun/T-YouTube/releases/latest)
+  [![Downloads](https://img.shields.io/github/downloads/engrtarun/T-YouTube/total?style=flat-square&label=Downloads&color=2563EB)](https://github.com/engrtarun/T-YouTube/releases)
   [![Android](https://img.shields.io/badge/Android-10%2B-3DDC84?style=flat-square&logo=android&logoColor=white)](https://developer.android.com/)
-  [![Size](https://img.shields.io/badge/APK-214%20MB-8B5CF6?style=flat-square)](https://github.com/engrtarundilwal/T-YouTube/releases/latest)
+  [![Size](https://img.shields.io/badge/APK-214%20MB-8B5CF6?style=flat-square)](https://github.com/engrtarun/T-YouTube/releases/latest)
   [![microG](https://img.shields.io/badge/powered%20by-microG-34A853?style=flat-square&logo=google-play&logoColor=white)](https://github.com/microg/GmsCore)
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](#-contributing)
 
   <sub>
-    <a href="https://github.com/engrtarundilwal/T-YouTube/releases/latest/download/T-YouTube-v1.0.0.apk">Direct download · T-YouTube-v1.0.0.apk</a>
+    <a href="https://github.com/engrtarun/T-YouTube/releases/latest/download/T-YouTube-v1.0.0.apk">Direct download · T-YouTube-v1.0.0.apk</a>
   </sub>
 
 </div>
@@ -283,12 +283,12 @@ versus the known-good build, confirming the runtime patches survived reassembly.
 
 ---
 
-## 👤 Author
+## 👤 Maintainer
 
-<a href="https://github.com/engrtarundilwal">
-  <img src="https://github.com/engrtarundilwal.png" width="88" height="88" alt="engrtarundilwal" style="border-radius:50%">
+<a href="https://github.com/engrtarun">
+  <img src="https://github.com/engrtarun.png" width="88" height="88" alt="engrtarun" style="border-radius:50%">
   <br>
-  <b>@engrtarundilwal</b>
+  <b>@engrtarun</b>
 </a>
 
 ---
@@ -337,7 +337,7 @@ otherwise connected to Google LLC or YouTube.
 <div align="center">
   <sub>
     Not affiliated with Google ·
-    <a href="https://github.com/engrtarundilwal/T-YouTube/issues">Report an issue</a> ·
-    <a href="https://github.com/engrtarundilwal/T-YouTube/releases">All releases</a>
+    <a href="https://github.com/engrtarun/T-YouTube/issues">Report an issue</a> ·
+    <a href="https://github.com/engrtarun/T-YouTube/releases">All releases</a>
   </sub>
 </div>
