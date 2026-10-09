@@ -1,4 +1,4 @@
-## 📹 Install Tutorial
+## Install Tutorial
 
 **New here and just want it working?** Watch the screen recording, follow the
 step-by-step, and check what each screen should look like.
@@ -16,7 +16,7 @@ step-by-step, and check what each screen should look like.
 <div align="center">
   <img src="assets/banner.png" width="100%" alt="T YouTube">
 
-  ### 📦 Download
+  ### Download
 
 **① microG-RE first** — then **② T YouTube**. Both buttons go straight to the file.
 
@@ -30,7 +30,7 @@ step-by-step, and check what each screen should look like.
 
   <br>
   <sub>
-    <b>⚠️ Install order matters:</b> microG-RE <b>pehle</b>, phir T YouTube.<br>
+    <b> Install order matters:</b> microG-RE <b>pehle</b>, phir T YouTube.<br>
     Android will ask you to allow <b>"Install unknown apps"</b> for your browser the first time.<br>
     T YouTube will not run without it — it cannot use Google Play Services.
   </sub>
@@ -63,7 +63,7 @@ step-by-step, and check what each screen should look like.
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 **Player** — one frame that shows three working features at once: the download
 button, SponsorBlock, and Return-YouTube-Dislike.
@@ -99,16 +99,16 @@ build, and both headers read **T YouTube**. On the base build this spot said
 
 ---
 
-## ✨ What this build changes
+## What this build changes
 
 This is **not** a feature-addition fork. It is a *cleanup and rebrand* of
 **YT Pro v59** — three deliberate changes, nothing else.
 
 | # | Change | Details |
 |:-:|:--|:--|
-| 1 | 🧹 **Startup ad/promo popup removed** | The mod fetches a remote JSON from a third-party server and pops an affiliate/promo dialog on every launch. Both code paths are stubbed to `return-void` at the entry point — no network request, no dialog, no background thread. |
-| 2 | ✏️ **Full rebrand** | Every `YouTube Pro` string replaced with `T YouTube` across **all 82 locales**, plus settings screens and the launcher label — **and** the in-app wordmark images (40 PNG/WebP assets across five densities) where the old name was baked into *pixels*, which no text search can find. Zero occurrences remain. |
-| 3 | 🎨 **New icon set** | Purpose-built launcher icon built to the official Android adaptive-icon spec. |
+| 1 | **Startup ad/promo popup removed** | The mod fetches a remote JSON from a third-party server and pops an affiliate/promo dialog on every launch. Both code paths are stubbed to `return-void` at the entry point — no network request, no dialog, no background thread. |
+| 2 |  **Full rebrand** | Every `YouTube Pro` string replaced with `T YouTube` across **all 82 locales**, plus settings screens and the launcher label — **and** the in-app wordmark images (40 PNG/WebP assets across five densities) where the old name was baked into *pixels*, which no text search can find. Zero occurrences remain. |
+| 3 | **New icon set** | Purpose-built launcher icon built to the official Android adaptive-icon spec. |
 
 **Not changed:** the package name, version code, or any patch/feature logic.
 This build upgrades in place over the original and keeps your data, logins and
@@ -116,7 +116,7 @@ watch history.
 
 ---
 
-## 🎨 The icon
+## The icon
 
 The previous icon was drawn at ~82 dp wide on a 108 dp canvas. Android only ever
 shows a **72 dp** window of that canvas — so the neon ring was clipped by every
@@ -136,19 +136,19 @@ Android 13+ **themed icon** (previously still showing the YouTube play glyph).
 
 ---
 
-## 📋 Requirements
+## Requirements
 
 | | |
 |:--|:--|
 | **Android** | 10.0 (API 29) or newer |
 | **Architecture** | `arm64-v8a`, `armeabi-v7a`, `x86`, `x86_64` — universal APK |
-| **Google Play Services** | ❌ **Not required — and must not be active.** T YouTube runs on **microG-RE**, which cannot coexist with Google Play Services. |
-| **microG-RE** | ✅ **Required.** A GmsCore fork — see below. |
+| **Google Play Services** | **Not required — and must not be active.** T YouTube runs on **microG-RE**, which cannot coexist with Google Play Services. |
+| **microG-RE** | **Required.** A GmsCore fork — see below. |
 | **Free storage** | ~350 MB (app + data) |
 
 ---
 
-## 📥 Installation
+## Installation
 
 ### Step 1 — Install microG-RE first
 
@@ -173,7 +173,7 @@ a random APK site:
 > microG-RE is **Apache-2.0** licensed and this repo links to it rather than
 > re-hosting it.
 
-> ⚠️ Already using **Google Play Services**? It must be **disabled/uninstalled**
+>  Already using **Google Play Services**? It must be **disabled/uninstalled**
 > first. microG will not install alongside it, and T YouTube will not work while
 > Play Services is still active.
 
@@ -193,7 +193,7 @@ Without this the app installs but sign-in, playback and most API calls fail.
 
 ---
 
-## ⚠️ Upgrading from an older YT Pro build
+## Upgrading from an older YT Pro build
 
 Android refuses to install an update signed with a **different key**. T YouTube
 is signed with the same AOSP `testkey` certificate that YT Pro v59 uses, so it
@@ -212,7 +212,7 @@ installed. Common causes:
 
 | Situation | What to do |
 |:--|:--|
-| A YT Pro build signed with a modder's own key | Uninstall it first (⚠️ clears app data) |
+| A YT Pro build signed with a modder's own key | Uninstall it first ( clears app data) |
 | A build signed with a random debug key | Uninstall it first |
 | Any other fork of `com.gold.android.youtube` | Uninstall it first |
 
@@ -221,7 +221,7 @@ updates, avoids the problem entirely.
 
 ---
 
-## ❓ FAQ
+## FAQ
 
 <details>
 <summary><b>Can it run alongside the official YouTube?</b></summary>
@@ -272,7 +272,7 @@ endorsed by Google. See [Legal](#-legal--disclaimer).
 
 ---
 
-## 🧪 Technical details
+## Technical details
 
 | Property | Value |
 |:--|:--|
@@ -306,7 +306,7 @@ Get-FileHash T-YouTube-v1.0.0.apk -Algorithm SHA256
 
 ---
 
-## 🔨 How it was built
+## How it was built
 
 ```
 YT Pro v59 (original APK)
@@ -333,7 +333,7 @@ versus the known-good build, confirming the runtime patches survived reassembly.
 
 ---
 
-## 👤 Maintainer
+## Maintainer
 
 <a href="https://github.com/engrtarun">
   <img src="https://github.com/engrtarun.png" width="88" height="88" alt="engrtarun" style="border-radius:50%">
@@ -343,7 +343,7 @@ versus the known-good build, confirming the runtime patches survived reassembly.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Issues and pull requests are welcome — especially translations, bug reports with
 logs, and icon refinements for other launcher shapes.
@@ -353,7 +353,7 @@ server-side / microG-side concerns.
 
 ---
 
-## ⚖️ Legal & Disclaimer
+## Legal & Disclaimer
 
 T YouTube is an **unofficial, community-made modification** of the YouTube
 Android client. It is not affiliated with, endorsed by, sponsored by, or
@@ -372,7 +372,7 @@ otherwise connected to Google LLC or YouTube.
 
 ---
 
-## 🙏 Credits
+## Credits
 
 | | |
 |:--|:--|
