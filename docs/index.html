@@ -27,14 +27,43 @@
   .wrap{max-width:var(--max);margin:0 auto;padding:0 20px}
 
   /* ---------- nav ---------- */
-  header.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);
-    background:rgba(5,6,10,.82);border-bottom:1px solid var(--line)}
+  header.nav{position:sticky;top:0;z-index:60;backdrop-filter:blur(14px);
+    background:rgba(5,6,10,.9);border-bottom:1px solid var(--line)}
   .nav .wrap{display:flex;align-items:center;gap:14px;height:62px}
-  .nav img{width:30px;height:30px;border-radius:8px}
-  .nav b{font-size:15px;letter-spacing:.2px}
+  .nav img{width:30px;height:30px;border-radius:8px;flex:0 0 auto}
+  .nav .brand{display:flex;align-items:center;gap:11px;min-width:0}
+  .nav .brand b{font-size:15px;letter-spacing:.2px;white-space:nowrap;overflow:hidden;
+    text-overflow:ellipsis}
   .nav .sp{margin-left:auto;display:flex;gap:6px}
-  .nav .sp a{font-size:13.5px;color:var(--dim);padding:7px 11px;border-radius:8px}
+  .nav .sp a{font-size:13.5px;color:var(--dim);padding:7px 11px;border-radius:8px;white-space:nowrap}
   .nav .sp a:hover{background:var(--card);color:var(--txt);text-decoration:none}
+
+  /* ---- mobile drawer ---- */
+  .burger{display:none;margin-left:auto;width:42px;height:42px;align-items:center;
+    justify-content:center;background:var(--card);border:1px solid var(--line);
+    border-radius:11px;cursor:pointer;flex:0 0 auto}
+  .burger span{display:block;width:17px;height:2px;background:var(--txt);border-radius:2px;
+    position:relative;transition:transform .2s ease,background .2s ease}
+  .burger span::before,.burger span::after{content:"";position:absolute;left:0;width:17px;height:2px;
+    background:var(--txt);border-radius:2px;transition:transform .2s ease,opacity .2s ease}
+  .burger span::before{top:-6px}
+  .burger span::after{top:6px}
+  .burger[aria-expanded="true"] span{background:transparent}
+  .burger[aria-expanded="true"] span::before{transform:translateY(6px) rotate(45deg)}
+  .burger[aria-expanded="true"] span::after{transform:translateY(-6px) rotate(-45deg)}
+  .scrim{display:none;position:fixed;inset:62px 0 0;background:rgba(0,0,0,.55);z-index:55}
+  .scrim.on{display:block}
+  @media(max-width:820px){
+    .nav .wrap{gap:10px}
+    .burger{display:flex}
+    .nav .sp{position:fixed;top:62px;left:0;right:0;flex-direction:column;gap:0;
+      background:#080a10;border-bottom:1px solid var(--line);padding:6px 12px 12px;
+      transform:translateY(-130%);transition:transform .24s ease;box-shadow:0 20px 40px rgba(0,0,0,.5)}
+    .nav .sp.open{transform:translateY(0)}
+    .nav .sp a{font-size:15px;padding:13px 12px;border-radius:10px;width:100%}
+    .nav .sp a:hover{background:var(--card)}
+  }
+  @media(max-width:400px){.nav .brand b{font-size:13.5px}}
 
   /* ---------- hero ---------- */
   .hero{padding:60px 0 40px;position:relative;overflow:hidden}
@@ -72,14 +101,13 @@
   .player{position:relative;aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;
     border:1px solid var(--line);box-shadow:0 22px 60px rgba(0,0,0,.55)}
   .player video{width:100%;height:100%;display:block;background:#000}
-  .player .hint{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
-    justify-content:center;gap:12px;text-align:center;padding:24px;
-    background:linear-gradient(180deg,#0a0c12,#05060a)}
-  .player .hint .ico{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;
-    background:linear-gradient(95deg,var(--pink),#ff5a3d);color:#fff;font-size:26px}
-  .player .hint p{color:var(--dim);font-size:14px;max-width:52ch}
-  .player .hint code{background:var(--card);border:1px solid var(--line);border-radius:6px;
-    padding:2px 7px;font-size:13px;color:var(--cyan)}
+  /* hint sits BELOW the poster, never on top of it - otherwise it hides the
+     thumbnail the moment the page loads */
+  .player .hint{position:absolute;left:0;right:0;bottom:0;padding:14px 18px;text-align:center;
+    background:linear-gradient(180deg,transparent,rgba(5,6,10,.92) 55%);
+    pointer-events:none;animation:fadeout .35s ease 6s forwards}
+  @keyframes fadeout{to{opacity:0;visibility:hidden}}
+  .player .hint p{color:var(--dim);font-size:13.5px}
   .vbar{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px;color:var(--dim2);font-size:13.5px}
   .vbar a{color:var(--dim)}
   .vbar a:hover{color:var(--cyan)}
@@ -148,7 +176,6 @@
   @media(max-width:760px){
     .step{grid-template-columns:1fr;gap:10px;padding:20px}
     .num{font-size:26px}
-    .nav .sp a:not(.keep){display:none}
     section{padding:40px 0}
   }
   @media(prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -158,18 +185,23 @@
 
 <header class="nav">
   <div class="wrap">
-    <img src="assets/logo.png" alt="">
-    <b>T YouTube · Install Tutorial</b>
-    <nav class="sp">
+    <a class="brand" href="#top">
+      <img src="assets/logo.png" alt="">
+      <b>T YouTube · Install Tutorial</b>
+    </a>
+    <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="menu"><span></span></button>
+
+    <nav class="sp" id="menu">
       <a href="#video">Video</a>
       <a href="#steps">Steps</a>
       <a href="#shots">Screenshots</a>
       <a href="#dl">Download</a>
       <a href="#fix">Fix errors</a>
-      <a class="keep" href="https://github.com/engrtarun/T-YouTube">GitHub ↗</a>
+      <a href="https://github.com/engrtarun/T-YouTube">GitHub ↗</a>
     </nav>
   </div>
 </header>
+<div class="scrim" id="scrim"></div>
 
 <div class="hero">
   <div class="wrap">
@@ -203,18 +235,13 @@
 
     <div class="player">
       <video id="vid" controls preload="metadata" playsinline
-             poster="assets/screenshots/settings.jpg">
+             poster="assets/thumbnail.png">
         <!-- ▼▼▼ DROP THE RECORDING IN: docs/assets/video/tutorial.mp4 ▼▼▼ -->
         <source src="https://github.com/engrtarun/T-YouTube/releases/download/v1.0.0/tutorial.mp4" type="video/mp4">
         Your browser cannot play this video.
       </video>
       <div class="hint" id="vidHint">
-        <div class="ico">▶</div>
-        <div>
-          <p><b>Loading the recording…</b><br>
-          The video is 153&nbsp;MB, so give it a moment. If it never appears,
-          the steps below are complete on their own.</p>
-        </div>
+          <p>▸ Tap play — the recording is 153&nbsp;MB, so it may take a moment to buffer.</p>
       </div>
     </div>
 
@@ -443,13 +470,41 @@
   (function () {
     var v = document.getElementById('vid'), hint = document.getElementById('vidHint');
     if (!v || !hint) return;
-    var probe = document.createElement('video');
-    probe.preload = 'metadata';
-    probe.onloadedmetadata = function () {
-      if (probe.duration && probe.duration > 1) { hint.style.display = 'none'; }
+    var hide = function () { hint.style.display = 'none'; };
+    var show = function () { hint.style.display = ''; };
+    v.addEventListener('loadedmetadata', hide);
+    v.addEventListener('canplay', hide);
+    v.addEventListener('playing', hide);
+    v.addEventListener('error', show);
+    // if metadata is already cached, drop the hint immediately
+    if (v.readyState >= 1) { hide(); }
+  })();
+
+  // ---- mobile drawer ----
+  (function () {
+    var b = document.getElementById('burger'), m = document.getElementById('menu'),
+        s = document.getElementById('scrim');
+    if (!b || !m) return;
+    var set = function (on) {
+      b.setAttribute('aria-expanded', on ? 'true' : 'false');
+      m.classList.toggle('open', on);
+      s.classList.toggle('on', on);
+      document.body.style.overflow = on ? 'hidden' : '';
     };
-    probe.onerror = function () { /* no file yet - keep the hint */ };
-    probe.src = v.querySelector('source').src;
+    b.addEventListener('click', function () {
+      set(b.getAttribute('aria-expanded') !== 'true');
+    });
+    s.addEventListener('click', function () { set(false); });
+    m.addEventListener('click', function (e) {
+      if (e.target.tagName === 'A') { set(false); }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { set(false); }
+    });
+    // reset when the layout goes back to desktop
+    window.matchMedia('(min-width:821px)').addEventListener('change', function (e) {
+      if (e.matches) { set(false); }
+    });
   })();
 </script>
 </body>
