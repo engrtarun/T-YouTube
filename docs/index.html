@@ -154,6 +154,8 @@
   .dcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;
     display:flex;flex-direction:column;gap:9px}
   .dcard .n{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim2);font-weight:700}
+  .dcard .n.ok{color:var(--cyan)}
+  .dcard p b{color:var(--txt);font-weight:650}
   .dcard h4{font-size:19px;font-weight:750}
   .dcard p{color:var(--dim);font-size:13.6px;flex:1}
   .dcard .sz{font-size:12.5px;color:var(--dim2)}
@@ -367,16 +369,18 @@
     <p class="lede">Both buttons go straight to the file — one tap, no extra page.</p>
     <div class="dl">
       <div class="dcard">
-        <span class="n">Step 1 · Required</span>
+        <span class="n ok">Required · install first</span>
         <h4>microG-RE</h4>
-        <p>The Google Play Services replacement T YouTube runs on. Install this first.</p>
+        <p>The Google Play Services replacement T YouTube runs on. Nothing works without it,
+           and it must be in place <b>before</b> the app.</p>
         <span class="sz">107 MB · universal · Apache-2.0</span>
         <a class="btn btn-s" href="https://github.com/MorpheApp/MicroG-RE/releases/download/7.2.1/microg-7.2.1.apk">Download microG-RE</a>
       </div>
       <div class="dcard">
-        <span class="n">Step 4</span>
+        <span class="n">The app · after microG-RE</span>
         <h4>T YouTube v1.0.0</h4>
-        <p>The app. Installs over YouTube Pro v59 without touching your data.</p>
+        <p>The app itself. Installs straight over YouTube Pro v59 without touching
+           your logins or watch history.</p>
         <span class="sz">214 MB · Android 10+ · universal</span>
         <a class="btn btn-p" href="https://github.com/engrtarun/T-YouTube/releases/download/v1.0.0/T-YouTube-v1.0.0.apk">Download T YouTube</a>
       </div>
