@@ -1,0 +1,32 @@
+# ---- never commit binaries: upload APKs as GitHub Release assets ----
+*.apk
+*.idsig
+*.apks
+*.aab
+*.dex
+*.keystore
+*.jks
+*.p12
+*.pem
+*.pk8
+
+# ---- signing material: NEVER commit ----
+*.pk8
+*.x509.pem
+testkey.p12
+debug.keystore
+local.properties
+
+# ---- build output ----
+build/
+dist/
+out/
+*.log
+
+# ---- OS / editor ----
+Thumbs.db
+desktop.ini
+.DS_Store
+.idea/
+.vscode/
+*.swp
