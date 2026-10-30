@@ -53,6 +53,9 @@ jobs:
       - name: Apply playback, download, theme and colour fixes
         run: python3 scripts/apply-fixes.py work
 
+      - name: Apply test-fix-4 branding, watermark and download-dialog fixes
+        run: python3 scripts/apply-test-fix-4.py work
+
       - name: Rebuild APK
         run: |
           mkdir -p dist
@@ -96,6 +99,14 @@ jobs:
           echo "dex files: $DEX_COUNT"
           test "$DEX_COUNT" -eq 10
 
+          # test-fix-4 must really be inside the APK, not just in the tree.
+          "$BUILD_TOOLS/aapt2" dump resources dist/T-YouTube-fixed-test.apk > dist/resources.txt
+          grep -q "tyt_reel_back_animation" dist/resources.txt
+          grep -q "tyt_brand_04_text" dist/resources.txt
+          unzip -p dist/T-YouTube-fixed-test.apk classes10.dex | grep -a -q "BrandAnimation"
+          unzip -p dist/T-YouTube-fixed-test.apk classes10.dex | grep -a -q "WatermarkTuner"
+          unzip -p dist/T-YouTube-fixed-test.apk classes10.dex | grep -a -q "SafeTruncate"
+
           cp ci/TEST-BUILD-README.txt dist/T-YouTube-fixed-TEST-README.txt
           sha256sum dist/T-YouTube-fixed-test.apk
           ls -lh dist/
@@ -109,6 +120,7 @@ jobs:
             dist/T-YouTube-fixed-TEST-README.txt
             dist/verify.txt
             dist/badging.txt
+            dist/resources.txt
           compression-level: 0
           retention-days: 14
 
@@ -124,7 +136,7 @@ jobs:
           else
             gh release create "$GITHUB_REF_NAME" \
               --title "T YouTube test build $GITHUB_REF_NAME" \
-              --notes "Automated CI test build from commit $GITHUB_SHA. Installs over T YouTube v1.0.0 (same AOSP testkey signature). Not a public stable release." \
+              --notes "Optional preview built from commit $GITHUB_SHA. Adds the Shorts T YouTube brand loop, a controls-only fullscreen wordmark, and safer duplicate-name handling in the download dialog. Installs over v1.0.0 or v1.0.1 (same AOSP testkey signature, same version code). Not a stable release - stable v1.0.1 remains the recommended download. See T-YouTube-fixed-TEST-README.txt for the checklist." \
               --prerelease \
               dist/T-YouTube-fixed-test.apk \
               dist/T-YouTube-fixed-TEST-README.txt

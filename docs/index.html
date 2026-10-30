@@ -190,6 +190,28 @@
   .stableupdate .su-link:hover{color:var(--cyan)}
   .stableupdate .su-sum{margin-top:14px;font-size:12.3px;color:var(--dim2);word-break:break-all}
 
+  /* ---------- preview / test build (highlight) ---------- */
+  .testbuild{margin-top:18px;border:1px solid rgba(245,158,11,.45);border-radius:16px;
+    background:linear-gradient(180deg,rgba(245,158,11,.10),rgba(0,229,255,.03));
+    padding:22px;position:relative;overflow:hidden}
+  .testbuild::after{content:"";position:absolute;width:340px;height:340px;right:-130px;top:-170px;
+    background:radial-gradient(circle,rgba(245,158,11,.14),transparent 65%);pointer-events:none}
+  .testbuild > *{position:relative;z-index:1}
+  .testbuild .tb-tag{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;
+    letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#fde3ad;
+    background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.45);
+    padding:6px 12px;border-radius:999px}
+  .testbuild h3{font-size:19px;font-weight:750;margin:12px 0 8px}
+  .testbuild p{color:var(--dim);font-size:13.8px;max-width:76ch}
+  .testbuild ul{margin:12px 0 0;padding-left:19px;color:var(--dim);font-size:13.6px;max-width:76ch}
+  .testbuild li{margin:6px 0}
+  .testbuild li b{color:var(--txt);font-weight:650}
+  .testbuild .tb-actions{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:18px}
+  .testbuild .tb-link{font-size:13.5px;color:var(--dim)}
+  .testbuild .tb-link:hover{color:var(--cyan)}
+  .testbuild .tb-sum{margin-top:14px;font-size:12.3px;color:var(--dim2);word-break:break-all}
+  .btn-amber{background:linear-gradient(180deg,#f6b73c,#e08a00);color:#20160a;border-color:#f6b73c}
+
   /* ---------- troubleshooting ---------- */
   details{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:10px}
   summary{cursor:pointer;padding:16px 20px;font-weight:650;font-size:15px;list-style:none;
@@ -229,6 +251,7 @@
       <a href="#shots">Screenshots</a>
       <a href="#dl">Download</a>
       <a href="#update">Update</a>
+      <a href="#preview">Preview</a>
       <a href="#fix">Fix errors</a>
       <a href="https://github.com/engrtarun/T-YouTube">GitHub ↗</a>
     </nav>
@@ -455,6 +478,92 @@
       <p class="su-sum">
         Verified APK · promoted from test-fix-3 without rebuilding ·
         SHA-256 <span class="k">71B0F782702129A0DDCC80EE0A7150F52FE0099671AB62692766B1C605EBE7FE</span>
+      </p>
+    </div>
+
+    <div class="testbuild" id="preview">
+      <span class="tb-tag">🧪 Preview · test-fix-4 (optional)</span>
+      <h3>Shorts branding, a fullscreen wordmark, and safer downloads</h3>
+      <p>
+        A new test build on top of stable v1.0.1. It is <b>optional</b> — stable v1.0.1
+        above is still the recommended download. Install it only if you want to try the
+        new look and the download-dialog fix early.
+      </p>
+      <ul>
+        <li><b>Shorts “T YouTube” loop.</b> The back arrow in Shorts now cycles through a
+            gentle 8-second brand animation. The whole area is still one big Back button —
+            tap it any time, including while the words are showing.</li>
+        <li><b>Fullscreen watermark.</b> “T YouTube” sits centred in the bottom control row
+            in portrait and landscape fullscreen, and only while the controls are on screen.
+            It never covers the video when the controls hide.</li>
+        <li><b>Download name fix.</b> Duplicate filenames now default to
+            <b>Generate unique name</b>. <b>Overwrite</b> is a separate, explicit choice and
+            is not offered while a download is running. Stale finished entries no longer
+            block a new download of the same title.</li>
+        <li><b>YouTube link guide (optional).</b> Want youtube.com links to open in T YouTube
+            instead of the official app? Follow the <a href="#links">short guide</a> — or
+            skip it; nothing else in the app depends on it.</li>
+      </ul>
+      <div class="tb-actions">
+        <a class="btn btn-amber" href="https://github.com/engrtarun/T-YouTube/releases/download/test-fix-4/T-YouTube-fixed-test.apk">Download test build test-fix-4</a>
+        <a class="tb-link" href="https://github.com/engrtarun/T-YouTube/releases/tag/test-fix-4">Release notes &amp; checksum ↗</a>
+        <a class="tb-link" href="#links">Link setup guide ↓</a>
+      </div>
+      <p class="tb-sum">
+        Same signature and version as v1.0.1, so it installs in place — your logins,
+        settings and downloads stay. Go back by installing v1.0.1 over it.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section id="links">
+  <div class="wrap">
+    <div class="kicker">Optional</div>
+    <h2>Open YouTube links in T YouTube</h2>
+    <p class="lede">
+      Purely a convenience. If you would rather not change anything, skip this page —
+      everything in the app already works.
+    </p>
+
+    <div class="testbuild" style="margin-top:20px">
+      <span class="tb-tag">Why this is manual</span>
+      <p>
+        Android allows <b>one</b> app per website. While the official YouTube app is verified
+        for <b>youtube.com</b>, T YouTube cannot take those links over silently — Google
+        already owns them. You have to hand the links over once, in Android settings.
+      </p>
+      <h3>Setup (about 1 minute)</h3>
+      <ul>
+        <li><b>1. Open the official YouTube app’s link settings.</b><br>
+            Android Settings → Apps → <b>YouTube</b> → <b>Open by default</b> →
+            turn off <b>Open supported links</b> (or remove <b>youtube.com</b> and
+            <b>m.youtube.com</b> from the supported addresses).</li>
+        <li><b>2. Give the links to T YouTube.</b><br>
+            Android Settings → Apps → <b>T YouTube</b> → <b>Open by default</b> →
+            <b>Add link</b> → tick <b>youtube.com</b> and <b>m.youtube.com</b>, then
+            <b>Add</b>.</li>
+        <li><b>3. Test it.</b> Open a youtube.com link from your browser or a chat app.
+            Android should offer T YouTube (or open it directly).</li>
+      </ul>
+      <p style="margin-top:14px">
+        <b>Shortcut:</b> these two buttons jump straight to each app’s Android settings page
+        when this guide is open on the phone. If your browser blocks them, use the steps
+        above — they are the same screens.
+      </p>
+      <div class="tb-actions" style="margin-top:10px">
+        <a class="btn btn-s" href="intent:#Intent;action=android.settings.APPLICATION_DETAILS_SETTINGS;data=package:com.google.android.youtube;end">Open official YouTube settings</a>
+        <a class="btn btn-s" href="intent:#Intent;action=android.settings.APPLICATION_DETAILS_SETTINGS;data=package:com.gold.android.youtube;end">Open T YouTube settings</a>
+      </div>
+      <h3>Skip for now</h3>
+      <p>
+        Do nothing on this page. Links keep opening in the official YouTube app or your
+        browser, exactly as before. You can come back to this guide at any time, and you can
+        undo step 1 the same way if you change your mind.
+      </p>
+      <p class="tb-sum">
+        Menu names differ slightly by phone maker (Samsung, Xiaomi, Pixel). Look for
+        “Open by default”, “Default apps” or “Supported links” in the app’s info page.
       </p>
     </div>
   </div>

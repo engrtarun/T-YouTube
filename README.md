@@ -45,7 +45,8 @@ step-by-step, and check what each screen should look like.
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](#-contributing)
 
   <sub>
-    <a href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.0.1">Release notes &amp; checksums</a>
+    <a href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.0.1">Release notes &amp; checksums</a> ·
+    <a href="https://github.com/engrtarun/T-YouTube/releases/tag/test-fix-4">Preview build test-fix-4</a>
   </sub>
 </div>
 
@@ -133,6 +134,51 @@ watch history.
 rebuilding — so the checksum published here matches the build testers installed.
 Same package, version name, version code and AOSP `testkey` signature: it
 installs straight over v1.0.0 or any earlier test build with data intact.
+
+---
+
+## test-fix-4 — optional preview
+
+An **optional test build** on top of v1.0.1. Stable **v1.0.1 remains the
+recommended download**; install this only if you want to try the new look and
+the download-dialog fix early.
+
+**[Download test build test-fix-4](https://github.com/engrtarun/T-YouTube/releases/download/test-fix-4/T-YouTube-fixed-test.apk)** ·
+[same signature and version as v1.0.1](https://github.com/engrtarun/T-YouTube/releases/tag/test-fix-4),
+so it installs in place and keeps your data.
+
+| Change | What to expect |
+|:--|:--|
+| **Shorts brand loop** | The back arrow in the Shorts header cycles through an 8-second **T YouTube** animation (arrow → wordmark → arrow). The whole 128×48 dp strip stays a single Back target, so a tap while the words are showing still goes back. |
+| **Fullscreen watermark** | A static **T YouTube** wordmark sits centred in the bottom action row, between the left controls and **More videos**, in both portrait and landscape fullscreen. It is only visible while the controls are shown and is not clickable. |
+| **Download names** | A duplicate filename now defaults to **Generate unique name**. **Overwrite** is an explicit secondary action and is hidden while a download is running. Finished-but-deleted missions are forgotten instead of blocking a re-download, and a failed truncate recovers with delete + recreate. |
+| **YouTube links (optional)** | See [Open YouTube links in T YouTube](#open-youtube-links-in-t-youtube). You can skip it; nothing else depends on it. |
+
+Rollback: install v1.0.1 over it. No data is lost.
+
+---
+
+## Open YouTube links in T YouTube
+
+Optional convenience. **Skip it if you prefer** — links keep opening in the
+official YouTube app or your browser, exactly as before.
+
+Android allows only **one** app per website. While the official YouTube app is
+verified for `youtube.com`, T YouTube cannot take those links over silently —
+Google already owns them. You hand them over once, in Android settings.
+
+1. **Release the links from official YouTube** — Android Settings → Apps →
+   **YouTube** → **Open by default** → turn off **Open supported links** (or
+   remove `youtube.com` and `m.youtube.com` from the supported addresses).
+2. **Give them to T YouTube** — Android Settings → Apps → **T YouTube** →
+   **Open by default** → **Add link** → tick `youtube.com` and `m.youtube.com` →
+   **Add**.
+3. **Test** — open a youtube.com link from your browser or a chat app; Android
+   should offer or open T YouTube.
+
+Menu names vary slightly by phone maker (Samsung, Xiaomi, Pixel): look for
+“Open by default”, “Default apps” or “Supported links” on the app info page.
+Undo step 1 the same way if you change your mind.
 
 ---
 

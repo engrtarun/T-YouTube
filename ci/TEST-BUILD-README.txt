@@ -1,93 +1,106 @@
-T YouTube fixed TEST build (test-fix-3)
+T YouTube fixed TEST build (test-fix-4)
 =======================================
 
 Package: com.gold.android.youtube
-Base: T YouTube v1.0.0 (YouTube 21.26.364) - same package + versionCode
-Signature: same AOSP testkey as v1.0.0, installs as an in-place update
+Base: T YouTube v1.0.0 (YouTube 21.26.364) + all v1.0.1 fixes + test-fix-4
+Signature: same AOSP testkey as v1.0.0/v1.0.1, installs as an in-place update
 Min Android: 10 (API 29)
 
-WHAT CHANGED (defaults + bug fixes - no new menus, no new buttons)
------------------------------------------------------------------
-1) Download button force-closed the app (test-fix-2 regression - fixed)
-   test-fix-2 added filename cleanup that cut every title at 80 characters.
-   For a normal title shorter than 80 characters that cut was invalid and the
-   download dialog crashed the moment it opened. Titles are now cut only when
-   they are actually longer than 80 characters, so normal titles pass through
-   unchanged and the dialog opens normally.
+WHAT IS NEW IN test-fix-4
+-------------------------
+1) Shorts "T YouTube" brand loop
+   The back arrow in the Shorts header now runs an 8-second animation:
+   arrow (4.8s) -> crossfade -> "T YouTube" (2.75s) -> crossfade -> arrow.
+   The whole 128x48dp strip is still ONE Back button. Tapping it at any
+   moment - including while the words are showing - must go back.
+   The video title is pinned to its old position, so nothing jumps.
 
-2) Seeking a long video froze playback, then only low quality played
-   Default spoof playback client: "Android Reel" (ANDROID_REEL_AUTH) -> "visionOS".
-   visionOS returns complete stream URLs with working seek and full quality
-   list, so jumps to 20+ minutes no longer hang and quality is not forced down.
+2) Fullscreen "T YouTube" watermark (controls only)
+   In fullscreen the wordmark sits centred in the bottom action row,
+   between the left controls and "More videos". It appears in BOTH
+   portrait and landscape fullscreen, and ONLY while the controls are
+   visible. Tap the video to hide the controls: the wordmark must hide
+   with them. It is not clickable.
 
-3) Shorts stalled for 1-2 minutes, then resumed in low quality
-   Same client change as (2): Shorts use the same stream resolver, so they get
-   the same seek/quality fix.
+3) Download dialog: duplicate names and stale entries
+   When a file with the same name exists, the dialog now defaults to
+   "Generate unique name" (e.g. "Title (1).mp4"). "Overwrite" is a
+   separate, explicit button and is not offered while a download is
+   running. A finished download whose file was later deleted no longer
+   blocks a new download of the same title.
 
-4) In-app downloads: extra stream source
-   Enabled the iOS stream source in the built-in NewPipe-based downloader
-   (the setFetchIosClient(true) behaviour stock NewPipe enables but this fork
-   never did). The download quality list now gets extra, unthrottled stream URLs.
+4) YouTube link guide (optional - you may skip it)
+   The site and README explain how to make youtube.com links open in
+   T YouTube. This cannot be automatic: Android allows one app per site
+   and official YouTube currently owns youtube.com, so it must be
+   released in Android settings first. Skipping changes nothing.
 
-5) Dark theme by default
-   Appearance defaults to Dark (app_theme_dark = true, Appearance = Dark).
-   You can still switch to Light / Use device theme in Settings > General.
-
-6) Seekbar in the logo colours
-   Custom seekbar colours are now ON by default:
-     played part / primary: #00FCFF (logo cyan-green)
-     accent / secondary:    #F3024E (logo red)
-   Colours were sampled from the official T YouTube logo.
-   You can change or disable them in Settings > Player > Seekbar.
+Everything from v1.0.1 is still included: download-crash fix, visionOS
+playback client (seek + quality), iOS stream source, dark theme, and the
+#00FCFF / #F3024E seekbar.
 
 HOW TO INSTALL
 --------------
-Open the APK on the phone and install it as an update over the existing T YouTube.
-Do NOT uninstall the old app first (you would lose downloads/settings).
-If Android says "App not installed", stop and report it - do not uninstall.
+Open the APK on the phone and install it as an update over the existing
+T YouTube. Do NOT uninstall the old app first (you would lose downloads
+and settings). If Android says "App not installed", stop and report it -
+do not uninstall.
 
 TEST CHECKLIST (about 8 minutes)
 --------------------------------
-[  ] Download dialog (the main fix): tap Download on a normal video with a
-     short title. The dialog must open (the app must NOT close) and show the
-     quality list. Pick a quality; the download must complete, appear in
-     Downloads, and play from there.
-[  ] Download a video whose title has emoji and is longer than 80 characters.
-     It must also open the dialog and download normally.
-[  ] Download a second normal video, to be sure repeated downloads still work.
-[  ] Long seek: play a 30+ minute 1080p video, drag the bar to ~23:00 (or use
-     the +10s button repeatedly). Playback should resume in a few seconds with
-     the quality you selected - no 2-8 minute freeze, no forced 144p/360p.
-[  ] Quality: gear icon -> quality menu is present and lists 1080p (1440p/2160p
-     when the upload has it). Changing quality takes effect immediately.
-[  ] Shorts: swipe through 10-15 Shorts. No 1-2 minute stall; if one buffers it
-     should recover quickly at normal quality.
-[  ] Theme: on first launch after install the app should be dark. Check
-     Settings > General > Appearance = Dark.
-[  ] Seekbar: play any video. The progress bar should be cyan/green (#00FCFF)
-     with a red (#F3024E) accent, not the old pink/red gradient.
-[  ] PiP: play a video, press Home. It should shrink to a floating PiP window
-     and keep playing (kept from test-fix-1).
+[  ] Shorts loop: open Shorts. The header arrow should change into
+     "T YouTube" after a few seconds, then back to the arrow.
+[  ] Shorts Back: wait until the words are visible, then tap the words.
+     It MUST go back. Repeat twice.
+[  ] Shorts title: the video title must stay in the same place the whole
+     time - it must not shift left or right when the words appear.
+[  ] Fullscreen portrait: play a normal video, go fullscreen, tap once to
+     show controls. "T YouTube" must be centred at the bottom between
+     the left buttons and "More videos". Wait for the controls to hide -
+     the wordmark must hide too.
+[  ] Fullscreen landscape: rotate to landscape fullscreen and repeat.
+[  ] Inline (not fullscreen): the watermark must NOT appear.
+[  ] Download duplicate: download a video, then download the same video
+     again. The dialog must offer "Generate unique name" as the main
+     action and "Overwrite" as a second action. Choose unique name and
+     confirm both files exist.
+[  ] Download overwrite: repeat, choose "Overwrite". It must replace the
+     file without an error and the new file must play.
+[  ] Download stale entry: delete a finished download from the Downloads
+     screen (keep the file if asked), then download the same video again.
+     It must download normally, not claim the file already exists.
+[  ] Download in progress: start a large download, then try downloading
+     the same title. "Overwrite" must not be offered while it runs.
+[  ] Link guide (optional): if you want it, follow the two settings
+     steps in the site guide. If not, skip - links still open as before.
+[  ] Regression: the download dialog still opens for a normal short
+     title (v1.0.1 fix), long seeks still resume at quality, and Shorts
+     do not stall.
 
 IF SOMETHING STILL FAILS
 ------------------------
-A previously saved setting always wins over a new default. Check in the app:
-  T YouTube settings -> General -> Appearance = Dark
-  T YouTube settings -> Player -> Seekbar -> custom colours ON,
-      primary #00FCFF, accent #F3024E
-  T YouTube settings -> Miscellaneous -> Spoof video streams -> Default client = visionOS
-Changing those values has exactly the same effect as this build's new defaults.
+Shorts tap while words are visible does not go back:
+   Send a screenshot of the header and the phone model. That means the
+   tap target is being clipped by the animation drawable.
 
-Download button closes the app again:
-   Send the video title/link and the exact step where it closes. That means
-   the filename crash fix did not cover your title, and a log is needed.
+Watermark shows when the controls are hidden, or in inline mode:
+   Send the phone model, Android version, and whether it was portrait or
+   landscape fullscreen. The gate is "overlay height >= 75% of display
+   height", and a screenshot shows which side failed.
 
-Download still says "file not created":
-  1. T YouTube settings -> Downloads -> download folder -> choose Internal storage
-     (not the SD card), then retry the same video.
-  2. If it works on internal storage, the SD card/folder was the problem.
-  3. If it still fails, send the video title/link and the exact error text.
+Watermark missing in one orientation:
+   Same as above - send the orientation and a screenshot with controls
+   visible.
+
+Download still says "file not created" or "already exists":
+   1. T YouTube settings -> Downloads -> download folder -> choose
+      Internal storage (not the SD card), then retry the same video.
+   2. If it works on internal storage, the SD card/folder was the
+      problem.
+   3. If it still fails, send the video title/link and the exact error
+      text.
 
 ROLLBACK
 --------
-Install the original T YouTube v1.0.0 APK over this build (same signature, no data loss).
+Install T YouTube v1.0.1 (or v1.0.0) over this build - same signature, no
+data loss.
