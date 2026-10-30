@@ -419,29 +419,37 @@
 
     <div class="testbuild" id="test">
       <span class="tb-tag">⚠ Test build · not stable</span>
-      <h3>Optional test build — only if you are testing the fixes</h3>
+      <h3>Optional test build — download, seek, Shorts + new defaults</h3>
       <p>
-        This build is a <b>preview</b> with fixes for picture-in-picture, in-app downloads, and
-        playback stalls after seeking. It is <b>not</b> a new stable release and you do
-        <b>not</b> need it. If you just want to watch YouTube, download
-        <b>T YouTube v1.0.0</b> above and ignore this box.
+        <b>test-fix-2</b> is a preview that tries to fix the reported bugs: video downloads
+        ending with “file not created”, long videos freezing after seeking to 20+ minutes and
+        dropping to low quality, and Shorts stalling for 1–2 minutes. It also defaults the app
+        to <b>dark theme</b> and colours the seekbar with the logo palette
+        (<b>#00FCFF</b> cyan-green primary, <b>#F3024E</b> red accent). It is <b>not</b> a new
+        stable release; stable v1.0.0 above is still the recommended download.
       </p>
       <ul>
-        <li><b>For testing only.</b> Expect bugs — it can behave worse than v1.0.0.</li>
+        <li><b>For testing only.</b> These fixes are unconfirmed until testers report back.</li>
         <li><b>Installs as an update over v1.0.0</b> (same app, same signature).
             Do not uninstall the app first; your logins and downloads stay.</li>
         <li><b>Same version number as v1.0.0</b> (21.26.364), so Android will not show it
             as an update and app stores will not update it for you.</li>
+        <li><b>If a download still fails,</b> set the download folder to
+            <b>Internal storage</b> in Settings → Downloads, then retry that video.
+            An old SD-card folder is a common cause.</li>
+        <li><b>Saved settings win:</b> if the app is already light or the seekbar was
+            customised, change it in Settings → General → Appearance and
+            Settings → Player → Seekbar.</li>
         <li><b>To go back:</b> install T YouTube v1.0.0 again over it. No data is lost.</li>
         <li>If you post about a problem, say you are on the <b>test build</b>, not v1.0.0.</li>
       </ul>
       <div class="tb-actions">
-        <a class="btn btn-test" href="https://github.com/engrtarun/T-YouTube/releases/download/test-fix-1/T-YouTube-fixed-test.apk">Download test build (212 MB)</a>
-        <a class="tb-link" href="https://github.com/engrtarun/T-YouTube/releases/tag/test-fix-1">Release page: files &amp; test notes ↗</a>
+        <a class="btn btn-test" href="https://github.com/engrtarun/T-YouTube/releases/download/test-fix-2/T-YouTube-fixed-test.apk">Download test build (212 MB)</a>
+        <a class="tb-link" href="https://github.com/engrtarun/T-YouTube/releases/tag/test-fix-2">Release page: files &amp; test notes ↗</a>
       </div>
       <p class="tb-sum">
         SHA-256 ·
-        <span class="k">8A24FCB6D6117A359D1C5504227FC99C8D1C00AD0E6BDF8E4C40E6490AA5BDDE</span>
+        <span class="k">236EC6B74A55376039D82C8B2C258968C51153A89C5E4211638A4CC97226765E</span>
       </p>
     </div>
   </div>
