@@ -97,12 +97,15 @@ jobs:
           echo "dex files: $DEX_COUNT"
           test "$DEX_COUNT" -eq 10
 
-          # Prove the three Zversion features made it into the APK.
+          # Prove the Zversion features made it into the APK.
           grep -q "ZVersionReelBackView" work/res/layout/reel_player_static_header.xml
           grep -q "ZVersionWatermark" work/res/layout/youtube_controls_bottom_ui_container.xml
+          grep -q "ZVersionWatermark" work/res/layout/youtube_video_exploder_controls_bottom_ui_container.xml
           test -f work/res/drawable/tyt_reel_back_animation.xml
           test "$(find work/res/drawable-xxhdpi -name 'tyt_brand_*.png' | wc -l)" -eq 8
-          unzip -p dist/T-YouTube-Zversion.apk classes10.dex | grep -a -q "ZVersionDownloadUniqueAction"
+          grep -q "createUniqueFile" work/smali_classes10/com/gold/youtube/om7753/download/DownloadDialog.smali
+          test ! -e work/smali_classes10/com/gold/youtube/om7753/download/ZVersionDownloadUniqueAction.smali
+          unzip -p dist/T-YouTube-Zversion.apk classes10.dex | grep -a -q "ZVersionReelBackView"
 
           cp ci/TEST-BUILD-README.txt dist/T-YouTube-Zversion-TEST-README.txt
           sha256sum dist/T-YouTube-Zversion.apk
@@ -132,7 +135,7 @@ jobs:
           else
             gh release create "$GITHUB_REF_NAME" \
               --title "T YouTube Zversion $GITHUB_REF_NAME" \
-              --notes "Optional Zversion preview built from stable v1.0.1 at commit $GITHUB_SHA. Adds the Shorts T YouTube brand loop, the fullscreen controls-only T YouTube watermark, and the duplicate-name download dialog (Generate unique name is the default; Overwrite is explicit; Pending/Running never offer Overwrite; a finished-but-deleted mission can be downloaded again). Package, version code and AOSP testkey signature are unchanged, so it installs over v1.0.1 with data intact. Not a stable release - stable v1.0.1 remains the recommended download. See T-YouTube-Zversion-TEST-README.txt for the checklist." \
+              --notes "Optional Zversion 2 preview built from stable v1.0.1 at commit $GITHUB_SHA. Fixes the Shorts T YouTube brand loop so it starts when the whole header becomes visible, adds the controls-only T YouTube watermark to BOTH bottom-control layouts the app can inflate, and restores effortless automatic duplicate naming (finished duplicates are renamed with the app's own createUniqueFile logic; no Generate unique name dialog; Pending/Running stay info-only and are never overwritten). Package, version code and AOSP testkey signature are unchanged, so it installs over v1.0.1 with data intact. Not a stable release - stable v1.0.1 remains the recommended download. See T-YouTube-Zversion-TEST-README.txt for the checklist." \
               --prerelease \
               dist/T-YouTube-Zversion.apk \
               dist/T-YouTube-Zversion-TEST-README.txt

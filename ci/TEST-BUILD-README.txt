@@ -1,35 +1,40 @@
-T YouTube Zversion TEST build
-=============================
+T YouTube Zversion 2 TEST build
+===============================
 
 Package: com.gold.android.youtube
 Base: T YouTube v1.0.1 (YouTube 21.26.364)
 Signature: same AOSP testkey as v1.0.1, installs as an in-place update
 Min Android: 10 (API 29)
 
-WHAT IS NEW IN ZVERSION
------------------------
+WHAT IS NEW IN ZVERSION 2
+-------------------------
 This is a separate test build on top of stable v1.0.1. It keeps every
 v1.0.1 playback/download/theme fix and adds three changes:
 
-1) Shorts header brand loop
+1) Shorts header brand loop (fixed)
    The top-left Shorts back control cycles every 8 seconds:
    arrow (4.8s) -> 225ms crossfade -> "T YouTube" (2.75s) -> 225ms
    crossfade -> arrow. The whole 128x48dp strip is still one Back target.
-   The video title must stay in exactly the same position.
+   The loop now starts when the whole Shorts header becomes visible, not
+   only when the button's own visibility changes. The video title must
+   stay in exactly the same position.
 
-2) Fullscreen "T YouTube" watermark
+2) Fullscreen "T YouTube" watermark (fixed)
    A small 18sp bold "T YouTube" wordmark, 80% white, centred in the
    bottom control row between the left controls and "More videos".
+   It is added to BOTH bottom-control layouts the app can inflate, so it
+   appears whether "Restore old player buttons" is on or off.
    It appears only in fullscreen while the controls are visible, in
    portrait and landscape. It must never appear inline, in miniplayer/PiP,
    or in Shorts, and it must not intercept taps or move any control.
 
-3) Download dialog duplicate-name fix
-   When a file with the same name already exists, the dialog offers
-   "Generate unique name" as the positive/default action (for example
-   "Title (1).mp4") and "Overwrite" as a separate neutral action.
-   Pending and Running downloads never offer Overwrite. A finished
-   mission whose file was deleted can be downloaded again.
+3) Automatic duplicate naming (fixed)
+   Downloading the same title again now just works: the app silently
+   saves a second file with its own unique name (for example
+   "Title (1).mp4"). There is no "Generate unique name" button and no
+   extra tap. Pending and Running downloads show an information dialog
+   and are never overwritten. A finished mission whose file was deleted
+   can be downloaded again.
 
 Everything from v1.0.1 is still included: download-crash fix, visionOS
 playback client (seek + quality), iOS stream source, dark theme, and the
@@ -76,16 +81,13 @@ TEST CHECKLIST
      inline player, miniplayer/PiP, or Shorts.
 
 [  ] Download duplicate: download a video, then download the same video
-     again. The dialog must show "Generate unique name" as the main
-     action and "Overwrite" as a second action. Choose unique name and
-     confirm both files exist.
-
-[  ] Download overwrite: repeat, choose "Overwrite". It must replace the
-     file without an error and the new file must play.
+     again. It must start immediately with no extra dialog and no extra
+     tap. Both files must exist; the second one should have a unique
+     name such as "Title (1).mp4".
 
 [  ] Download in progress: start a large download, then try downloading
-     the same title. The dialog must not offer "Overwrite" while it is
-     Pending or Running.
+     the same title. It must show an information dialog only, with no
+     "Overwrite" and no "Generate unique name" action.
 
 [  ] Stale entry: delete a finished download from the Downloads screen
      (keep the file if asked), then download the same video again. It
@@ -109,7 +111,7 @@ Fullscreen watermark does not appear or appears inline:
    Send fullscreen portrait and landscape screenshots with controls
    shown and hidden, plus the inline player screenshot.
 
-Download dialog has no working button or the app freezes:
+Download duplicate does not start or overwrites the old file:
    Send the video title or link, the phone model, and whether the file
    already existed. If possible, include a logcat taken while tapping
    Download.

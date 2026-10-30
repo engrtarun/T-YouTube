@@ -46,7 +46,7 @@ step-by-step, and check what each screen should look like.
 
   <sub>
     <a href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.0.1">Release notes &amp; checksums</a> ·
-    <a href="https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-1">Preview build test-zversion-1</a>
+    <a href="https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-2">Preview build test-zversion-2</a>
   </sub>
 </div>
 
@@ -137,29 +137,30 @@ installs straight over v1.0.0 or any earlier test build with data intact.
 
 ---
 
-## test-zversion-1 — Shorts, fullscreen and download preview
+## test-zversion-2 - Shorts, fullscreen and download preview
 
-An **optional Zversion test build** decoded from the published **v1.0.1**
-APK. Stable **v1.0.1 remains the recommended download**. This build adds the
-two UI features that were withdrawn in test-fix-4, plus the duplicate-name
-download fix:
+An **optional Zversion 2 test build** decoded from the published **v1.0.1**
+APK. Stable **v1.0.1 remains the recommended download**. Zversion 2 fixes
+the two UI features that did not appear in Zversion 1 and restores effortless
+duplicate naming:
 
 | Change | What to expect |
 |:--|:--|
-| **Shorts brand loop** | The top-left Shorts back control cycles every 8 seconds: arrow → 225 ms crossfade → **T YouTube** → 225 ms crossfade → arrow. The whole 128×48 dp strip is still one Back target and the title does not move. |
-| **Fullscreen watermark** | A subtle 18 sp bold **T YouTube** wordmark in the bottom control row, between the left controls and “More videos”. It appears only in fullscreen while controls are visible, in portrait and landscape, and is absent inline, in PiP and in Shorts. |
-| **Duplicate names** | A duplicate filename asks first, with **Generate unique name** as the positive/default action (e.g. `Title (1).mp4`). **Overwrite** is a separate neutral action and is not offered for Pending or Running downloads. |
-| **Finished downloads** | A finished mission whose file was deleted no longer blocks a new download; the stale mission is forgotten and the file is created again. |
+| **Shorts brand loop** | The top-left Shorts back control cycles every 8 seconds: arrow -> 225 ms crossfade -> **T YouTube** -> 225 ms crossfade -> arrow. The whole 128x48 dp strip is still one Back target and the title does not move. The loop starts when the whole header becomes visible, not only when the button itself changes. |
+| **Fullscreen watermark** | A subtle 18 sp bold **T YouTube** wordmark in the bottom control row, between the left controls and "More videos". It is added to **both** bottom-control layouts the app can inflate, so it appears whether "Restore old player buttons" is on or off. It shows only in fullscreen while controls are visible, in portrait and landscape, and is absent inline, in PiP and in Shorts. |
+| **Duplicate names** | Downloading the same title again just works: the app silently saves a second file with its own unique name (e.g. `Title (1).mp4`). There is no **Generate unique name** button and no extra tap. |
+| **Active downloads** | Pending and Running downloads show an information dialog only and are never overwritten. A finished mission whose file was deleted can be downloaded again. |
 | **YouTube links (optional)** | See [Open YouTube links in T YouTube](#open-youtube-links-in-t-youtube). You can skip it; nothing else depends on it. |
 
-**[Download Zversion test build](https://github.com/engrtarun/T-YouTube/releases/download/test-zversion-1/T-YouTube-Zversion.apk)** ·
-[same signature and version as v1.0.1](https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-1),
-so it installs in place and keeps your data.
+**[Download Zversion 2 test build](https://github.com/engrtarun/T-YouTube/releases/download/test-zversion-2/T-YouTube-Zversion.apk)** -
+[same signature and version as v1.0.1](https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-2),
+so it installs in place and keeps your data. You can install it directly over
+Zversion 1.
 
 Rollback: install v1.0.1 over it. No data is lost.
 
-Size **222,584,227 bytes (212 MB)** · SHA-256
-`4CD565F46672C9651AFB77831F7A8C2420A684D2F08E9098CB6C4B78D76A1F22`
+Size and SHA-256 are published on the
+[test-zversion-2 release page](https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-2).
 
 Full change log for every test build, including the withdrawn test-fix-4:
 **[TEST-CHANGES.md](TEST-CHANGES.md)**.

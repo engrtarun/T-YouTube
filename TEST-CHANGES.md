@@ -11,14 +11,78 @@ reference.
 | `test-fix-3` | **Promoted to v1.0.1** | v1.0.0 | Fixed the download dialog crash on short titles |
 | `test-fix-4` | **Withdrawn — release and tag deleted** | v1.0.0 + v1.0.1 fixes | Shorts brand loop, fullscreen watermark, download dialog rework |
 | `test-fix-5` | Superseded | v1.0.0 + v1.0.1 fixes | Download dialog only; complete stable v1.0.1 UI |
-| `test-zversion-1` | **Current optional test build** | stable v1.0.1 | Shorts brand loop, fullscreen watermark, download dialog fix |
+| `test-zversion-1` | Superseded | stable v1.0.1 | Shorts brand loop, fullscreen watermark, download dialog fix |
+| `test-zversion-2` | **Current optional test build** | stable v1.0.1 | Fixed Shorts loop, both-layout watermark, automatic duplicate naming |
 
 Stable **v1.0.1 remains the recommended download**. Test builds are optional
 and are published as GitHub prereleases.
 
 ---
 
-## test-zversion-1 — Shorts, fullscreen and download (current)
+## test-zversion-2 - Zversion 1 fixes (current)
+
+**Release:** https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-2
+
+This build keeps the Zversion 1 feature set but fixes why the first attempt did
+not appear on the phone, and restores automatic duplicate naming. It is still
+decoded from the **published v1.0.1 APK**, and stable v1.0.1 is untouched.
+
+### 1. Shorts brand loop now starts reliably
+
+- The 8-second loop, 128x48 dp strip and 65 dp title anchor are unchanged.
+- The custom view now restarts the `AnimationDrawable` when the **whole
+  header** becomes visible, using `onVisibilityAggregated`, `onLayout` and
+  `onWindowVisibilityChanged` fallbacks.
+- Zversion 1 only reacted to the button's own visibility change. The Shorts
+  controller makes the button visible while its parent header is still `GONE`,
+  so the start could be skipped and never retried.
+- The animation still stops when the header is detached or hidden, and the
+  whole strip remains one Back target with the same content description.
+
+### 2. Fullscreen watermark is in both bottom-control layouts
+
+- The app chooses between `youtube_controls_bottom_ui_container.xml` and
+  `youtube_video_exploder_controls_bottom_ui_container.xml` at runtime via
+  `LegacyPlayerControlsPatch.usePlayerBottomControlsExploderLayout()`.
+- Zversion 1 patched only the legacy layout. Devices with "Restore old player
+  buttons" off use the exploder layout, so the watermark was never inflated.
+- Zversion 2 patches **both** layouts with the same 18 sp bold white 80%
+  wordmark, constrained between the timestamps and `bottom_end_container`.
+- It is still a child of the controls, so it hides with them, and it remains
+  absent inline, in PiP/miniplayer and in Shorts.
+
+### 3. Duplicate downloads are automatic again
+
+- The broken **Generate unique name** button and the
+  `ZVersionDownloadUniqueAction` class are removed.
+- A finished duplicate now silently calls the app's own
+  `StoredDirectoryHelper.createUniqueFile()`, so a second file is saved as
+  `Title (1).mp4` with no dialog and no extra tap.
+- Pending and Running missions still show an information-only dialog and are
+  never overwritten.
+- A finished mission whose file was deleted is still forgotten and downloaded
+  again normally.
+
+### Build
+
+- Base APK: **stable v1.0.1**
+  (`T-YouTube-v1.0.1.apk`, SHA-256
+  `71B0F782702129A0DDCC80EE0A7150F52FE0099671AB62692766B1C605EBE7FE`)
+- Patch: `scripts/apply-zversion.py` only
+- CI: GitHub Actions `.github/workflows/build-test-apk.yml`
+- APK: `T-YouTube-Zversion.apk`
+- Package: `com.gold.android.youtube`
+- Version: `21.26.364` / versionCode `2147483647`
+- Signature: AOSP `testkey` (same as v1.0.1)
+
+### Verify
+
+- APK size and SHA-256 are published on the release page.
+- Test checklist: `ci/TEST-BUILD-README.txt`.
+
+---
+
+## test-zversion-1 — Shorts, fullscreen and download (superseded)
 
 **Release:** https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-1
 
