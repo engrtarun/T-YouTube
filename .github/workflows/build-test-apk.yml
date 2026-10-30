@@ -1,0 +1,131 @@
+name: Build fixed test APK
+
+# Heavy work (apktool decode/rebuild, signing) runs on GitHub's runners.
+# Trigger: push a tag named test-fix-* (creates a prerelease with the APK),
+# or run this workflow manually from the Actions tab.
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "test-fix-*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-test-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  BASE_APK_URL: https://github.com/engrtarun/T-YouTube/releases/download/v1.0.0/T-YouTube-v1.0.0.apk
+  BASE_APK_SHA256: 3dd2e57bcf683b36a9a1df8be31aa69a2380d16e96dca9de5009b49221b2f005
+  APKTOOL_VERSION: 2.11.1
+  CERT_SHA256: a40da80a59d170caa950cf15c18c454d47a39b26989d8b640ecd745ba71bf5dc
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Download base APK v1.0.0 and verify checksum
+        run: |
+          curl -fL --retry 3 --retry-delay 5 -o base.apk "$BASE_APK_URL"
+          echo "$BASE_APK_SHA256  base.apk" | sha256sum -c -
+
+      - name: Download apktool ${{ env.APKTOOL_VERSION }}
+        run: |
+          curl -fL --retry 3 -o apktool.jar \
+            "https://github.com/iBotPeaches/Apktool/releases/download/v${APKTOOL_VERSION}/apktool_${APKTOOL_VERSION}.jar"
+
+      - name: Decode APK
+        run: java -Xmx6g -jar apktool.jar d -f base.apk -o work
+
+      - name: Apply the three fixes
+        run: python3 scripts/apply-fixes.py work
+
+      - name: Rebuild APK
+        run: |
+          mkdir -p dist
+          java -Xmx6g -jar apktool.jar b work -o dist/unsigned.apk
+
+      - name: Zipalign
+        run: |
+          BT="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -n1)"
+          echo "BUILD_TOOLS=$BT" >> "$GITHUB_ENV"
+          echo "Using $BT"
+          "$BT/zipalign" -p -f 4 dist/unsigned.apk dist/aligned.apk
+
+      - name: Fetch AOSP testkey and verify certificate fingerprint
+        run: |
+          base="https://android.googlesource.com/platform/build/+/refs/heads/master/target/product/security"
+          curl -fsSL "$base/testkey.pk8?format=TEXT" | base64 -d > testkey.pk8
+          curl -fsSL "$base/testkey.x509.pem?format=TEXT" | base64 -d > testkey.x509.pem
+          FP="$(openssl x509 -in testkey.x509.pem -noout -fingerprint -sha256 \
+                | sed 's/^.*=//' | tr -d ':' | tr 'A-F' 'a-f')"
+          echo "cert sha256: $FP"
+          test "$FP" = "$CERT_SHA256"
+
+      - name: Sign with AOSP testkey (same signature as v1.0.0)
+        run: |
+          "$BUILD_TOOLS/apksigner" sign \
+            --key testkey.pk8 --cert testkey.x509.pem \
+            --v1-signing-enabled false \
+            --v2-signing-enabled true \
+            --v3-signing-enabled true \
+            --out dist/T-YouTube-fixed-test.apk dist/aligned.apk
+
+      - name: Verify APK
+        run: |
+          "$BUILD_TOOLS/apksigner" verify --print-certs dist/T-YouTube-fixed-test.apk | tee dist/verify.txt
+          grep -qi "$CERT_SHA256" dist/verify.txt
+
+          "$BUILD_TOOLS/aapt2" dump badging dist/T-YouTube-fixed-test.apk | head -n1 | tee dist/badging.txt
+          grep -q "package: name='com.gold.android.youtube' versionCode='2147483647'" dist/badging.txt
+
+          DEX_COUNT="$(unzip -l dist/T-YouTube-fixed-test.apk | grep -Ec 'classes[0-9]*\.dex$')"
+          echo "dex files: $DEX_COUNT"
+          test "$DEX_COUNT" -eq 10
+
+          cp ci/TEST-BUILD-README.txt dist/T-YouTube-fixed-TEST-README.txt
+          sha256sum dist/T-YouTube-fixed-test.apk
+          ls -lh dist/
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: T-YouTube-fixed-test-${{ github.sha }}
+          path: |
+            dist/T-YouTube-fixed-test.apk
+            dist/T-YouTube-fixed-TEST-README.txt
+            dist/verify.txt
+            dist/badging.txt
+          compression-level: 0
+          retention-days: 14
+
+      - name: Publish prerelease (tag builds only)
+        if: startsWith(github.ref, 'refs/tags/test-fix-')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" \
+              dist/T-YouTube-fixed-test.apk \
+              dist/T-YouTube-fixed-TEST-README.txt --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" \
+              --title "T YouTube test build $GITHUB_REF_NAME" \
+              --notes "Automated CI test build from commit $GITHUB_SHA. Installs over T YouTube v1.0.0 (same AOSP testkey signature). Not a public stable release." \
+              --prerelease \
+              dist/T-YouTube-fixed-test.apk \
+              dist/T-YouTube-fixed-TEST-README.txt
+          fi
