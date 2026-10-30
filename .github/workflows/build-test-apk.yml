@@ -106,7 +106,7 @@ jobs:
           grep -q "createUniqueFile" work/smali_classes10/com/gold/youtube/om7753/download/DownloadDialog.smali
           grep -q 'if-eqz p1, :cond_0' work/smali_classes10/com/gold/youtube/om7753/util/FilenameUtils.smali
           grep -q 'if-nez v0, :done' work/smali_classes10/com/gold/extension/youtube/brand/ZVersionReelBackView.smali
-          test "$(grep -c 'if-nez v0, :draw' work/smali_classes10/com/gold/extension/youtube/brand/ZVersionReelBackView.smali)" -eq 1
+          test "$(grep -c 'if-nez v0, :draw' work/smali_classes10/com/gold/extension/youtube/brand/ZVersionReelBackView.smali)" -eq 2
           grep -q 'if-nez v0, :done' work/smali_classes10/com/gold/extension/youtube/brand/ZVersionWatermark.smali
           grep -q "21.20.402 (Zversion 3)" work/res/xml/youtube_prefs.xml
           test ! -e work/smali_classes10/com/gold/youtube/om7753/download/ZVersionDownloadUniqueAction.smali
