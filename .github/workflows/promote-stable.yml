@@ -1,0 +1,68 @@
+name: Promote verified APK to stable
+
+# Trigger: push a stable tag such as v1.0.1.
+# This does NOT rebuild. It copies the exact APK that was tested in the
+# test-fix-3 release, verifies its checksum, and publishes it as the latest
+# stable release under the stable tag. The published SHA-256 therefore matches
+# the build testers actually installed.
+
+on:
+  push:
+    tags:
+      - "v1.*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: promote-stable-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_TAG: test-fix-3
+  SOURCE_ASSET: T-YouTube-fixed-test.apk
+  SOURCE_SHA256: 71b0f782702129a0ddcc80ee0a7150f52fe0099671ab62692766b1c605ebe7fe
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download the tested APK from ${{ env.SOURCE_TAG }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p dist
+          gh release download "$SOURCE_TAG" \
+            --pattern "$SOURCE_ASSET" \
+            --dir dist \
+            --clobber
+          echo "$SOURCE_SHA256  dist/$SOURCE_ASSET" | sha256sum -c -
+          mv "dist/$SOURCE_ASSET" "dist/T-YouTube-${GITHUB_REF_NAME}.apk"
+          cp ci/STABLE-README.txt "dist/T-YouTube-${GITHUB_REF_NAME}-README.txt"
+          sha256sum "dist/T-YouTube-${GITHUB_REF_NAME}.apk"
+
+      - name: Publish stable release (latest)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --verify-tag \
+            --latest \
+            --title "T YouTube $GITHUB_REF_NAME - stable update" \
+            --notes-file ci/STABLE-RELEASE-NOTES.md \
+            "dist/T-YouTube-${GITHUB_REF_NAME}.apk" \
+            "dist/T-YouTube-${GITHUB_REF_NAME}-README.txt"
+
+      - name: Verify release is stable and public
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" \
+            --json isPrerelease,isDraft,tagName,assets \
+            --jq '{prerelease:.isPrerelease,draft:.isDraft,tag:.tagName,assets:[.assets[].name]}'
+          test "$(gh release view "$GITHUB_REF_NAME" --json isPrerelease --jq .isPrerelease)" = "false"
