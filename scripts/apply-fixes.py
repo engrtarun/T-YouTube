@@ -158,6 +158,24 @@ EDITS = [
         "Playback: version the spoof-client pref key so old installs pick up VISIONOS",
     ),
     (
+        pathlib.Path("res/xml/youtube_prefs.xml"),
+        'android:key="youtube_spoof_video_streams_client_type"',
+        'android:key="youtube_spoof_video_streams_client_type_v2"',
+        "Playback: point settings UI at versioned spoof-client key (youtube_prefs)",
+    ),
+    (
+        pathlib.Path("res/xml/youtube_prefs_icons.xml"),
+        'android:key="youtube_spoof_video_streams_client_type"',
+        'android:key="youtube_spoof_video_streams_client_type_v2"',
+        "Playback: point settings UI at versioned spoof-client key (icons)",
+    ),
+    (
+        pathlib.Path("res/xml/youtube_prefs_icons_bold.xml"),
+        'android:key="youtube_spoof_video_streams_client_type"',
+        'android:key="youtube_spoof_video_streams_client_type_v2"',
+        "Playback: point settings UI at versioned spoof-client key (icons bold)",
+    ),
+    (
         SETTINGS,
         "    new-instance v5, Lcom/gold/extension/shared/settings/BooleanSetting;\n"
         "\n"
@@ -243,6 +261,11 @@ def main() -> int:
     extractor = (root / EXTRACTOR).read_text(encoding="utf-8")
     filenames = (root / FILENAMES).read_text(encoding="utf-8")
     prefs = (root / GENERAL_PREFS).read_text(encoding="utf-8")
+    spoof_prefs = [
+        (root / pathlib.Path("res/xml/youtube_prefs.xml")).read_text(encoding="utf-8"),
+        (root / pathlib.Path("res/xml/youtube_prefs_icons.xml")).read_text(encoding="utf-8"),
+        (root / pathlib.Path("res/xml/youtube_prefs_icons_bold.xml")).read_text(encoding="utf-8"),
+    ]
     checks = [
         (
             "MiniplayerPatch$MiniplayerType;->DEFAULT:"
@@ -266,6 +289,17 @@ def main() -> int:
         (
             '"youtube_spoof_video_streams_client_type_v2"' in settings,
             "spoof-client key versioned",
+        ),
+        (
+            all(
+                'android:key="youtube_spoof_video_streams_client_type_v2"' in t
+                for t in spoof_prefs
+            )
+            and not any(
+                'android:key="youtube_spoof_video_streams_client_type"' in t
+                for t in spoof_prefs
+            ),
+            "settings UI uses the versioned spoof-client key",
         ),
         (
             "\"#00FCFF\"" in settings and "\"#F3024E\"" in settings,
