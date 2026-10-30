@@ -162,6 +162,9 @@ Rollback: install v1.0.1 over it. No data is lost.
 **Size** 222,566,961 bytes (212 MB) · **SHA-256**
 `4AE3F2D8B26B3869B21A6B17B0C588095626BCF7C6362883F98AC97B63370A0D`
 
+Full change log for every test build, including the withdrawn test-fix-4:
+**[TEST-CHANGES.md](TEST-CHANGES.md)**.
+
 ---
 
 ## Open YouTube links in T YouTube
