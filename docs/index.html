@@ -169,23 +169,26 @@
   .dcard p{color:var(--dim);font-size:13.6px;flex:1}
   .dcard .sz{font-size:12.5px;color:var(--dim2)}
 
-  /* ---------- optional test build (prerelease) ---------- */
-  .testbuild{margin-top:26px;border:1px solid rgba(245,158,11,.42);border-radius:16px;
-    background:linear-gradient(180deg,rgba(245,158,11,.10),rgba(245,158,11,.025));padding:22px}
-  .testbuild .tb-tag{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;
-    letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#ffd58a;
-    background:rgba(245,158,11,.16);border:1px solid rgba(245,158,11,.45);
+  /* ---------- official stable update (highlight) ---------- */
+  .stableupdate{margin-top:26px;border:1px solid rgba(34,197,94,.42);border-radius:16px;
+    background:linear-gradient(180deg,rgba(34,197,94,.10),rgba(0,229,255,.035));
+    padding:22px;position:relative;overflow:hidden}
+  .stableupdate::after{content:"";position:absolute;width:340px;height:340px;right:-130px;top:-170px;
+    background:radial-gradient(circle,rgba(0,229,255,.16),transparent 65%);pointer-events:none}
+  .stableupdate > *{position:relative;z-index:1}
+  .stableupdate .su-tag{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;
+    letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#b6f0c9;
+    background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.45);
     padding:6px 12px;border-radius:999px}
-  .testbuild h3{font-size:18px;font-weight:750;margin:12px 0 8px}
-  .testbuild p{color:var(--dim);font-size:13.8px;max-width:76ch}
-  .testbuild ul{margin:12px 0 0;padding-left:19px;color:var(--dim);font-size:13.6px;max-width:76ch}
-  .testbuild li{margin:6px 0}
-  .testbuild li b{color:var(--txt);font-weight:650}
-  .testbuild .tb-actions{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:18px}
-  .btn-test{background:rgba(245,158,11,.14);border-color:rgba(245,158,11,.55);color:#ffd58a}
-  .testbuild .tb-link{font-size:13.5px;color:var(--dim)}
-  .testbuild .tb-link:hover{color:var(--warn)}
-  .testbuild .tb-sum{margin-top:14px;font-size:12.3px;color:var(--dim2);word-break:break-all}
+  .stableupdate h3{font-size:19px;font-weight:750;margin:12px 0 8px}
+  .stableupdate p{color:var(--dim);font-size:13.8px;max-width:76ch}
+  .stableupdate ul{margin:12px 0 0;padding-left:19px;color:var(--dim);font-size:13.6px;max-width:76ch}
+  .stableupdate li{margin:6px 0}
+  .stableupdate li b{color:var(--txt);font-weight:650}
+  .stableupdate .su-actions{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:18px}
+  .stableupdate .su-link{font-size:13.5px;color:var(--dim)}
+  .stableupdate .su-link:hover{color:var(--cyan)}
+  .stableupdate .su-sum{margin-top:14px;font-size:12.3px;color:var(--dim2);word-break:break-all}
 
   /* ---------- troubleshooting ---------- */
   details{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:10px}
@@ -225,6 +228,7 @@
       <a href="#steps">Steps</a>
       <a href="#shots">Screenshots</a>
       <a href="#dl">Download</a>
+      <a href="#update">Update</a>
       <a href="#fix">Fix errors</a>
       <a href="https://github.com/engrtarun/T-YouTube">GitHub ↗</a>
     </nav>
@@ -235,6 +239,7 @@
 <div class="hero">
   <div class="wrap">
     <span class="badge"><i></i> ~5 minute setup</span>
+    <span class="badge" style="color:#b6f0c9;border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.08)">✅ v1.0.1 stable update</span>
     <h1>Get <span>T YouTube</span><br>running on your phone</h1>
     <p class="sub">
       Most people get stuck on one thing only: this app needs <b>microG-RE</b> instead of
@@ -248,7 +253,7 @@
     </div>
     <div class="meta">
       <span><b>Android 10+</b> required</span>
-      <span><b>214 MB</b> APK</span>
+      <span><b>212 MB</b> APK</span>
       <span><b>107 MB</b> microG-RE</span>
       <span>Works on <b>arm64 + 32-bit</b></span>
     </div>
@@ -330,7 +335,7 @@
         <div class="num">04</div>
         <div>
           <h3>Install T YouTube</h3>
-          <p>Tap the second button, open <span class="k">T-YouTube-v1.0.0.apk</span>, tap
+          <p>Tap the second button, open <span class="k">T-YouTube-v1.0.1.apk</span>, tap
              <b>Install</b>. Allow the unknown-app prompt if it appears.</p>
           <div class="note ok">
             Already have YouTube Pro v59 on the phone? It installs straight on top —
@@ -405,53 +410,51 @@
       </div>
       <div class="dcard">
         <span class="n">The app · after microG-RE</span>
-        <h4>T YouTube v1.0.0</h4>
-        <p>The app itself. Installs straight over YouTube Pro v59 without touching
-           your logins or watch history.</p>
-        <span class="sz">214 MB · Android 10+ · universal</span>
-        <a class="btn btn-p" href="https://github.com/engrtarun/T-YouTube/releases/download/v1.0.0/T-YouTube-v1.0.0.apk">Download T YouTube</a>
+        <h4>T YouTube v1.0.1</h4>
+        <p>The official stable update. Installs straight over v1.0.0 or any earlier test
+           build without touching your logins, settings or downloads.</p>
+        <span class="sz">212 MB · Android 10+ · universal</span>
+        <a class="btn btn-p" href="https://github.com/engrtarun/T-YouTube/releases/download/v1.0.1/T-YouTube-v1.0.1.apk">Download T YouTube</a>
       </div>
     </div>
     <p class="lede" style="margin-top:22px;font-size:13.6px">
-      SHA-256 for T YouTube v1.0.0 (stable) ·
-      <span class="k">3DD2E57BCF683B36A9A1DF8BE31AA69A2380D16E96DCA9DE5009B49221B2F005</span>
+      SHA-256 for T YouTube v1.0.1 (stable) ·
+      <span class="k">71B0F782702129A0DDCC80EE0A7150F52FE0099671AB62692766B1C605EBE7FE</span>
     </p>
 
-    <div class="testbuild" id="test">
-      <span class="tb-tag">⚠ Test build · not stable</span>
-      <h3>Optional test build — download crash fixed, seek, Shorts + new defaults</h3>
+    <div class="stableupdate" id="update">
+      <span class="su-tag">✅ Official stable update · v1.0.1</span>
+      <h3>The download crash is fixed — this is now the stable build</h3>
       <p>
-        <b>test-fix-3</b> is a preview that fixes the reported bugs: tapping Download no longer
-        closes the app, video downloads can complete, long videos no longer freeze after seeking
-        to 20+ minutes or drop to low quality, and Shorts no longer stall for 1–2 minutes. It also
-        defaults the app to <b>dark theme</b> and colours the seekbar with the logo palette
-        (<b>#00FCFF</b> cyan-green primary, <b>#F3024E</b> red accent). It is <b>not</b> a new
-        stable release; stable v1.0.0 above is still the recommended download.
+        Everything tested in the preview is now official. <b>v1.0.1</b> fixes the reported
+        bugs — tapping Download no longer closes the app, downloads complete, long videos no
+        longer freeze after seeking, and Shorts no longer stall — and keeps the new
+        <b>dark theme</b> and logo-coloured seekbar (<b>#00FCFF</b> primary,
+        <b>#F3024E</b> accent). It replaces v1.0.0 as the recommended download.
       </p>
       <ul>
-        <li><b>For testing only.</b> These fixes are unconfirmed until testers report back.</li>
-        <li><b>Coming from test-fix-2?</b> Install this over it. test-fix-2 closed the app as
-            soon as the download dialog opened; this build fixes that crash.</li>
-        <li><b>Installs as an update over v1.0.0</b> (same app, same signature).
-            Do not uninstall the app first; your logins and downloads stay.</li>
-        <li><b>Same version number as v1.0.0</b> (21.26.364), so Android will not show it
-            as an update and app stores will not update it for you.</li>
-        <li><b>If a download still fails,</b> set the download folder to
-            <b>Internal storage</b> in Settings → Downloads, then retry that video.
-            An old SD-card folder is a common cause.</li>
-        <li><b>Saved settings win:</b> if the app is already light or the seekbar was
+        <li><b>Download crash fixed.</b> The previous build cut every title at 80 characters;
+            short titles hit an invalid cut and the dialog crashed the app. The cap now applies
+            only when a title is actually longer than 80 characters.</li>
+        <li><b>Downloads complete.</b> Filenames are cleaned before saving, and the downloader
+            gets extra unthrottled stream URLs from the iOS source.</li>
+        <li><b>Seeking works.</b> visionOS is the default playback client, so 20+ minute jumps
+            resume at the selected quality instead of freezing or dropping to 144p.</li>
+        <li><b>Shorts start immediately.</b> Same stream-resolver fix, no 1–2 minute stall.</li>
+        <li><b>Installs straight over v1.0.0 or any test build</b> — same signature, same
+            version number (21.26.364). Your logins, settings and downloads stay.</li>
+        <li><b>Saved settings still win.</b> If the app is already light or the seekbar was
             customised, change it in Settings → General → Appearance and
             Settings → Player → Seekbar.</li>
-        <li><b>To go back:</b> install T YouTube v1.0.0 again over it. No data is lost.</li>
-        <li>If you post about a problem, say you are on the <b>test build</b>, not v1.0.0.</li>
+        <li><b>To go back:</b> install v1.0.0 again over it. No data is lost.</li>
       </ul>
-      <div class="tb-actions">
-        <a class="btn btn-test" href="https://github.com/engrtarun/T-YouTube/releases/download/test-fix-3/T-YouTube-fixed-test.apk">Download test build (212 MB)</a>
-        <a class="tb-link" href="https://github.com/engrtarun/T-YouTube/releases/tag/test-fix-3">Release page: files &amp; test notes ↗</a>
+      <div class="su-actions">
+        <a class="btn btn-p" href="https://github.com/engrtarun/T-YouTube/releases/download/v1.0.1/T-YouTube-v1.0.1.apk">Download stable v1.0.1 (212 MB)</a>
+        <a class="su-link" href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.0.1">Release notes &amp; checksum ↗</a>
       </div>
-      <p class="tb-sum">
-        SHA-256 ·
-        <span class="k">71B0F782702129A0DDCC80EE0A7150F52FE0099671AB62692766B1C605EBE7FE</span>
+      <p class="su-sum">
+        Verified APK · promoted from test-fix-3 without rebuilding ·
+        SHA-256 <span class="k">71B0F782702129A0DDCC80EE0A7150F52FE0099671AB62692766B1C605EBE7FE</span>
       </p>
     </div>
   </div>
@@ -502,6 +505,18 @@
       <div class="db">
         microG needs background permission on some phones. In microG-RE settings, exclude it
         from battery optimisation, and check <b>Settings → Signature spoofing</b> is enabled.
+      </div>
+    </details>
+
+    <details>
+      <summary>Download still fails / says “file not created”</summary>
+      <div class="db">
+        <ol>
+          <li>Open <b>Settings → Downloads → download folder</b> and choose
+              <b>Internal storage</b> (not the SD card), then retry the same video.</li>
+          <li>If it works on internal storage, the old folder/SD card was the problem.</li>
+          <li>If it still fails, send the video title or link and the exact error text.</li>
+        </ol>
       </div>
     </details>
 

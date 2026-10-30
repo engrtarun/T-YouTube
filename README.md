@@ -24,8 +24,8 @@ step-by-step, and check what each screen should look like.
     <img src="https://img.shields.io/badge/1%C2%B7%20Download%20microG-RE%20(107%20MB)-3DDC84?style=for-the-badge&logo=google-play&logoColor=white" alt="Download microG-RE">
   </a>
 
-  <a href="https://github.com/engrtarun/T-YouTube/releases/download/v1.0.0/T-YouTube-v1.0.0.apk">
-    <img src="https://img.shields.io/badge/2%C2%B7%20Download%20T%20YouTube%20(214%20MB)-FF1744?style=for-the-badge&logo=android&logoColor=white" alt="Download T YouTube APK">
+  <a href="https://github.com/engrtarun/T-YouTube/releases/download/v1.0.1/T-YouTube-v1.0.1.apk">
+    <img src="https://img.shields.io/badge/2%C2%B7%20Download%20T%20YouTube%20(212%20MB)-FF1744?style=for-the-badge&logo=android&logoColor=white" alt="Download T YouTube APK">
   </a>
 
   <br>
@@ -40,12 +40,12 @@ step-by-step, and check what each screen should look like.
   [![Version](https://img.shields.io/github/v/release/engrtarun/T-YouTube?style=flat-square&label=Version&color=FF1744)](https://github.com/engrtarun/T-YouTube/releases/latest)
   [![Downloads](https://img.shields.io/github/downloads/engrtarun/T-YouTube/total?style=flat-square&label=Downloads&color=2563EB)](https://github.com/engrtarun/T-YouTube/releases)
   [![Android](https://img.shields.io/badge/Android-10%2B-3DDC84?style=flat-square&logo=android&logoColor=white)](https://developer.android.com/)
-  [![Size](https://img.shields.io/badge/APK-214%20MB-8B5CF6?style=flat-square)](https://github.com/engrtarun/T-YouTube/releases/latest)
+  [![Size](https://img.shields.io/badge/APK-212%20MB-8B5CF6?style=flat-square)](https://github.com/engrtarun/T-YouTube/releases/latest)
   [![microG-RE](https://img.shields.io/badge/powered%20by-microG--RE-34A853?style=flat-square&logo=google-play&logoColor=white)](https://github.com/MorpheApp/MicroG-RE)
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](#-contributing)
 
   <sub>
-    <a href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.0.0">Release notes &amp; checksums</a>
+    <a href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.0.1">Release notes &amp; checksums</a>
   </sub>
 </div>
 
@@ -113,6 +113,26 @@ This is **not** a feature-addition fork. It is a *cleanup and rebrand* of
 **Not changed:** the package name, version code, or any patch/feature logic.
 This build upgrades in place over the original and keeps your data, logins and
 watch history.
+
+---
+
+## v1.0.1 — stable update
+
+**The Download crash is fixed, and the playback/download fixes tested in
+`test-fix-3` are now the stable build.** No new menus or buttons.
+
+| Fix | What changed |
+|:--|:--|
+| **Download crash** | The 80-character filename cap had an inverted comparison, so a normal short title still hit `substring(0, 80)` and threw `StringIndexOutOfBoundsException` as the dialog opened. The cap now applies only to titles longer than 80 characters. |
+| **Downloads complete** | Filenames are cleaned with the app's charset before saving, and the built-in downloader's iOS stream source is enabled, adding unthrottled stream URLs to the quality picker. |
+| **Seeking / quality** | Default playback client is now **visionOS** instead of Android Reel, so 20+ minute seeks resume at the selected quality instead of freezing and dropping to 144p/360p. |
+| **Shorts** | Same stream-resolver change; Shorts no longer stall for 1–2 minutes. |
+| **Defaults** | Dark theme, seekbar `#00FCFF` primary + `#F3024E` accent, and the test-fix-1 PiP behaviour. |
+
+`v1.0.1` is the exact APK that passed testing as `test-fix-3`, promoted without
+rebuilding — so the checksum published here matches the build testers installed.
+Same package, version name, version code and AOSP `testkey` signature: it
+installs straight over v1.0.0 or any earlier test build with data intact.
 
 ---
 
@@ -187,7 +207,7 @@ Without this the app installs but sign-in, playback and most API calls fail.
 
 ### Step 3 — Install T YouTube
 
-1. Download `T-YouTube-v1.0.0.apk` from the link at the top
+1. Download `T-YouTube-v1.0.1.apk` from the link at the top
 2. Open it — allow **"Install unknown apps"** for your file manager/browser
 3. Tap **Install**
 
@@ -281,8 +301,8 @@ endorsed by Google. See [Legal](#-legal--disclaimer).
 | Version code | `2147483647` |
 | Min SDK | 29 (Android 10) |
 | Target SDK | 37 |
-| APK size | 224,566,006 bytes (214 MB) |
-| Entry count | 16,830 |
+| APK size | 222,566,961 bytes (212 MB) |
+| Entry count | 16,827 |
 | Signature scheme | APK Signature Scheme **v3** |
 | Signing certificate | AOSP `testkey` — `CN=Android, O=Android, L=Mountain View, ST=California, C=US` |
 | Cert SHA-256 | `a40da80a59d170caa950cf15c18c454d47a39b26989d8b640ecd745ba71bf5dc` |
@@ -292,16 +312,16 @@ endorsed by Google. See [Legal](#-legal--disclaimer).
 
 ```powershell
 # signature
-apksigner verify --print-certs T-YouTube-v1.0.0.apk
+apksigner verify --print-certs T-YouTube-v1.0.1.apk
 
 # checksum
-Get-FileHash T-YouTube-v1.0.0.apk -Algorithm SHA256
+Get-FileHash T-YouTube-v1.0.1.apk -Algorithm SHA256
 ```
 
-**SHA-256 for v1.0.0**
+**SHA-256 for v1.0.1**
 
 ```
-3DD2E57BCF683B36A9A1DF8BE31AA69A2380D16E96DCA9DE5009B49221B2F005
+71B0F782702129A0DDCC80EE0A7150F52FE0099671AB62692766B1C605EBE7FE
 ```
 
 ---
@@ -373,7 +393,7 @@ project has instead of ad revenue.
 |:--|:--|
 | Nothing | Press **Star** - takes one click, costs nothing |
 | Spreading a link that dies | Press **Fork** - you get your own copy to change freely |
-| Reporting a bug later | Press **Watch** - you get notified when v1.0.1 ships |
+| Reporting a bug later | Press **Watch** - you get notified when a new update ships |
 
 **Share it with one person who got stuck installing.** That is worth more than
 a hundred stars: it is the difference between someone giving up and someone
