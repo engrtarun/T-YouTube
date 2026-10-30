@@ -33,6 +33,10 @@ dist/
 out/
 *.log
 
+# ---- Python ----
+__pycache__/
+*.pyc
+
 # ---- OS / editor ----
 Thumbs.db
 desktop.ini

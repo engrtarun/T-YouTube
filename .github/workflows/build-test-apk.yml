@@ -1,24 +1,24 @@
-name: Build fixed test APK
+name: Build Zversion test APK
 
 # Heavy work (apktool decode/rebuild, signing) runs on GitHub's runners.
-# Trigger: push a tag named test-fix-* (creates a prerelease with the APK),
-# or run this workflow manually from the Actions tab.
+# Trigger: push a tag named test-zversion-* (creates a prerelease with the
+# APK), or run this workflow manually from the Actions tab.
 on:
   workflow_dispatch:
   push:
     tags:
-      - "test-fix-*"
+      - "test-zversion-*"
 
 permissions:
   contents: write
 
 concurrency:
-  group: build-test-apk-${{ github.ref }}
+  group: build-zversion-apk-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  BASE_APK_URL: https://github.com/engrtarun/T-YouTube/releases/download/v1.0.0/T-YouTube-v1.0.0.apk
-  BASE_APK_SHA256: 3dd2e57bcf683b36a9a1df8be31aa69a2380d16e96dca9de5009b49221b2f005
+  BASE_APK_URL: https://github.com/engrtarun/T-YouTube/releases/download/v1.0.1/T-YouTube-v1.0.1.apk
+  BASE_APK_SHA256: 71b0f782702129a0ddcc80ee0a7150f52fe0099671ab62692766b1c605ebe7fe
   APKTOOL_VERSION: 2.11.1
   CERT_SHA256: a40da80a59d170caa950cf15c18c454d47a39b26989d8b640ecd745ba71bf5dc
 
@@ -37,7 +37,7 @@ jobs:
           distribution: temurin
           java-version: "21"
 
-      - name: Download base APK v1.0.0 and verify checksum
+      - name: Download stable v1.0.1 and verify checksum
         run: |
           curl -fL --retry 3 --retry-delay 5 -o base.apk "$BASE_APK_URL"
           echo "$BASE_APK_SHA256  base.apk" | sha256sum -c -
@@ -47,14 +47,11 @@ jobs:
           curl -fL --retry 3 -o apktool.jar \
             "https://github.com/iBotPeaches/Apktool/releases/download/v${APKTOOL_VERSION}/apktool_${APKTOOL_VERSION}.jar"
 
-      - name: Decode APK
+      - name: Decode stable v1.0.1
         run: java -Xmx6g -jar apktool.jar d -f base.apk -o work
 
-      - name: Apply playback, download, theme and colour fixes
-        run: python3 scripts/apply-fixes.py work
-
-      - name: Apply test-fix-5 download-dialog fix
-        run: python3 scripts/apply-test-fix-5.py work
+      - name: Apply Zversion patches
+        run: python3 scripts/apply-zversion.py work
 
       - name: Rebuild APK
         run: |
@@ -78,63 +75,65 @@ jobs:
           echo "cert sha256: $FP"
           test "$FP" = "$CERT_SHA256"
 
-      - name: Sign with AOSP testkey (same signature as v1.0.0)
+      - name: Sign with AOSP testkey (same signature as v1.0.1)
         run: |
           "$BUILD_TOOLS/apksigner" sign \
             --key testkey.pk8 --cert testkey.x509.pem \
             --v1-signing-enabled false \
             --v2-signing-enabled true \
             --v3-signing-enabled true \
-            --out dist/T-YouTube-fixed-test.apk dist/aligned.apk
+            --out dist/T-YouTube-Zversion.apk dist/aligned.apk
 
       - name: Verify APK
         run: |
-          "$BUILD_TOOLS/apksigner" verify --print-certs dist/T-YouTube-fixed-test.apk | tee dist/verify.txt
+          "$BUILD_TOOLS/apksigner" verify --print-certs dist/T-YouTube-Zversion.apk | tee dist/verify.txt
           grep -qi "$CERT_SHA256" dist/verify.txt
 
-          "$BUILD_TOOLS/aapt2" dump badging dist/T-YouTube-fixed-test.apk | head -n1 | tee dist/badging.txt
+          "$BUILD_TOOLS/aapt2" dump badging dist/T-YouTube-Zversion.apk | head -n1 | tee dist/badging.txt
           grep -q "package: name='com.gold.android.youtube' versionCode='2147483647'" dist/badging.txt
+          grep -q "versionName='21.26.364'" dist/badging.txt
 
-          DEX_COUNT="$(unzip -l dist/T-YouTube-fixed-test.apk | grep -Ec 'classes[0-9]*\.dex$')"
+          DEX_COUNT="$(unzip -l dist/T-YouTube-Zversion.apk | grep -Ec 'classes[0-9]*\.dex$')"
           echo "dex files: $DEX_COUNT"
           test "$DEX_COUNT" -eq 10
 
-          # test-fix-5 is a download-dialog-only build: prove the dialog made
-          # it into the APK and that the branding/watermark experiment is gone.
-          test ! -e work/res/drawable/tyt_reel_back_animation.xml
-          ! unzip -l dist/T-YouTube-fixed-test.apk | grep -q "tyt_brand_"
-          unzip -p dist/T-YouTube-fixed-test.apk classes10.dex | grep -a -q "generate_unique_name"
+          # Prove the three Zversion features made it into the APK.
+          grep -q "ZVersionReelBackView" work/res/layout/reel_player_static_header.xml
+          grep -q "ZVersionWatermark" work/res/layout/youtube_controls_bottom_ui_container.xml
+          test -f work/res/drawable/tyt_reel_back_animation.xml
+          test "$(find work/res/drawable-xxhdpi -name 'tyt_brand_*.png' | wc -l)" -eq 8
+          unzip -p dist/T-YouTube-Zversion.apk classes10.dex | grep -a -q "ZVersionDownloadUniqueAction"
 
-          cp ci/TEST-BUILD-README.txt dist/T-YouTube-fixed-TEST-README.txt
-          sha256sum dist/T-YouTube-fixed-test.apk
+          cp ci/TEST-BUILD-README.txt dist/T-YouTube-Zversion-TEST-README.txt
+          sha256sum dist/T-YouTube-Zversion.apk
           ls -lh dist/
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: T-YouTube-fixed-test-${{ github.sha }}
+          name: T-YouTube-Zversion-${{ github.sha }}
           path: |
-            dist/T-YouTube-fixed-test.apk
-            dist/T-YouTube-fixed-TEST-README.txt
+            dist/T-YouTube-Zversion.apk
+            dist/T-YouTube-Zversion-TEST-README.txt
             dist/verify.txt
             dist/badging.txt
           compression-level: 0
           retention-days: 14
 
       - name: Publish prerelease (tag builds only)
-        if: startsWith(github.ref, 'refs/tags/test-fix-')
+        if: startsWith(github.ref, 'refs/tags/test-zversion-')
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
             gh release upload "$GITHUB_REF_NAME" \
-              dist/T-YouTube-fixed-test.apk \
-              dist/T-YouTube-fixed-TEST-README.txt --clobber
+              dist/T-YouTube-Zversion.apk \
+              dist/T-YouTube-Zversion-TEST-README.txt --clobber
           else
             gh release create "$GITHUB_REF_NAME" \
-              --title "T YouTube test build $GITHUB_REF_NAME" \
-              --notes "Optional preview built from commit $GITHUB_SHA. Keeps the complete stable v1.0.1 UI and only fixes the download dialog: duplicate filenames now default to Generate unique name, Overwrite is a separate explicit action, and Pending/Running downloads do not offer overwrite. Installs over v1.0.0, v1.0.1 or test-fix-4 (same AOSP testkey signature, same version code). Not a stable release - stable v1.0.1 remains the recommended download. See T-YouTube-fixed-TEST-README.txt for the checklist." \
+              --title "T YouTube Zversion $GITHUB_REF_NAME" \
+              --notes "Optional Zversion preview built from stable v1.0.1 at commit $GITHUB_SHA. Adds the Shorts T YouTube brand loop, the fullscreen controls-only T YouTube watermark, and the duplicate-name download dialog (Generate unique name is the default; Overwrite is explicit; Pending/Running never offer Overwrite; a finished-but-deleted mission can be downloaded again). Package, version code and AOSP testkey signature are unchanged, so it installs over v1.0.1 with data intact. Not a stable release - stable v1.0.1 remains the recommended download. See T-YouTube-Zversion-TEST-README.txt for the checklist." \
               --prerelease \
-              dist/T-YouTube-fixed-test.apk \
-              dist/T-YouTube-fixed-TEST-README.txt
+              dist/T-YouTube-Zversion.apk \
+              dist/T-YouTube-Zversion-TEST-README.txt
           fi

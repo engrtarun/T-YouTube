@@ -482,35 +482,40 @@
     </div>
 
     <div class="testbuild" id="preview">
-      <span class="tb-tag">🧪 Preview · test-fix-5 (optional)</span>
-      <h3>Download fix only — stable v1.0.1 UI untouched</h3>
+      <span class="tb-tag">🧪 Preview · test-zversion-1 (optional)</span>
+      <h3>Shorts branding, fullscreen watermark and download fix</h3>
       <p>
-        A new test build on top of stable v1.0.1. It is <b>optional</b> — stable v1.0.1
-        above is still the recommended download. The broken test-fix-4 branding and
-        watermark experiment has been <b>removed completely</b>; this build changes only
-        the duplicate-name download dialog.
+        A separate <b>Zversion</b> test build decoded from stable v1.0.1. It is
+        <b>optional</b> — stable v1.0.1 above is still the recommended download.
+        This build adds the two UI features that were withdrawn in test-fix-4 and
+        keeps the duplicate-name download fix.
       </p>
       <ul>
-        <li><b>Stable UI.</b> Shorts header, fullscreen controls, titles and every layout
-            are the stable v1.0.1 UI. Nothing was restyled, resized or moved.</li>
+        <li><b>Shorts brand loop.</b> The top-left back control cycles every 8 seconds:
+            arrow → crossfade → <b>T YouTube</b> → crossfade → arrow. The whole
+            128×48 dp strip is one Back target and the title does not move.</li>
+        <li><b>Fullscreen watermark.</b> A subtle 18 sp bold <b>T YouTube</b> wordmark
+            in the bottom control row, between the left controls and “More videos”.
+            It appears only in fullscreen while controls are visible, in portrait and
+            landscape, and is absent inline, in PiP and in Shorts.</li>
         <li><b>Duplicate filenames ask first.</b> The positive/default action is
-            <b>Generate unique name</b> (for example <b>Title (1).mp4</b>).</li>
-        <li><b>Overwrite is separate.</b> It is a second, explicit action on the same
-            dialog and is not offered while a download is Pending or Running.</li>
+            <b>Generate unique name</b> (for example <b>Title (1).mp4</b>).
+            <b>Overwrite</b> is a separate action and is not offered while a download
+            is Pending or Running.</li>
         <li><b>Finished downloads.</b> A finished entry whose file was deleted no longer
-            blocks a new download; the normal overwrite path forgets it and continues.</li>
+            blocks a new download; the stale mission is forgotten and the file is
+            created again.</li>
         <li><b>YouTube link guide (optional).</b> Want youtube.com links to open in T YouTube
             instead of the official app? Follow the <a href="#links">short guide</a> — or
             skip it; nothing else in the app depends on it.</li>
       </ul>
       <div class="tb-actions">
-        <a class="btn btn-amber" href="https://github.com/engrtarun/T-YouTube/releases/download/test-fix-5/T-YouTube-fixed-test.apk">Download test build test-fix-5</a>
-        <a class="tb-link" href="https://github.com/engrtarun/T-YouTube/releases/tag/test-fix-5">Release notes &amp; checksum ↗</a>
+        <a class="btn btn-amber" href="https://github.com/engrtarun/T-YouTube/releases/download/test-zversion-1/T-YouTube-Zversion.apk">Download Zversion test build</a>
+        <a class="tb-link" href="https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-1">Release notes &amp; checksum ↗</a>
         <a class="tb-link" href="#links">Link setup guide ↓</a>
       </div>
       <p class="tb-sum">
-        Size 222,566,961 bytes (212 MB) · SHA-256
-        <span class="k">4AE3F2D8B26B3869B21A6B17B0C588095626BCF7C6362883F98AC97B63370A0D</span>
+        Size and SHA-256 are recorded in the GitHub prerelease after the CI run.
       </p>
       <p class="tb-sum">
         Same signature and version as v1.0.1, so it installs in place — your logins,

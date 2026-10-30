@@ -10,14 +10,83 @@ reference.
 | `test-fix-2` | Superseded | v1.0.0 | visionOS playback, filename cleanup, dark theme, seekbar colours |
 | `test-fix-3` | **Promoted to v1.0.1** | v1.0.0 | Fixed the download dialog crash on short titles |
 | `test-fix-4` | **Withdrawn — release and tag deleted** | v1.0.0 + v1.0.1 fixes | Shorts brand loop, fullscreen watermark, download dialog rework |
-| `test-fix-5` | **Current optional test build** | v1.0.0 + v1.0.1 fixes | Download dialog only; complete stable v1.0.1 UI |
+| `test-fix-5` | Superseded | v1.0.0 + v1.0.1 fixes | Download dialog only; complete stable v1.0.1 UI |
+| `test-zversion-1` | **Current optional test build** | stable v1.0.1 | Shorts brand loop, fullscreen watermark, download dialog fix |
 
 Stable **v1.0.1 remains the recommended download**. Test builds are optional
 and are published as GitHub prereleases.
 
 ---
 
-## test-fix-5 — download dialog only (current)
+## test-zversion-1 — Shorts, fullscreen and download (current)
+
+**Release:** https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-1
+
+This is a separate Zversion test build decoded from the **published v1.0.1
+APK**, not from v1.0.0. Stable v1.0.1 is untouched. The package name,
+version code, version name and AOSP testkey signature are unchanged, so it
+installs over v1.0.1 with data intact.
+
+### 1. Shorts brand loop
+
+- The top-left Shorts back control is now a custom 128×48 dp strip.
+- It loops every 8 seconds: arrow 4.8 s → 225 ms crossfade → “T YouTube”
+  2.75 s → 225 ms crossfade → arrow.
+- The whole strip is one Back target; tapping the arrow, the wordmark or the
+  empty space goes Back.
+- The video title is pinned at its old 65 dp start position and does not move.
+- The animation starts only when the real header view is attached and visible,
+  and stops when it is detached. TalkBack content description is unchanged.
+
+### 2. Fullscreen watermark
+
+- Adds a custom “T YouTube” view to the actual bottom control row
+  (`youtube_controls_bottom_ui_container`), not the usually-hidden quick
+  actions container.
+- 18 sp bold YouTube Sans, overlay primary text colour, alpha 0.8.
+- Constrained between the left time controls and the right-side “More videos”
+  button, so it cannot overlap or resize a control.
+- Gated by the real fullscreen container (`fullscreen_mode_container`) when the
+  player is reparented, with a player-overlay-height fallback for other
+  fullscreen modes. Because it is a child of the controls, it hides with the
+  controls, and it is absent inline, in PiP/miniplayer and in Shorts.
+- Not clickable, not focusable, `importantForAccessibility="no"`.
+
+### 3. Download dialog
+
+- Duplicate filename: **Generate unique name** is the positive/default action
+  (for example `Title (1).mp4`).
+- **Overwrite** is a separate neutral action on the same dialog.
+- Pending and Running missions show an informational dialog with Cancel only;
+  they never offer Overwrite.
+- Finished mission with a deleted file: the stale mission is forgotten and the
+  file is created again, so re-download works.
+- The normal folder flow, the Save-as single-URI flow, and the directory+URI
+  flow are handled separately; the old overloaded `v0` state machine was
+  replaced.
+- No `SafeTruncate` helper and no UI-thread delete/recreate path.
+
+### Build
+
+- Base APK: **stable v1.0.1**
+  (`T-YouTube-v1.0.1.apk`, SHA-256
+  `71B0F782702129A0DDCC80EE0A7150F52FE0099671AB62692766B1C605EBE7FE`)
+- Patch: `scripts/apply-zversion.py` only
+- CI: GitHub Actions `.github/workflows/build-test-apk.yml`
+- APK: `T-YouTube-Zversion.apk`
+- Package: `com.gold.android.youtube`
+- Version: `21.26.364` / versionCode `2147483647`
+- Signature: AOSP `testkey` (same as v1.0.1)
+
+### Verify
+
+- APK size and SHA-256 are recorded in the GitHub prerelease and on the site
+  after the CI run.
+- Test checklist: `ci/TEST-BUILD-README.txt`.
+
+---
+
+## test-fix-5 — download dialog only (superseded)
 
 **Release:** https://github.com/engrtarun/T-YouTube/releases/tag/test-fix-5
 
