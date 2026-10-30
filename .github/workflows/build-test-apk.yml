@@ -50,7 +50,7 @@ jobs:
       - name: Decode APK
         run: java -Xmx6g -jar apktool.jar d -f base.apk -o work
 
-      - name: Apply the three fixes
+      - name: Apply playback, download, theme and colour fixes
         run: python3 scripts/apply-fixes.py work
 
       - name: Rebuild APK

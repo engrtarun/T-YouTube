@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Apply the three T-YouTube bug-fix patches to an apktool-decoded tree.
+"""Apply the T-YouTube bug-fix + branding-default patches to a decoded tree.
 
 Usage: python3 scripts/apply-fixes.py <decoded-dir>
 
-The patches only change default setting values / one static read; no UI or
-feature code is added. Each replacement must match exactly once, otherwise the
-build fails on purpose (so an upstream APK change can never silently produce an
-unpatched build).
+Only default values, one filename sanitizer and two XML defaults are changed.
+No new screens, buttons or menus are added. Each replacement must match
+exactly once, otherwise the build fails on purpose (so an upstream APK change
+can never silently produce an unpatched build).
 """
 from __future__ import annotations
 
@@ -20,6 +20,119 @@ EXTRACTOR = pathlib.Path(
     "smali_classes10/com/gold/youtube/om7753/extractor/services/youtube/"
     "extractors/YoutubeStreamExtractor.smali"
 )
+FILENAMES = pathlib.Path(
+    "smali_classes10/com/gold/youtube/om7753/util/FilenameUtils.smali"
+)
+GENERAL_PREFS = pathlib.Path("res/xml/general_prefs.xml")
+
+OLD_FILENAME_METHOD = """.method private static createFilename(Ljava/lang/String;Ljava/util/regex/Pattern;Ljava/lang/String;)Ljava/lang/String;
+    .locals 0
+
+    invoke-virtual {p1}, Ljava/util/regex/Pattern;->pattern()Ljava/lang/String;
+
+    move-result-object p1
+
+    invoke-virtual {p0, p1, p2}, Ljava/lang/String;->replaceAll(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+"""
+
+NEW_FILENAME_METHOD = r""".method private static createFilename(Ljava/lang/String;Ljava/util/regex/Pattern;Ljava/lang/String;)Ljava/lang/String;
+    .locals 6
+
+    invoke-virtual {p1}, Ljava/util/regex/Pattern;->pattern()Ljava/lang/String;
+
+    move-result-object p1
+
+    invoke-virtual {p0, p1, p2}, Ljava/lang/String;->replaceAll(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object p0
+
+    const-string p1, "[\\uD800-\\uDFFF]+"
+
+    const-string p2, ""
+
+    invoke-virtual {p0, p1, p2}, Ljava/lang/String;->replaceAll(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object p0
+
+    invoke-virtual {p0}, Ljava/lang/String;->trim()Ljava/lang/String;
+
+    move-result-object p0
+
+    invoke-virtual {p0}, Ljava/lang/String;->isEmpty()Z
+
+    move-result p1
+
+    if-nez p1, :nonempty
+
+    const-string p0, "download"
+
+    :nonempty
+    invoke-virtual {p0}, Ljava/lang/String;->length()I
+
+    move-result p1
+
+    const/16 p2, 0x50
+
+    if-gt p1, p2, :done
+
+    const/16 v0, 0x2e
+
+    invoke-virtual {p0, v0}, Ljava/lang/String;->lastIndexOf(I)I
+
+    move-result v0
+
+    const-string v1, ""
+
+    if-lez v0, :noext
+
+    sub-int v2, p1, v0
+
+    const/16 v3, 0x8
+
+    if-le v2, v3, :noext
+
+    invoke-virtual {p0, v0}, Ljava/lang/String;->substring(I)Ljava/lang/String;
+
+    move-result-object v1
+
+    :noext
+    invoke-virtual {v1}, Ljava/lang/String;->length()I
+
+    move-result v2
+
+    rsub-int v2, v2, 0x50
+
+    const/4 v3, 0x0
+
+    invoke-virtual {p0, v3, v2}, Ljava/lang/String;->substring(II)Ljava/lang/String;
+
+    move-result-object p0
+
+    new-instance v2, Ljava/lang/StringBuilder;
+
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+
+    invoke-virtual {v2, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v2
+
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object p0
+
+    :done
+    return-object p0
+.end method
+"""
 
 EDITS = [
     (
@@ -34,9 +147,64 @@ EDITS = [
         SETTINGS,
         "sget-object v6, Lcom/gold/extension/shared/spoof/ClientType;->ANDROID_REEL_AUTH:"
         "Lcom/gold/extension/shared/spoof/ClientType;",
-        "sget-object v6, Lcom/gold/extension/shared/spoof/ClientType;->ANDROID_VR_1_64:"
+        "sget-object v6, Lcom/gold/extension/shared/spoof/ClientType;->VISIONOS:"
         "Lcom/gold/extension/shared/spoof/ClientType;",
-        "Playback: default spoof client ANDROID_REEL_AUTH -> ANDROID_VR_1_64",
+        "Playback: default spoof client ANDROID_REEL_AUTH -> VISIONOS",
+    ),
+    (
+        SETTINGS,
+        "const-string v2, \"youtube_spoof_video_streams_client_type\"",
+        "const-string v2, \"youtube_spoof_video_streams_client_type_v2\"",
+        "Playback: version the spoof-client pref key so old installs pick up VISIONOS",
+    ),
+    (
+        SETTINGS,
+        "    new-instance v5, Lcom/gold/extension/shared/settings/BooleanSetting;\n"
+        "\n"
+        "    const-string v6, \"youtube_seekbar_custom_color\"\n"
+        "\n"
+        "    invoke-direct {v5, v6, v4, v7}, Lcom/gold/extension/shared/settings/"
+        "BooleanSetting;-><init>(Ljava/lang/String;Ljava/lang/Boolean;Z)V",
+        "    new-instance v5, Lcom/gold/extension/shared/settings/BooleanSetting;\n"
+        "\n"
+        "    const-string v6, \"youtube_seekbar_custom_color\"\n"
+        "\n"
+        "    invoke-direct {v5, v6, v1, v7}, Lcom/gold/extension/shared/settings/"
+        "BooleanSetting;-><init>(Ljava/lang/String;Ljava/lang/Boolean;Z)V",
+        "Seekbar: enable custom colors by default (v1 is Boolean.TRUE here)",
+    ),
+    (
+        SETTINGS,
+        "const-string v7, \"#FF0033\"",
+        "const-string v7, \"#00FCFF\"",
+        "Seekbar: primary colour -> logo cyan-green #00FCFF",
+    ),
+    (
+        SETTINGS,
+        "const-string v3, \"#FF2791\"",
+        "const-string v3, \"#F3024E\"",
+        "Seekbar: accent colour -> logo red #F3024E",
+    ),
+    (
+        FILENAMES,
+        OLD_FILENAME_METHOD,
+        NEW_FILENAME_METHOD,
+        "Downloads: strip emoji/surrogates and cap names at 80 chars (keeps extension)",
+    ),
+    (
+        GENERAL_PREFS,
+        'android:key="app_theme_dark" android:summary="@string/pref_dark_theme_for_app_summary" '
+        'android:defaultValue="false"',
+        'android:key="app_theme_dark" android:summary="@string/pref_dark_theme_for_app_summary" '
+        'android:defaultValue="true"',
+        "Theme: dark theme switch default false -> true",
+    ),
+    (
+        GENERAL_PREFS,
+        'android:key="app_theme_appearance" android:summary="@string/app_theme_appearance_summary"',
+        'android:key="app_theme_appearance" android:defaultValue="@string/app_theme_appearance_dark" '
+        'android:summary="@string/app_theme_appearance_summary"',
+        "Theme: Appearance list default -> Dark",
     ),
     (
         EXTRACTOR,
@@ -73,6 +241,8 @@ def main() -> int:
     # Post-conditions: the patched instructions must be present, old ones gone.
     settings = (root / SETTINGS).read_text(encoding="utf-8")
     extractor = (root / EXTRACTOR).read_text(encoding="utf-8")
+    filenames = (root / FILENAMES).read_text(encoding="utf-8")
+    prefs = (root / GENERAL_PREFS).read_text(encoding="utf-8")
     checks = [
         (
             "MiniplayerPatch$MiniplayerType;->DEFAULT:"
@@ -85,14 +255,44 @@ def main() -> int:
             "miniplayer MINIMAL default removed",
         ),
         (
-            "ClientType;->ANDROID_VR_1_64:Lcom/gold/extension/shared/spoof/ClientType;"
-            in settings,
-            "Android VR default present",
+            "ClientType;->VISIONOS:Lcom/gold/extension/shared/spoof/ClientType;" in settings,
+            "visionOS default present",
         ),
         (
             "ClientType;->ANDROID_REEL_AUTH:Lcom/gold/extension/shared/spoof/ClientType;"
             not in settings,
             "Reel default removed",
+        ),
+        (
+            '"youtube_spoof_video_streams_client_type_v2"' in settings,
+            "spoof-client key versioned",
+        ),
+        (
+            "\"#00FCFF\"" in settings and "\"#F3024E\"" in settings,
+            "seekbar brand colours present",
+        ),
+        (
+            "invoke-direct {v5, v6, v1, v7}, Lcom/gold/extension/shared/settings/"
+            "BooleanSetting;-><init>(Ljava/lang/String;Ljava/lang/Boolean;Z)V" in settings,
+            "seekbar custom colours enabled by default",
+        ),
+        (
+            r"[\\uD800-\\uDFFF]+" in filenames,
+            "filename surrogate stripping present",
+        ),
+        (
+            "const/16 p2, 0x50" in filenames,
+            "filename 80-char cap present",
+        ),
+        (
+            'android:key="app_theme_dark"' in prefs
+            and 'android:defaultValue="true"' in prefs,
+            "dark theme switch defaults to true",
+        ),
+        (
+            'android:key="app_theme_appearance" android:defaultValue='
+            '"@string/app_theme_appearance_dark"' in prefs,
+            "appearance defaults to dark",
         ),
         (
             "sget-boolean v8, Lcom/gold/youtube/om7753/extractor/services/youtube/"
