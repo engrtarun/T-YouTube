@@ -80,8 +80,8 @@ installs over v1.0.1 with data intact.
 
 ### Verify
 
-- APK size and SHA-256 are recorded in the GitHub prerelease and on the site
-  after the CI run.
+- APK size **222,584,227 bytes (212 MB)**; SHA-256
+  `4CD565F46672C9651AFB77831F7A8C2420A684D2F08E9098CB6C4B78D76A1F22`.
 - Test checklist: `ci/TEST-BUILD-README.txt`.
 
 ---

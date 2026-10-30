@@ -158,8 +158,8 @@ so it installs in place and keeps your data.
 
 Rollback: install v1.0.1 over it. No data is lost.
 
-Size and SHA-256 are recorded in the GitHub prerelease and on the site after
-the CI run.
+Size **222,584,227 bytes (212 MB)** · SHA-256
+`4CD565F46672C9651AFB77831F7A8C2420A684D2F08E9098CB6C4B78D76A1F22`
 
 Full change log for every test build, including the withdrawn test-fix-4:
 **[TEST-CHANGES.md](TEST-CHANGES.md)**.
