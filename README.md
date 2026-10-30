@@ -156,6 +156,9 @@ so it installs in place and keeps your data.
 
 Rollback: install v1.0.1 over it. No data is lost.
 
+**Size** 222,584,227 bytes (212 MB) · **SHA-256**
+`8770822A16FC3C3524FBA4B9D95EC3FBB20019A2D66DBD7E2AA7D06D6155C0C9`
+
 ---
 
 ## Open YouTube links in T YouTube
