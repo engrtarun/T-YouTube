@@ -1,39 +1,37 @@
-T YouTube fixed TEST build (test-fix-4)
+T YouTube fixed TEST build (test-fix-5)
 =======================================
 
 Package: com.gold.android.youtube
-Base: T YouTube v1.0.0 (YouTube 21.26.364) + all v1.0.1 fixes + test-fix-4
+Base: T YouTube v1.0.0 (YouTube 21.26.364) + all v1.0.1 fixes + test-fix-5
 Signature: same AOSP testkey as v1.0.0/v1.0.1, installs as an in-place update
 Min Android: 10 (API 29)
 
-WHAT IS NEW IN test-fix-4
+WHAT IS NEW IN test-fix-5
 -------------------------
-1) Shorts "T YouTube" brand loop
-   The back arrow in the Shorts header now runs an 8-second animation:
-   arrow (4.8s) -> crossfade -> "T YouTube" (2.75s) -> crossfade -> arrow.
-   The whole 128x48dp strip is still ONE Back button. Tapping it at any
-   moment - including while the words are showing - must go back.
-   The video title is pinned to its old position, so nothing jumps.
+Only the download dialog changed. The UI is the complete stable v1.0.1 UI:
+no layout, drawable, font, animation or watermark changes.
 
-2) Fullscreen "T YouTube" watermark (controls only)
-   In fullscreen the wordmark sits centred in the bottom action row,
-   between the left controls and "More videos". It appears in BOTH
-   portrait and landscape fullscreen, and ONLY while the controls are
-   visible. Tap the video to hide the controls: the wordmark must hide
-   with them. It is not clickable.
+1) Duplicate filenames now ask first
+   When a file with the same name already exists, the dialog offers
+   "Generate unique name" as the positive/default action (for example
+   "Title (1).mp4"). "Overwrite" is a separate neutral action on the same
+   dialog. Choosing unique name must download alongside the old file;
+   choosing overwrite must replace the old file.
 
-3) Download dialog: duplicate names and stale entries
-   When a file with the same name exists, the dialog now defaults to
-   "Generate unique name" (e.g. "Title (1).mp4"). "Overwrite" is a
-   separate, explicit button and is not offered while a download is
-   running. A finished download whose file was later deleted no longer
-   blocks a new download of the same title.
+2) No overwrite while a download is pending or running
+   For Pending or Running missions the dialog informs you and only offers
+   Cancel. It must never offer to overwrite an active download.
 
-4) YouTube link guide (optional - you may skip it)
-   The site and README explain how to make youtube.com links open in
-   T YouTube. This cannot be automatic: Android allows one app per site
-   and official YouTube currently owns youtube.com, so it must be
-   released in Android settings first. Skipping changes nothing.
+3) Finished-but-deleted downloads do not block
+   Delete a finished download from the Downloads screen (keep the file if
+   asked), then download the same video again. It must download normally,
+   not claim the file already exists.
+
+WHAT IS NOT IN THIS BUILD
+-------------------------
+The test-fix-4 Shorts brand loop and fullscreen watermark are gone. They
+were removed because they changed the UI and did not render correctly on
+the test device. Do not report missing branding/watermark as a bug.
 
 Everything from v1.0.1 is still included: download-crash fix, visionOS
 playback client (seek + quality), iOS stream source, dark theme, and the
@@ -42,63 +40,55 @@ playback client (seek + quality), iOS stream source, dark theme, and the
 HOW TO INSTALL
 --------------
 Open the APK on the phone and install it as an update over the existing
-T YouTube. Do NOT uninstall the old app first (you would lose downloads
-and settings). If Android says "App not installed", stop and report it -
-do not uninstall.
+T YouTube (v1.0.1 or test-fix-4). Do NOT uninstall the old app first (you
+would lose downloads and settings). If Android says "App not installed",
+stop and report it - do not uninstall.
 
-TEST CHECKLIST (about 8 minutes)
+TEST CHECKLIST (about 5 minutes)
 --------------------------------
-[  ] Shorts loop: open Shorts. The header arrow should change into
-     "T YouTube" after a few seconds, then back to the arrow.
-[  ] Shorts Back: wait until the words are visible, then tap the words.
-     It MUST go back. Repeat twice.
-[  ] Shorts title: the video title must stay in the same place the whole
-     time - it must not shift left or right when the words appear.
-[  ] Fullscreen portrait: play a normal video, go fullscreen, tap once to
-     show controls. "T YouTube" must be centred at the bottom between
-     the left buttons and "More videos". Wait for the controls to hide -
-     the wordmark must hide too.
-[  ] Fullscreen landscape: rotate to landscape fullscreen and repeat.
-[  ] Inline (not fullscreen): the watermark must NOT appear.
+[  ] UI unchanged: open Shorts and confirm the header/back arrow looks
+     exactly like v1.0.1 (a normal arrow, no text loop, no oversized
+     button, title in its old position). Open a video fullscreen in
+     portrait and landscape and confirm the normal bottom controls look
+     unchanged, with no "T YouTube" watermark.
 [  ] Download duplicate: download a video, then download the same video
-     again. The dialog must offer "Generate unique name" as the main
+     again. The dialog must show "Generate unique name" as the main
      action and "Overwrite" as a second action. Choose unique name and
      confirm both files exist.
 [  ] Download overwrite: repeat, choose "Overwrite". It must replace the
      file without an error and the new file must play.
-[  ] Download stale entry: delete a finished download from the Downloads
-     screen (keep the file if asked), then download the same video again.
-     It must download normally, not claim the file already exists.
 [  ] Download in progress: start a large download, then try downloading
-     the same title. "Overwrite" must not be offered while it runs.
-[  ] Link guide (optional): if you want it, follow the two settings
-     steps in the site guide. If not, skip - links still open as before.
+     the same title. The dialog must not offer "Overwrite" while it is
+     Pending or Running.
+[  ] Stale entry: delete a finished download from the Downloads screen
+     (keep the file if asked), then download the same video again. It
+     must download normally, not claim the file already exists.
 [  ] Regression: the download dialog still opens for a normal short
      title (v1.0.1 fix), long seeks still resume at quality, and Shorts
      do not stall.
+[  ] Link guide (optional): if you want it, follow the two settings
+     steps in the site guide. If not, skip - links still open as before.
 
 IF SOMETHING STILL FAILS
 ------------------------
-Shorts tap while words are visible does not go back:
-   Send a screenshot of the header and the phone model. That means the
-   tap target is being clipped by the animation drawable.
+Download dialog shows no working button / app freezes when tapping
+Download:
+   Send the video title or link, the phone model, and whether the file
+   already existed. If possible, include a logcat taken while tapping
+   Download. This build removed the test-fix-4 truncate helper, so a
+   freeze here is new information.
 
-Watermark shows when the controls are hidden, or in inline mode:
-   Send the phone model, Android version, and whether it was portrait or
-   landscape fullscreen. The gate is "overlay height >= 75% of display
-   height", and a screenshot shows which side failed.
-
-Watermark missing in one orientation:
-   Same as above - send the orientation and a screenshot with controls
-   visible.
-
-Download still says "file not created" or "already exists":
+Duplicate dialog does not appear at all:
    1. T YouTube settings -> Downloads -> download folder -> choose
       Internal storage (not the SD card), then retry the same video.
-   2. If it works on internal storage, the SD card/folder was the
-      problem.
-   3. If it still fails, send the video title/link and the exact error
-      text.
+   2. If it still overwrites silently, send the video title/link and the
+      exact dialog text you see.
+   3. If it still fails, send the exact error text.
+
+UI looks different from v1.0.1:
+   Take a screenshot. This build contains no UI patches, so any difference
+   means the wrong APK was installed. Check that the installed file is
+   T-YouTube-fixed-test.apk from the test-fix-5 release.
 
 ROLLBACK
 --------

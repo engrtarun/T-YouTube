@@ -46,7 +46,7 @@ step-by-step, and check what each screen should look like.
 
   <sub>
     <a href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.0.1">Release notes &amp; checksums</a> ·
-    <a href="https://github.com/engrtarun/T-YouTube/releases/tag/test-fix-4">Preview build test-fix-4</a>
+    <a href="https://github.com/engrtarun/T-YouTube/releases/tag/test-fix-5">Preview build test-fix-5</a>
   </sub>
 </div>
 
@@ -137,27 +137,30 @@ installs straight over v1.0.0 or any earlier test build with data intact.
 
 ---
 
-## test-fix-4 — optional preview
+## test-fix-5 — download fix only
 
 An **optional test build** on top of v1.0.1. Stable **v1.0.1 remains the
-recommended download**; install this only if you want to try the new look and
-the download-dialog fix early.
+recommended download**. This build keeps the **complete stable v1.0.1 UI** —
+no layout, drawable or animation changes — and only fixes the duplicate-name
+download dialog. The broken test-fix-4 branding/watermark experiment has been
+removed completely.
 
-**[Download test build test-fix-4](https://github.com/engrtarun/T-YouTube/releases/download/test-fix-4/T-YouTube-fixed-test.apk)** ·
-[same signature and version as v1.0.1](https://github.com/engrtarun/T-YouTube/releases/tag/test-fix-4),
+**[Download test build test-fix-5](https://github.com/engrtarun/T-YouTube/releases/download/test-fix-5/T-YouTube-fixed-test.apk)** ·
+[same signature and version as v1.0.1](https://github.com/engrtarun/T-YouTube/releases/tag/test-fix-5),
 so it installs in place and keeps your data.
 
 | Change | What to expect |
 |:--|:--|
-| **Shorts brand loop** | The back arrow in the Shorts header cycles through an 8-second **T YouTube** animation (arrow → wordmark → arrow). The whole 128×48 dp strip stays a single Back target, so a tap while the words are showing still goes back. |
-| **Fullscreen watermark** | A static **T YouTube** wordmark sits centred in the bottom action row, between the left controls and **More videos**, in both portrait and landscape fullscreen. It is only visible while the controls are shown and is not clickable. |
-| **Download names** | A duplicate filename now defaults to **Generate unique name**. **Overwrite** is an explicit secondary action and is hidden while a download is running. Finished-but-deleted missions are forgotten instead of blocking a re-download, and a failed truncate recovers with delete + recreate. |
+| **Stable UI** | Shorts header, fullscreen controls, titles and every layout are byte-for-byte the stable v1.0.1 UI. Nothing was restyled or resized. |
+| **Duplicate names** | A duplicate filename now asks first, with **Generate unique name** as the positive/default action (e.g. `Title (1).mp4`). |
+| **Overwrite** | **Overwrite** is a separate neutral action on the same dialog. It is not offered for Pending or Running downloads. |
+| **Finished downloads** | A finished mission whose file was deleted no longer blocks a new download; the normal overwrite path forgets it and continues. |
 | **YouTube links (optional)** | See [Open YouTube links in T YouTube](#open-youtube-links-in-t-youtube). You can skip it; nothing else depends on it. |
 
 Rollback: install v1.0.1 over it. No data is lost.
 
-**Size** 222,584,227 bytes (212 MB) · **SHA-256**
-`8770822A16FC3C3524FBA4B9D95EC3FBB20019A2D66DBD7E2AA7D06D6155C0C9`
+Size and SHA-256 are published in the
+[test-fix-5 release notes](https://github.com/engrtarun/T-YouTube/releases/tag/test-fix-5).
 
 ---
 
