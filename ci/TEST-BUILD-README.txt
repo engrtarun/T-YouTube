@@ -5,8 +5,8 @@ Package: com.gold.android.youtube
 Base: T YouTube v1.0.1 (YouTube 21.26.364)
 Signature: same AOSP testkey as v1.0.1, installs as an in-place update
 Min Android: 10 (API 29)
-APK size: SIZE_BYTES bytes
-SHA-256: SHA256
+APK size: 222584227 bytes
+SHA-256: 181aa22e700d59e3e2d3910064d1ba1b1ac4d6cd6a3a9024ea6c48962969e4a3
 
 WHAT IS NEW IN ZVERSION 3
 -------------------------

@@ -114,7 +114,7 @@ jobs:
 
           SIZE="$(stat -c%s dist/T-YouTube-Zversion.apk)"
           SHA="$(sha256sum dist/T-YouTube-Zversion.apk | cut -d' ' -f1)"
-          sed -i "s/SIZE_BYTES/$SIZE/; s/SHA256/$SHA/" ci/TEST-BUILD-README.txt
+          sed -i "s/^APK size: .*/APK size: $SIZE bytes/; s/^SHA-256: .*/SHA-256: $SHA/" ci/TEST-BUILD-README.txt
           cp ci/TEST-BUILD-README.txt dist/T-YouTube-Zversion-TEST-README.txt
           echo "size: $SIZE bytes"
           echo "sha256: $SHA"

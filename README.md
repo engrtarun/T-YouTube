@@ -161,8 +161,8 @@ v1.0.1 or any Zversion build.
 
 Rollback: install v1.0.1 over it. No data is lost.
 
-**Size:** SIZE_BYTES bytes
-**SHA-256:** `SHA256`
+**Size:** 222,584,227 bytes
+**SHA-256:** `181aa22e700d59e3e2d3910064d1ba1b1ac4d6cd6a3a9024ea6c48962969e4a3`
 
 Full change log for every test build, including the withdrawn test-fix-4:
 **[TEST-CHANGES.md](TEST-CHANGES.md)**.
