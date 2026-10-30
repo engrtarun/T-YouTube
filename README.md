@@ -165,6 +165,9 @@ Rollback: install v1.0.1 over it. No data is lost.
 Full change log for every test build, including the withdrawn test-fix-4:
 **[TEST-CHANGES.md](TEST-CHANGES.md)**.
 
+Shorts/fullscreen branding specs for a future separate build:
+**[TEST-UI-BRIEF.md](TEST-UI-BRIEF.md)**.
+
 ---
 
 ## Open YouTube links in T YouTube
