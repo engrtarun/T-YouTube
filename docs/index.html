@@ -169,6 +169,24 @@
   .dcard p{color:var(--dim);font-size:13.6px;flex:1}
   .dcard .sz{font-size:12.5px;color:var(--dim2)}
 
+  /* ---------- optional test build (prerelease) ---------- */
+  .testbuild{margin-top:26px;border:1px solid rgba(245,158,11,.42);border-radius:16px;
+    background:linear-gradient(180deg,rgba(245,158,11,.10),rgba(245,158,11,.025));padding:22px}
+  .testbuild .tb-tag{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;
+    letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#ffd58a;
+    background:rgba(245,158,11,.16);border:1px solid rgba(245,158,11,.45);
+    padding:6px 12px;border-radius:999px}
+  .testbuild h3{font-size:18px;font-weight:750;margin:12px 0 8px}
+  .testbuild p{color:var(--dim);font-size:13.8px;max-width:76ch}
+  .testbuild ul{margin:12px 0 0;padding-left:19px;color:var(--dim);font-size:13.6px;max-width:76ch}
+  .testbuild li{margin:6px 0}
+  .testbuild li b{color:var(--txt);font-weight:650}
+  .testbuild .tb-actions{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:18px}
+  .btn-test{background:rgba(245,158,11,.14);border-color:rgba(245,158,11,.55);color:#ffd58a}
+  .testbuild .tb-link{font-size:13.5px;color:var(--dim)}
+  .testbuild .tb-link:hover{color:var(--warn)}
+  .testbuild .tb-sum{margin-top:14px;font-size:12.3px;color:var(--dim2);word-break:break-all}
+
   /* ---------- troubleshooting ---------- */
   details{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:10px}
   summary{cursor:pointer;padding:16px 20px;font-weight:650;font-size:15px;list-style:none;
@@ -398,6 +416,34 @@
       Checksum for the APK ·
       <span class="k">3DD2E57BCF683B36A9A1DF8BE31AA69A2380D16E96DCA9DE5009B49221B2F005</span>
     </p>
+
+    <div class="testbuild" id="test">
+      <span class="tb-tag">⚠ Test build · not stable</span>
+      <h3>Optional test build — only if you are testing the fixes</h3>
+      <p>
+        This build is a <b>preview</b> with fixes for picture-in-picture, in-app downloads, and
+        playback stalls after seeking. It is <b>not</b> a new stable release and you do
+        <b>not</b> need it. If you just want to watch YouTube, download
+        <b>T YouTube v1.0.0</b> above and ignore this box.
+      </p>
+      <ul>
+        <li><b>For testing only.</b> Expect bugs — it can behave worse than v1.0.0.</li>
+        <li><b>Installs as an update over v1.0.0</b> (same app, same signature).
+            Do not uninstall the app first; your logins and downloads stay.</li>
+        <li><b>Same version number as v1.0.0</b> (21.26.364), so Android will not show it
+            as an update and app stores will not update it for you.</li>
+        <li><b>To go back:</b> install T YouTube v1.0.0 again over it. No data is lost.</li>
+        <li>If you post about a problem, say you are on the <b>test build</b>, not v1.0.0.</li>
+      </ul>
+      <div class="tb-actions">
+        <a class="btn btn-test" href="https://github.com/engrtarun/T-YouTube/releases/download/test-fix-1/T-YouTube-fixed-test.apk">Download test build (212 MB)</a>
+        <a class="tb-link" href="https://github.com/engrtarun/T-YouTube/releases/tag/test-fix-1">What changed &amp; test checklist ↗</a>
+      </div>
+      <p class="tb-sum">
+        SHA-256 ·
+        <span class="k">8A24FCB6D6117A359D1C5504227FC99C8D1C00AD0E6BDF8E4C40E6490AA5BDDE</span>
+      </p>
+    </div>
   </div>
 </section>
 
