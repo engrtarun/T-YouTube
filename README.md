@@ -46,7 +46,7 @@ step-by-step, and check what each screen should look like.
 
   <sub>
     <a href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.0.1">Release notes &amp; checksums</a> ·
-    <a href="https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-2">Preview build test-zversion-2</a>
+    <a href="https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-3">Preview build test-zversion-3</a>
   </sub>
 </div>
 
@@ -137,30 +137,32 @@ installs straight over v1.0.0 or any earlier test build with data intact.
 
 ---
 
-## test-zversion-2 - Shorts, fullscreen and download preview
+## test-zversion-3 - the Zversion 2 fixes actually run
 
-An **optional Zversion 2 test build** decoded from the published **v1.0.1**
-APK. Stable **v1.0.1 remains the recommended download**. Zversion 2 fixes
-the two UI features that did not appear in Zversion 1 and restores effortless
-duplicate naming:
+An **optional Zversion 3 test build** decoded from the published **v1.0.1**
+APK. Stable **v1.0.1 remains the recommended download**. Zversion 2 built and
+installed, but three inverted boolean checks kept the new UI and filename logic
+from running. Zversion 3 fixes the checks:
 
 | Change | What to expect |
 |:--|:--|
-| **Shorts brand loop** | The top-left Shorts back control cycles every 8 seconds: arrow -> 225 ms crossfade -> **T YouTube** -> 225 ms crossfade -> arrow. The whole 128x48 dp strip is still one Back target and the title does not move. The loop starts when the whole header becomes visible, not only when the button itself changes. |
-| **Fullscreen watermark** | A subtle 18 sp bold **T YouTube** wordmark in the bottom control row, between the left controls and "More videos". It is added to **both** bottom-control layouts the app can inflate, so it appears whether "Restore old player buttons" is on or off. It shows only in fullscreen while controls are visible, in portrait and landscape, and is absent inline, in PiP and in Shorts. |
+| **Shorts brand loop** | The top-left Shorts back control cycles every 8 seconds: arrow -> 225 ms crossfade -> **T YouTube** -> 225 ms crossfade -> arrow. The whole 128x48 dp strip is one Back target and the title does not move. Zversion 3 starts the loop when the view is visible (Zversion 2's check was inverted). |
+| **Fullscreen watermark** | A subtle 18 sp bold **T YouTube** wordmark in the bottom control row, between the left controls and "More videos". Zversion 3 registers the layout listener that Zversion 2 skipped, so the watermark actually appears. It is in **both** bottom-control layouts, shows only in fullscreen while controls are visible, and is absent inline, in PiP and in Shorts. |
+| **Download filename** | The dialog now starts with the real video title. v1.0.1's `FilenameUtils` had an inverted `isEmpty()` check that replaced every non-empty title with `"download"`; Zversion 3 fixes it. |
 | **Duplicate names** | Downloading the same title again just works: the app silently saves a second file with its own unique name (e.g. `Title (1).mp4`). There is no **Generate unique name** button and no extra tap. |
 | **Active downloads** | Pending and Running downloads show an information dialog only and are never overwritten. A finished mission whose file was deleted can be downloaded again. |
+| **Build marker** | The About screen shows `Play Store Version 21.20.402 (Zversion 3)` so you can confirm the installed build. The app version stays `21.26.364`. |
 | **YouTube links (optional)** | See [Open YouTube links in T YouTube](#open-youtube-links-in-t-youtube). You can skip it; nothing else depends on it. |
 
-**[Download Zversion 2 test build](https://github.com/engrtarun/T-YouTube/releases/download/test-zversion-2/T-YouTube-Zversion.apk)** -
-[same signature and version as v1.0.1](https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-2),
+**[Download Zversion 3 test build](https://github.com/engrtarun/T-YouTube/releases/download/test-zversion-3/T-YouTube-Zversion.apk)** -
+[same signature and version as v1.0.1](https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-3),
 so it installs in place and keeps your data. You can install it directly over
-Zversion 1.
+v1.0.1 or any Zversion build.
 
 Rollback: install v1.0.1 over it. No data is lost.
 
-**Size:** 222,584,227 bytes (212.3 MiB)
-**SHA-256:** `FA861B71B820880661A1F8D0E24CFD655126FD4388748805A8F98BE6CC5B5FA9`
+**Size:** SIZE_BYTES bytes
+**SHA-256:** `SHA256`
 
 Full change log for every test build, including the withdrawn test-fix-4:
 **[TEST-CHANGES.md](TEST-CHANGES.md)**.

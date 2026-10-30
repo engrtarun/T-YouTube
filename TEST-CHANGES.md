@@ -12,14 +12,74 @@ reference.
 | `test-fix-4` | **Withdrawn — release and tag deleted** | v1.0.0 + v1.0.1 fixes | Shorts brand loop, fullscreen watermark, download dialog rework |
 | `test-fix-5` | Superseded | v1.0.0 + v1.0.1 fixes | Download dialog only; complete stable v1.0.1 UI |
 | `test-zversion-1` | Superseded | stable v1.0.1 | Shorts brand loop, fullscreen watermark, download dialog fix |
-| `test-zversion-2` | **Current optional test build** | stable v1.0.1 | Fixed Shorts loop, both-layout watermark, automatic duplicate naming |
+| `test-zversion-2` | Superseded | stable v1.0.1 | Fixed Shorts loop, both-layout watermark, automatic duplicate naming |
+| `test-zversion-3` | **Current optional test build** | stable v1.0.1 | Fixed inverted visibility/listener/filename checks so Zversion 2 actually runs |
 
 Stable **v1.0.1 remains the recommended download**. Test builds are optional
 and are published as GitHub prereleases.
 
 ---
 
-## test-zversion-2 - Zversion 1 fixes (current)
+## test-zversion-3 - the Zversion 2 fixes actually run (current)
+
+**Release:** https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-3
+
+Zversion 2 built and installed, but three inverted boolean checks stopped the
+new UI and filename logic from running. Zversion 3 fixes the checks and keeps
+the same package, version code and AOSP testkey signature.
+
+### 1. Shorts brand loop
+
+- `ZVersionReelBackView.restartBrandAnimation()` skipped the animation when
+  `getVisibility() == VISIBLE` because the branch was inverted. The arrow
+  stayed static.
+- Zversion 3 starts the loop when the view is visible. The 8-second timing,
+  128x48 dp strip, 65 dp title anchor and TalkBack description are unchanged.
+
+### 2. Fullscreen watermark
+
+- `ZVersionWatermark.onAttachedToWindow()` skipped
+  `addOnGlobalLayoutListener()` when `listenerAttached == false` (also
+  inverted), so `onGlobalLayout()` never ran and the view stayed `INVISIBLE`.
+- Zversion 3 attaches the listener, calls `updateVisibility()` immediately on
+  attach, and keeps the watermark in both bottom-control layouts. It still
+  shows only in fullscreen while controls are visible, in portrait and
+  landscape, and is absent inline, in PiP and in Shorts.
+
+### 3. Download filename
+
+- v1.0.1's `FilenameUtils.createFilename()` replaced every non-empty title
+  with the literal `"download"` because the `isEmpty()` branch was inverted.
+  That is why the dialog always showed "download" and why duplicates collided.
+- Zversion 3 restores the video title. Finished duplicates still auto-rename
+  with `createUniqueFile()` (`Title (1).mp4`); Pending/Running remain
+  information-only and are never overwritten.
+
+### 4. Build marker
+
+- The About screen summary is now `21.20.402 (Zversion 3)` so the installed
+  build is easy to identify. The actual version name remains `21.26.364`.
+
+### Build
+
+- Base APK: **stable v1.0.1**
+  (`T-YouTube-v1.0.1.apk`, SHA-256
+  `71B0F782702129A0DDCC80EE0A7150F52FE0099671AB62692766B1C605EBE7FE`)
+- Patch: `scripts/apply-zversion.py` only
+- CI: GitHub Actions `.github/workflows/build-test-apk.yml`
+- APK: `T-YouTube-Zversion.apk`
+- Package: `com.gold.android.youtube`
+- Version: `21.26.364` / versionCode `2147483647`
+- Signature: AOSP `testkey` (same as v1.0.1)
+
+### Verify
+
+- APK size and SHA-256 are published on the release page.
+- Test checklist: `ci/TEST-BUILD-README.txt`.
+
+---
+
+## test-zversion-2 - Zversion 1 fixes (superseded)
 
 **Release:** https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-2
 

@@ -482,26 +482,29 @@
     </div>
 
     <div class="testbuild" id="preview">
-      <span class="tb-tag">Preview &mdash; test-zversion-2 (optional)</span>
+      <span class="tb-tag">Preview &mdash; test-zversion-3 (optional)</span>
       <h3>Shorts branding, fullscreen watermark and automatic duplicate naming</h3>
       <p>
-        A separate <b>Zversion 2</b> test build decoded from stable v1.0.1. It is
+        A separate <b>Zversion 3</b> test build decoded from stable v1.0.1. It is
         <b>optional</b> &mdash; stable v1.0.1 above is still the recommended download.
-        Zversion 2 fixes the two UI features that did not appear in Zversion 1 and
-        restores effortless duplicate naming.
+        Zversion 2 built and installed, but three inverted boolean checks kept the
+        new UI and filename logic from running. Zversion 3 fixes the checks.
       </p>
       <ul>
         <li><b>Shorts brand loop.</b> The top-left back control cycles every 8 seconds:
             arrow &rarr; crossfade &rarr; <b>T YouTube</b> &rarr; crossfade &rarr; arrow. The whole
-            128x48 dp strip is one Back target and the title does not move. The loop
-            now starts when the whole header becomes visible, not only when the button
-            itself changes.</li>
+            128x48 dp strip is one Back target and the title does not move. Zversion 3
+            starts the loop when the view is visible (Zversion 2&rsquo;s check was inverted).</li>
         <li><b>Fullscreen watermark.</b> A subtle 18 sp bold <b>T YouTube</b> wordmark
             in the bottom control row, between the left controls and &ldquo;More videos&rdquo;.
-            It is added to <b>both</b> bottom-control layouts the app can inflate, so it
-            appears whether &ldquo;Restore old player buttons&rdquo; is on or off. It shows only in
-            fullscreen while controls are visible, in portrait and landscape, and is
-            absent inline, in PiP and in Shorts.</li>
+            Zversion 3 registers the layout listener that Zversion 2 skipped, so the
+            watermark actually appears. It is in <b>both</b> bottom-control layouts,
+            shows only in fullscreen while controls are visible, and is absent inline,
+            in PiP and in Shorts.</li>
+        <li><b>Download filename.</b> The dialog now starts with the real video title.
+            v1.0.1&rsquo;s <code>FilenameUtils</code> had an inverted <code>isEmpty()</code>
+            check that replaced every non-empty title with &ldquo;download&rdquo;;
+            Zversion 3 fixes it.</li>
         <li><b>Automatic duplicate naming.</b> Downloading the same title again just
             works: the app silently saves a second file with its own unique name
             (for example <b>Title (1).mp4</b>). There is no <b>Generate unique name</b>
@@ -509,23 +512,26 @@
         <li><b>Active downloads.</b> Pending and Running downloads show an information
             dialog only and are never overwritten. A finished entry whose file was
             deleted no longer blocks a new download.</li>
+        <li><b>Build marker.</b> The About screen shows
+            <b>21.20.402 (Zversion 3)</b> so you can confirm the installed build.
+            The app version stays 21.26.364.</li>
         <li><b>YouTube link guide (optional).</b> Want youtube.com links to open in T YouTube
             instead of the official app? Follow the <a href="#links">short guide</a> &mdash; or
             skip it; nothing else in the app depends on it.</li>
       </ul>
       <div class="tb-actions">
-        <a class="btn btn-amber" href="https://github.com/engrtarun/T-YouTube/releases/download/test-zversion-2/T-YouTube-Zversion.apk">Download Zversion 2 test build</a>
-        <a class="tb-link" href="https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-2">Release notes &amp; checksum &rarr;</a>
+        <a class="btn btn-amber" href="https://github.com/engrtarun/T-YouTube/releases/download/test-zversion-3/T-YouTube-Zversion.apk">Download Zversion 3 test build</a>
+        <a class="tb-link" href="https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-3">Release notes &amp; checksum &rarr;</a>
         <a class="tb-link" href="#links">Link setup guide &rarr;</a>
       </div>
       <p class="tb-sum">
-        <b>Size:</b> 222,584,227 bytes (212.3 MiB)<br>
-        <b>SHA-256:</b> <code>FA861B71B820880661A1F8D0E24CFD655126FD4388748805A8F98BE6CC5B5FA9</code>
+        <b>Size:</b> SIZE_BYTES bytes<br>
+        <b>SHA-256:</b> <code>SHA256</code>
       </p>
       <p class="tb-sum">
         Same signature and version as v1.0.1, so it installs in place &mdash; your logins,
-        settings and downloads stay. You can install it directly over Zversion 1.
-        Go back by installing v1.0.1 over it.
+        settings and downloads stay. You can install it directly over v1.0.1 or any
+        Zversion build. Go back by installing v1.0.1 over it.
       </p>
     </div>
   </div>

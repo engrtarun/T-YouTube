@@ -40,6 +40,10 @@ EXPLODER_CONTROLS_LAYOUT = pathlib.Path(
 DOWNLOAD_DIALOG = pathlib.Path(
     "smali_classes10/com/gold/youtube/om7753/download/DownloadDialog.smali"
 )
+FILENAME_UTILS = pathlib.Path(
+    "smali_classes10/com/gold/youtube/om7753/util/FilenameUtils.smali"
+)
+ABOUT_PREFS = pathlib.Path("res/xml/youtube_prefs.xml")
 BRAND_DIR = pathlib.Path("smali_classes10/com/gold/extension/youtube/brand")
 DOWNLOAD_DIR = pathlib.Path("smali_classes10/com/gold/youtube/om7753/download")
 
@@ -140,7 +144,7 @@ REEL_BACK_SMALI_V2 = """.class public final Lcom/gold/extension/youtube/brand/ZV
 
     move-result v0
 
-    if-nez v0, :done
+    if-eqz v0, :done
 
     invoke-virtual {p0}, Lcom/gold/extension/youtube/brand/ZVersionReelBackView;->getBackground()Landroid/graphics/drawable/Drawable;
 
@@ -578,7 +582,7 @@ WATERMARK_SMALI = """.class public final Lcom/gold/extension/youtube/brand/ZVers
 
     iget-boolean v0, p0, Lcom/gold/extension/youtube/brand/ZVersionWatermark;->listenerAttached:Z
 
-    if-eqz v0, :done
+    if-nez v0, :done
 
     invoke-virtual {p0}, Lcom/gold/extension/youtube/brand/ZVersionWatermark;->getViewTreeObserver()Landroid/view/ViewTreeObserver;
 
@@ -590,6 +594,8 @@ WATERMARK_SMALI = """.class public final Lcom/gold/extension/youtube/brand/ZVers
 
     iput-boolean v0, p0, Lcom/gold/extension/youtube/brand/ZVersionWatermark;->listenerAttached:Z
 
+    invoke-direct {p0}, Lcom/gold/extension/youtube/brand/ZVersionWatermark;->updateVisibility()V
+
     :done
     return-void
 .end method
@@ -599,7 +605,7 @@ WATERMARK_SMALI = """.class public final Lcom/gold/extension/youtube/brand/ZVers
 
     iget-boolean v0, p0, Lcom/gold/extension/youtube/brand/ZVersionWatermark;->listenerAttached:Z
 
-    if-eqz v0, :skip
+    if-nez v0, :skip
 
     invoke-virtual {p0}, Lcom/gold/extension/youtube/brand/ZVersionWatermark;->getViewTreeObserver()Landroid/view/ViewTreeObserver;
 
@@ -1040,6 +1046,38 @@ def main() -> int:
     ):
         return 1
 
+    # v1.0.1 ships an inverted empty-name test here: every non-empty title
+    # becomes "download".  Restore the intended fallback so the dialog starts
+    # with the video title and createUniqueFile() can add " (1)", " (2)", ...
+    if not replace_once(
+        root, FILENAME_UTILS,
+        '    invoke-virtual {p0}, Ljava/lang/String;->isEmpty()Z\n'
+        '\n'
+        '    move-result p1\n'
+        '\n'
+        '    if-nez p1, :cond_0\n'
+        '\n'
+        '    const-string p0, "download"',
+        '    invoke-virtual {p0}, Ljava/lang/String;->isEmpty()Z\n'
+        '\n'
+        '    move-result p1\n'
+        '\n'
+        '    if-eqz p1, :cond_0\n'
+        '\n'
+        '    const-string p0, "download"',
+        "Downloads: use the video title instead of the literal 'download'",
+    ):
+        return 1
+
+    if not replace_once(
+        root, ABOUT_PREFS,
+        'android:key="youtube_downloads_package_name" android:summary="21.20.402"',
+        'android:key="youtube_downloads_package_name" '
+        'android:summary="21.20.402 (Zversion 3)"',
+        "About: add a visible Zversion 3 build marker",
+    ):
+        return 1
+
     if not write_new(root, BRAND_DIR / "ZVersionReelBackView.smali",
                      REEL_BACK_SMALI_V2, "Shorts: custom brand-loop view"):
         return 1
@@ -1060,6 +1098,14 @@ def main() -> int:
     legacy = (root / CONTROLS_LAYOUT).read_text(encoding="utf-8")
     exploder = (root / EXPLODER_CONTROLS_LAYOUT).read_text(encoding="utf-8")
     dialog = (root / DOWNLOAD_DIALOG).read_text(encoding="utf-8")
+    filename_utils = (root / FILENAME_UTILS).read_text(encoding="utf-8")
+    about_prefs = (root / ABOUT_PREFS).read_text(encoding="utf-8")
+    brand_view = (root / BRAND_DIR / "ZVersionReelBackView.smali").read_text(
+        encoding="utf-8"
+    )
+    watermark_view = (root / BRAND_DIR / "ZVersionWatermark.smali").read_text(
+        encoding="utf-8"
+    )
     dialog_start = dialog.index(CHECK_METHOD)
     dialog_end = dialog.index(".end method", dialog_start)
     check_method = dialog[dialog_start:dialog_end]
@@ -1114,6 +1160,29 @@ def main() -> int:
             'ZVersionDownloadUniqueAction' not in dialog
             and 'startUniqueDownload' not in dialog,
             "Downloads: the broken Generate unique name action is gone",
+        ),
+        (
+            'if-eqz p1, :cond_0' in filename_utils
+            and 'if-nez p1, :cond_0' not in filename_utils,
+            "Downloads: the filename starts with the video title",
+        ),
+        (
+            'invoke-virtual {p0}, Lcom/gold/extension/youtube/brand/'
+            'ZVersionReelBackView;->getVisibility()I\n\n'
+            '    move-result v0\n\n'
+            '    if-eqz v0, :done' in brand_view,
+            "Shorts: the brand loop starts when the view is visible",
+        ),
+        (
+            'android:summary="21.20.402 (Zversion 3)"' in about_prefs,
+            "About: the Zversion 3 marker is visible",
+        ),
+        (
+            'if-nez v0, :done' in watermark_view
+            and 'if-nez v0, :skip' in watermark_view
+            and 'invoke-direct {p0}, Lcom/gold/extension/youtube/brand/'
+                'ZVersionWatermark;->updateVisibility()V' in watermark_view,
+            "Fullscreen: the watermark attaches and updates its layout listener",
         ),
         (
             (root / BRAND_DIR / "ZVersionReelBackView.smali").is_file()
