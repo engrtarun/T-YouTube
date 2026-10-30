@@ -159,8 +159,8 @@ Zversion 1.
 
 Rollback: install v1.0.1 over it. No data is lost.
 
-Size and SHA-256 are published on the
-[test-zversion-2 release page](https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-2).
+**Size:** 222,584,227 bytes (212.3 MiB)
+**SHA-256:** `FA861B71B820880661A1F8D0E24CFD655126FD4388748805A8F98BE6CC5B5FA9`
 
 Full change log for every test build, including the withdrawn test-fix-4:
 **[TEST-CHANGES.md](TEST-CHANGES.md)**.

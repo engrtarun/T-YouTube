@@ -70,7 +70,8 @@ decoded from the **published v1.0.1 APK**, and stable v1.0.1 is untouched.
   `71B0F782702129A0DDCC80EE0A7150F52FE0099671AB62692766B1C605EBE7FE`)
 - Patch: `scripts/apply-zversion.py` only
 - CI: GitHub Actions `.github/workflows/build-test-apk.yml`
-- APK: `T-YouTube-Zversion.apk`
+- APK: `T-YouTube-Zversion.apk` (222,584,227 bytes / 212.3 MiB)
+- SHA-256: `FA861B71B820880661A1F8D0E24CFD655126FD4388748805A8F98BE6CC5B5FA9`
 - Package: `com.gold.android.youtube`
 - Version: `21.26.364` / versionCode `2147483647`
 - Signature: AOSP `testkey` (same as v1.0.1)
