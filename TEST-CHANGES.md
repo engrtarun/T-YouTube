@@ -13,7 +13,7 @@ reference.
 | `test-fix-5` | Superseded | v1.0.0 + v1.0.1 fixes | Download dialog only; complete stable v1.0.1 UI |
 | `test-zversion-1` | Superseded | stable v1.0.1 | Shorts brand loop, fullscreen watermark, download dialog fix |
 | `test-zversion-2` | Superseded | stable v1.0.1 | Fixed Shorts loop, both-layout watermark, automatic duplicate naming |
-| `test-zversion-3` | **Current optional test build** | stable v1.0.1 | Fixed inverted visibility/listener/filename checks so Zversion 2 actually runs |
+| `test-zversion-3` | **Current optional test build** | stable v1.0.1 | Fixed the hidden-to-visible guard, listener registration and filename check so Zversion 2 actually runs |
 
 Stable **v1.0.1 remains the recommended download**. Test builds are optional
 and are published as GitHub prereleases.
@@ -24,16 +24,18 @@ and are published as GitHub prereleases.
 
 **Release:** https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-3
 
-Zversion 2 built and installed, but three inverted boolean checks stopped the
-new UI and filename logic from running. Zversion 3 fixes the checks and keeps
-the same package, version code and AOSP testkey signature.
+Zversion 2 built and installed, but three boolean checks stopped the new UI
+and filename logic from running. Zversion 3 fixes the checks and keeps the
+same package, version code and AOSP testkey signature.
 
 ### 1. Shorts brand loop
 
-- `ZVersionReelBackView.restartBrandAnimation()` skipped the animation when
-  `getVisibility() == VISIBLE` because the branch was inverted. The arrow
-  stayed static.
-- Zversion 3 starts the loop when the view is visible. The 8-second timing,
+- `ZVersionReelBackView` skipped `restartBrandAnimation()` when the view went
+  from hidden to visible: `onVisibilityAggregated`, `onLayout` and `onDraw`
+  all tested `aggregatedVisible` with `if-eqz`, so a first transition looked
+  like "already visible" and the arrow never animated.
+- Zversion 3 flips those guards to `if-nez`, so the loop starts on the first
+  hidden-to-visible transition as well as on later ones. The 8-second timing,
   128x48 dp strip, 65 dp title anchor and TalkBack description are unchanged.
 
 ### 2. Fullscreen watermark

@@ -14,11 +14,12 @@ This build fixes three bugs that made the Zversion 2 changes invisible on
 the phone. It keeps every v1.0.1 playback/download/theme fix.
 
 1) Shorts brand loop (actually starts now)
-   The custom view's visibility check was inverted: it skipped the
-   AnimationDrawable start exactly when the view was VISIBLE. Zversion 3
-   starts the 8-second loop (arrow 4.8s -> 225ms crossfade -> "T YouTube"
-   2.75s -> 225ms crossfade) as soon as the header is visible. The whole
-   128x48dp strip is one Back target; the title stays at 65dp.
+   The custom view only started the loop when it was already marked
+   visible, so the hidden-to-visible transition was skipped. Zversion 3
+   fixes that guard and starts the 8-second loop (arrow 4.8s -> 225ms
+   crossfade -> "T YouTube" 2.75s -> 225ms crossfade) as soon as the
+   header appears. The whole 128x48dp strip is one Back target; the title
+   stays at 65dp.
 
 2) Fullscreen "T YouTube" watermark (actually appears now)
    The view's OnGlobalLayoutListener was never registered because the

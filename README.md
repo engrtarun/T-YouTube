@@ -141,12 +141,12 @@ installs straight over v1.0.0 or any earlier test build with data intact.
 
 An **optional Zversion 3 test build** decoded from the published **v1.0.1**
 APK. Stable **v1.0.1 remains the recommended download**. Zversion 2 built and
-installed, but three inverted boolean checks kept the new UI and filename logic
-from running. Zversion 3 fixes the checks:
+installed, but three boolean checks kept the new UI and filename logic from
+running. Zversion 3 fixes the checks:
 
 | Change | What to expect |
 |:--|:--|
-| **Shorts brand loop** | The top-left Shorts back control cycles every 8 seconds: arrow -> 225 ms crossfade -> **T YouTube** -> 225 ms crossfade -> arrow. The whole 128x48 dp strip is one Back target and the title does not move. Zversion 3 starts the loop when the view is visible (Zversion 2's check was inverted). |
+| **Shorts brand loop** | The top-left Shorts back control cycles every 8 seconds: arrow -> 225 ms crossfade -> **T YouTube** -> 225 ms crossfade -> arrow. The whole 128x48 dp strip is one Back target and the title does not move. Zversion 3 starts the loop on the hidden-to-visible transition; Zversion 2 skipped that transition. |
 | **Fullscreen watermark** | A subtle 18 sp bold **T YouTube** wordmark in the bottom control row, between the left controls and "More videos". Zversion 3 registers the layout listener that Zversion 2 skipped, so the watermark actually appears. It is in **both** bottom-control layouts, shows only in fullscreen while controls are visible, and is absent inline, in PiP and in Shorts. |
 | **Download filename** | The dialog now starts with the real video title. v1.0.1's `FilenameUtils` had an inverted `isEmpty()` check that replaced every non-empty title with `"download"`; Zversion 3 fixes it. |
 | **Duplicate names** | Downloading the same title again just works: the app silently saves a second file with its own unique name (e.g. `Title (1).mp4`). There is no **Generate unique name** button and no extra tap. |

@@ -487,14 +487,14 @@
       <p>
         A separate <b>Zversion 3</b> test build decoded from stable v1.0.1. It is
         <b>optional</b> &mdash; stable v1.0.1 above is still the recommended download.
-        Zversion 2 built and installed, but three inverted boolean checks kept the
-        new UI and filename logic from running. Zversion 3 fixes the checks.
+        Zversion 2 built and installed, but three boolean checks kept the new UI
+        and filename logic from running. Zversion 3 fixes the checks.
       </p>
       <ul>
         <li><b>Shorts brand loop.</b> The top-left back control cycles every 8 seconds:
             arrow &rarr; crossfade &rarr; <b>T YouTube</b> &rarr; crossfade &rarr; arrow. The whole
             128x48 dp strip is one Back target and the title does not move. Zversion 3
-            starts the loop when the view is visible (Zversion 2&rsquo;s check was inverted).</li>
+            starts the loop on the hidden-to-visible transition; Zversion 2 skipped it.</li>
         <li><b>Fullscreen watermark.</b> A subtle 18 sp bold <b>T YouTube</b> wordmark
             in the bottom control row, between the left controls and &ldquo;More videos&rdquo;.
             Zversion 3 registers the layout listener that Zversion 2 skipped, so the

@@ -3,21 +3,24 @@
 
 Usage: python3 scripts/apply-zversion.py <decoded-dir>
 
-Zversion 2 is a separate test build on top of stable v1.0.1. It adds:
+Zversion 3 is a separate test build on top of stable v1.0.1. It adds:
 
   * Shorts back control: an 8-second "T YouTube" brand loop
     (4.8s arrow, 225ms crossfade, 2.75s wordmark, 225ms crossfade),
-    hosted by a custom ImageView. The loop restarts when the whole header
-    becomes visible (onVisibilityAggregated/onLayout), not only when the
-    button's own visibility changes.
+    hosted by a custom ImageView. Zversion 3 fixes the hidden-to-visible
+    guard so the loop starts the first time the header appears
+    (onVisibilityAggregated/onLayout/onDraw), not only on later changes.
   * Fullscreen-only "T YouTube" watermark in BOTH bottom-control layouts
     the app can inflate at runtime (legacy and video-exploder), gated by
     the fullscreen container (with an overlay-height fallback) and hidden
-    with the controls.
-  * Downloads: duplicate finished names are renamed automatically with
-    the app's own createUniqueFile() logic, with no "Generate unique name"
-    dialog and no extra tap. Pending/Running missions still show the
-    informational dialog and are never overwritten.
+    with the controls. Zversion 3 registers the layout listener that
+    Zversion 2 skipped.
+  * Downloads: the dialog starts with the real video title (v1.0.1's
+    empty-name check was inverted). Duplicate finished names are renamed
+    automatically with the app's own createUniqueFile() logic, with no
+    "Generate unique name" dialog and no extra tap. Pending/Running
+    missions still show the informational dialog and are never
+    overwritten.
 
 Every replacement is checked for an exact single match. The script also
 runs post-condition checks and exits non-zero if any anchor is missing, so
@@ -144,7 +147,7 @@ REEL_BACK_SMALI_V2 = """.class public final Lcom/gold/extension/youtube/brand/ZV
 
     move-result v0
 
-    if-eqz v0, :done
+    if-nez v0, :done
 
     invoke-virtual {p0}, Lcom/gold/extension/youtube/brand/ZVersionReelBackView;->getBackground()Landroid/graphics/drawable/Drawable;
 
@@ -280,7 +283,7 @@ REEL_BACK_SMALI_V2 = """.class public final Lcom/gold/extension/youtube/brand/ZV
 
     iget-boolean v0, p0, Lcom/gold/extension/youtube/brand/ZVersionReelBackView;->aggregatedVisible:Z
 
-    if-eqz v0, :done
+    if-nez v0, :done
 
     const/4 v0, 0x1
 
@@ -346,7 +349,7 @@ REEL_BACK_SMALI_V2 = """.class public final Lcom/gold/extension/youtube/brand/ZV
 
     iget-boolean v0, p0, Lcom/gold/extension/youtube/brand/ZVersionReelBackView;->aggregatedVisible:Z
 
-    if-eqz v0, :done
+    if-nez v0, :done
 
     const/4 v0, 0x1
 
@@ -378,7 +381,7 @@ REEL_BACK_SMALI_V2 = """.class public final Lcom/gold/extension/youtube/brand/ZV
 
     iget-boolean v0, p0, Lcom/gold/extension/youtube/brand/ZVersionReelBackView;->aggregatedVisible:Z
 
-    if-eqz v0, :draw
+    if-nez v0, :draw
 
     const/4 v0, 0x1
 
@@ -605,7 +608,7 @@ WATERMARK_SMALI = """.class public final Lcom/gold/extension/youtube/brand/ZVers
 
     iget-boolean v0, p0, Lcom/gold/extension/youtube/brand/ZVersionWatermark;->listenerAttached:Z
 
-    if-nez v0, :skip
+    if-eqz v0, :skip
 
     invoke-virtual {p0}, Lcom/gold/extension/youtube/brand/ZVersionWatermark;->getViewTreeObserver()Landroid/view/ViewTreeObserver;
 
@@ -1170,8 +1173,15 @@ def main() -> int:
             'invoke-virtual {p0}, Lcom/gold/extension/youtube/brand/'
             'ZVersionReelBackView;->getVisibility()I\n\n'
             '    move-result v0\n\n'
-            '    if-eqz v0, :done' in brand_view,
-            "Shorts: the brand loop starts when the view is visible",
+            '    if-nez v0, :done' in brand_view
+            and brand_view.count(
+                'iget-boolean v0, p0, Lcom/gold/extension/youtube/brand/'
+                'ZVersionReelBackView;->aggregatedVisible:Z\n\n'
+                '    if-nez v0'
+            ) == 3
+            and 'ZVersionReelBackView;->aggregatedVisible:Z\n\n'
+                '    if-eqz v0' not in brand_view,
+            "Shorts: the brand loop starts on the hidden-to-visible transition",
         ),
         (
             'android:summary="21.20.402 (Zversion 3)"' in about_prefs,
@@ -1179,7 +1189,7 @@ def main() -> int:
         ),
         (
             'if-nez v0, :done' in watermark_view
-            and 'if-nez v0, :skip' in watermark_view
+            and 'if-eqz v0, :skip' in watermark_view
             and 'invoke-direct {p0}, Lcom/gold/extension/youtube/brand/'
                 'ZVersionWatermark;->updateVisibility()V' in watermark_view,
             "Fullscreen: the watermark attaches and updates its layout listener",
