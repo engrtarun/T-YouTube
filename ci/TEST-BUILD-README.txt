@@ -1,4 +1,4 @@
-T YouTube fixed TEST build (test-fix-2)
+T YouTube fixed TEST build (test-fix-3)
 =======================================
 
 Package: com.gold.android.youtube
@@ -8,11 +8,12 @@ Min Android: 10 (API 29)
 
 WHAT CHANGED (defaults + bug fixes - no new menus, no new buttons)
 -----------------------------------------------------------------
-1) Video downloads failing with "file not created" (audio worked)
-   The downloader kept emoji and very long titles in the filename. Android's
-   storage picker / SD-card filesystem rejects those names, so the file was
-   never created. Filenames are now cleaned of emoji/unsupported characters
-   and capped at 80 characters (extension kept).
+1) Download button force-closed the app (test-fix-2 regression - fixed)
+   test-fix-2 added filename cleanup that cut every title at 80 characters.
+   For a normal title shorter than 80 characters that cut was invalid and the
+   download dialog crashed the moment it opened. Titles are now cut only when
+   they are actually longer than 80 characters, so normal titles pass through
+   unchanged and the dialog opens normally.
 
 2) Seeking a long video froze playback, then only low quality played
    Default spoof playback client: "Android Reel" (ANDROID_REEL_AUTH) -> "visionOS".
@@ -47,11 +48,13 @@ If Android says "App not installed", stop and report it - do not uninstall.
 
 TEST CHECKLIST (about 8 minutes)
 --------------------------------
-[  ] Download (the main fix): open a video whose title has emoji and is long
-     (or any video that failed before) -> Download -> pick a video quality.
-     The download must complete, appear in Downloads, and play from there.
-[  ] Download a second video with a normal short title, to be sure normal
-     downloads still work.
+[  ] Download dialog (the main fix): tap Download on a normal video with a
+     short title. The dialog must open (the app must NOT close) and show the
+     quality list. Pick a quality; the download must complete, appear in
+     Downloads, and play from there.
+[  ] Download a video whose title has emoji and is longer than 80 characters.
+     It must also open the dialog and download normally.
+[  ] Download a second normal video, to be sure repeated downloads still work.
 [  ] Long seek: play a 30+ minute 1080p video, drag the bar to ~23:00 (or use
      the +10s button repeatedly). Playback should resume in a few seconds with
      the quality you selected - no 2-8 minute freeze, no forced 144p/360p.
@@ -74,6 +77,10 @@ A previously saved setting always wins over a new default. Check in the app:
       primary #00FCFF, accent #F3024E
   T YouTube settings -> Miscellaneous -> Spoof video streams -> Default client = visionOS
 Changing those values has exactly the same effect as this build's new defaults.
+
+Download button closes the app again:
+   Send the video title/link and the exact step where it closes. That means
+   the filename crash fix did not cover your title, and a log is needed.
 
 Download still says "file not created":
   1. T YouTube settings -> Downloads -> download folder -> choose Internal storage

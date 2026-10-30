@@ -41,19 +41,11 @@ OLD_FILENAME_METHOD = """.method private static createFilename(Ljava/lang/String
 """
 
 NEW_FILENAME_METHOD = r""".method private static createFilename(Ljava/lang/String;Ljava/util/regex/Pattern;Ljava/lang/String;)Ljava/lang/String;
-    .locals 6
+    .locals 1
 
     invoke-virtual {p1}, Ljava/util/regex/Pattern;->pattern()Ljava/lang/String;
 
     move-result-object p1
-
-    invoke-virtual {p0, p1, p2}, Ljava/lang/String;->replaceAll(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object p0
-
-    const-string p1, "[\\uD800-\\uDFFF]+"
-
-    const-string p2, ""
 
     invoke-virtual {p0, p1, p2}, Ljava/lang/String;->replaceAll(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
@@ -78,54 +70,11 @@ NEW_FILENAME_METHOD = r""".method private static createFilename(Ljava/lang/Strin
 
     const/16 p2, 0x50
 
-    if-gt p1, p2, :done
+    if-le p1, p2, :done
 
-    const/16 v0, 0x2e
+    const/4 v0, 0x0
 
-    invoke-virtual {p0, v0}, Ljava/lang/String;->lastIndexOf(I)I
-
-    move-result v0
-
-    const-string v1, ""
-
-    if-lez v0, :noext
-
-    sub-int v2, p1, v0
-
-    const/16 v3, 0x8
-
-    if-le v2, v3, :noext
-
-    invoke-virtual {p0, v0}, Ljava/lang/String;->substring(I)Ljava/lang/String;
-
-    move-result-object v1
-
-    :noext
-    invoke-virtual {v1}, Ljava/lang/String;->length()I
-
-    move-result v2
-
-    rsub-int v2, v2, 0x50
-
-    const/4 v3, 0x0
-
-    invoke-virtual {p0, v3, v2}, Ljava/lang/String;->substring(II)Ljava/lang/String;
-
-    move-result-object p0
-
-    new-instance v2, Ljava/lang/StringBuilder;
-
-    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
-
-    invoke-virtual {v2, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v2
-
-    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v2
-
-    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    invoke-virtual {p0, v0, p2}, Ljava/lang/String;->substring(II)Ljava/lang/String;
 
     move-result-object p0
 
@@ -207,7 +156,7 @@ EDITS = [
         FILENAMES,
         OLD_FILENAME_METHOD,
         NEW_FILENAME_METHOD,
-        "Downloads: strip emoji/surrogates and cap names at 80 chars (keeps extension)",
+        "Downloads: cap display names at 80 chars without crashing short titles",
     ),
     (
         GENERAL_PREFS,
@@ -311,12 +260,16 @@ def main() -> int:
             "seekbar custom colours enabled by default",
         ),
         (
-            r"[\\uD800-\\uDFFF]+" in filenames,
-            "filename surrogate stripping present",
+            "if-le p1, p2, :done" in filenames,
+            "filename cap skips short names (no short-title substring crash)",
         ),
         (
             "const/16 p2, 0x50" in filenames,
             "filename 80-char cap present",
+        ),
+        (
+            "uD800" not in filenames,
+            "unsafe surrogate regex removed",
         ),
         (
             'android:key="app_theme_dark"' in prefs
