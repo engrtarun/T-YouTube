@@ -66,6 +66,9 @@ step-by-step, and check what each screen should look like.
 
 ## Screenshots
 
+Captions describe the current **v1.1.0** build. The images are from the
+v1.0.0 era, so a few details on screen differ from what ships today.
+
 **Player** — one frame that shows three working features at once: the download
 button, SponsorBlock, and Return-YouTube-Dislike.
 
@@ -89,14 +92,18 @@ build, and both headers read **T YouTube**. On the base build this spot said
 <tr>
 <td align="center" width="50%">
   <img src="assets/screenshots/download.jpg" width="250" alt="Download dialog with quality picker">
-  <br><sub><b>Downloader</b><br>Quality picker, 144p → 1080p60.</sub>
+  <br><sub><b>Downloader</b><br>Quality picker, 144p → 4K@60. The filename<br>opens with the real video title, a duplicate<br>is auto-renamed to <b>Title (1).mp4</b>, and tapping<br>the toolbar icon starts the download.</sub>
 </td>
 <td align="center" width="50%">
   <img src="assets/screenshots/browse.jpg" width="250" alt="Watch screen with music player">
-  <br><sub><b>Watch screen</b><br>Playback, comments,<br>music player.</sub>
+  <br><sub><b>Watch screen</b><br>Playback, comments, music player.<br>Fullscreen shows a small <b>T YouTube</b><br>mark in the control row.</sub>
 </td>
 </tr>
 </table>
+
+Shorts and the fullscreen watermark changed in v1.1.0 but are not in these
+images yet — see [issue #1](https://github.com/engrtarun/T-YouTube/issues/1)
+and [issue #5](https://github.com/engrtarun/T-YouTube/issues/5).
 
 ---
 
