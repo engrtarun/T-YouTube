@@ -97,19 +97,36 @@ jobs:
           echo "dex files: $DEX_COUNT"
           test "$DEX_COUNT" -eq 10
 
-          # Prove the Zversion features made it into the APK.
+          # Prove the Zversion 4 features made it into the APK.
           grep -q "ZVersionReelBackView" work/res/layout/reel_player_static_header.xml
+          # Root-cause fix: the SECOND same-id back button must carry the loop
+          # too, and no plain arrow may remain anywhere in Shorts.
+          grep -q "ZVersionReelBackView" work/res/layout/reel_player_back_button.xml
+          test "$(grep -rl "reel_back_button" work/res/layout*/ | xargs grep -l "ZVersionReelBackView" | wc -l)" -eq 2
+          test "$(grep -rl "reel_back_button" work/res/layout*/ | xargs grep -l "quantum_ic_arrow_back_white_24" | wc -l)" -eq 0
           grep -q "ZVersionWatermark" work/res/layout/youtube_controls_bottom_ui_container.xml
           grep -q "ZVersionWatermark" work/res/layout/youtube_video_exploder_controls_bottom_ui_container.xml
+          # Watermark must sit below the scrubber line and be small.
+          grep -q 'layout_constraintBottom_toBottomOf="parent"' work/res/layout/youtube_controls_bottom_ui_container.xml
+          grep -q 'android:textSize="14.0sp"' work/res/layout/youtube_controls_bottom_ui_container.xml
           test -f work/res/drawable/tyt_reel_back_animation.xml
+          test ! -e work/res/drawable/tyt_reel_back_foreground.xml
           test "$(find work/res/drawable-xxhdpi -name 'tyt_brand_*.png' | wc -l)" -eq 8
-          grep -q "createUniqueFile" work/smali_classes10/com/gold/youtube/om7753/download/DownloadDialog.smali
+          # Download: original v1.0.1 state machine + two surgical auto-rename
+          # blocks + the cancel-only info dialog.
+          test "$(grep -c 'createUniqueFile' work/smali_classes10/com/gold/youtube/om7753/download/DownloadDialog.smali)" -eq 2
+          grep -q 'try_start_u1' work/smali_classes10/com/gold/youtube/om7753/download/DownloadDialog.smali
+          grep -q 'try_start_u2' work/smali_classes10/com/gold/youtube/om7753/download/DownloadDialog.smali
+          grep -q ':info_dialog' work/smali_classes10/com/gold/youtube/om7753/download/DownloadDialog.smali
+          grep -q 'continueSelectedDownload' work/smali_classes10/com/gold/youtube/om7753/download/DownloadDialog.smali
+          test ! -e work/smali_classes10/com/gold/youtube/om7753/download/ZVersionDownloadUniqueAction.smali
           grep -q 'if-eqz p1, :cond_0' work/smali_classes10/com/gold/youtube/om7753/util/FilenameUtils.smali
           grep -q 'if-nez v0, :done' work/smali_classes10/com/gold/extension/youtube/brand/ZVersionReelBackView.smali
           test "$(grep -c 'if-nez v0, :draw' work/smali_classes10/com/gold/extension/youtube/brand/ZVersionReelBackView.smali)" -eq 2
+          grep -q 'onWindowFocusChanged(Z)V' work/smali_classes10/com/gold/extension/youtube/brand/ZVersionReelBackView.smali
           grep -q 'if-nez v0, :done' work/smali_classes10/com/gold/extension/youtube/brand/ZVersionWatermark.smali
-          grep -q "21.20.402 (Zversion 3)" work/res/xml/youtube_prefs.xml
-          test ! -e work/smali_classes10/com/gold/youtube/om7753/download/ZVersionDownloadUniqueAction.smali
+          grep -q 'onVisibilityChanged(Landroid/view/View;I)V' work/smali_classes10/com/gold/extension/youtube/brand/ZVersionWatermark.smali
+          grep -q "21.20.402 (Zversion 4)" work/res/xml/youtube_prefs.xml
           unzip -p dist/T-YouTube-Zversion.apk classes10.dex | grep -a -q "ZVersionReelBackView"
 
           SIZE="$(stat -c%s dist/T-YouTube-Zversion.apk)"
@@ -144,7 +161,7 @@ jobs:
           else
             gh release create "$GITHUB_REF_NAME" \
               --title "T YouTube Zversion $GITHUB_REF_NAME" \
-              --notes "Optional Zversion 3 preview built from stable v1.0.1 at commit $GITHUB_SHA. Fixes the hidden-to-visible guard that stopped the Shorts brand loop from starting, registers the layout listener that made the fullscreen watermark stay invisible, restores the video title as the download filename (v1.0.1's empty-name check was inverted, so every file was called 'download'), keeps automatic duplicate naming via createUniqueFile, keeps the controls-only watermark in BOTH bottom-control layouts, and adds a 'Zversion 3' marker on the About screen so the installed build is easy to identify. Package, version code and AOSP testkey signature are unchanged, so it installs over v1.0.1 with data intact. Not a stable release - stable v1.0.1 remains the recommended download. See T-YouTube-Zversion-TEST-README.txt for the checklist." \
+              --notes "Zversion 4 test build from stable v1.0.1 at commit $GITHUB_SHA. Shorts: fixes the real cause of the stuck plain arrow - a SECOND view with the same reel_back_button id (reel_player_back_button.xml) still shipped quantum_ic_arrow_back_white_24, so findViewById() could hand the player the arrow instead of the brand loop; both layouts now carry the 8s T YouTube loop, and onWindowFocusChanged restarts the AnimationDrawable once attached so it can no longer freeze on frame 0. Fullscreen watermark: now smaller (14sp, 32dp) and lower - anchored to the bottom of the control row below the scrubber line - and hidden in sync with the controls via onVisibilityChanged (fires when the view OR an ancestor changes visibility). Downloads: stable v1.0.1's proven checkSelectedDownload is restored unchanged (Zversion 3's rewrite had inverted conditionals and broke even the first download), plus two surgical changes: an existing file with no mission and a finished duplicate both fall through to createUniqueFile() and start downloading immediately - no taps, no overwrite - while pending/running missions only show a cancel-only dialog and are never overwritten; the filename still starts with the real video title. About screen shows '21.20.402 (Zversion 4)' so the installed build is easy to identify. Package, version code and AOSP testkey signature are unchanged, so it installs over v1.0.1 with data intact. Not a stable release - stable v1.0.1 remains the recommended download. See T-YouTube-Zversion-TEST-README.txt for the checklist." \
               --prerelease \
               dist/T-YouTube-Zversion.apk \
               dist/T-YouTube-Zversion-TEST-README.txt

@@ -3,24 +3,31 @@
 
 Usage: python3 scripts/apply-zversion.py <decoded-dir>
 
-Zversion 3 is a separate test build on top of stable v1.0.1. It adds:
+Zversion 4 is a separate test build on top of stable v1.0.1. It adds:
 
   * Shorts back control: an 8-second "T YouTube" brand loop
     (4.8s arrow, 225ms crossfade, 2.75s wordmark, 225ms crossfade),
-    hosted by a custom ImageView. Zversion 3 fixes the hidden-to-visible
-    guard so the loop starts the first time the header appears
-    (onVisibilityAggregated/onLayout/onDraw), not only on later changes.
+    hosted by a custom ImageView. BOTH layouts that carry a
+    reel_back_button get it: reel_player_static_header.xml and
+    reel_player_back_button.xml - the second one still shipped a plain
+    white arrow with the same view id, so findViewById() could hand the
+    player the arrow instead of the loop. onWindowFocusChanged restarts
+    the AnimationDrawable once the view really is attached, so the loop
+    can no longer freeze on the opening arrow.
   * Fullscreen-only "T YouTube" watermark in BOTH bottom-control layouts
-    the app can inflate at runtime (legacy and video-exploder), gated by
-    the fullscreen container (with an overlay-height fallback) and hidden
-    with the controls. Zversion 3 registers the layout listener that
-    Zversion 2 skipped.
-  * Downloads: the dialog starts with the real video title (v1.0.1's
-    empty-name check was inverted). Duplicate finished names are renamed
-    automatically with the app's own createUniqueFile() logic, with no
-    "Generate unique name" dialog and no extra tap. Pending/Running
-    missions still show the informational dialog and are never
-    overwritten.
+    the app can inflate at runtime (legacy and video-exploder). It sits
+    at the bottom of the control row (below the scrubber line) at 14sp,
+    and onVisibilityChanged hides it the moment the controls overlay
+    hides - no waiting for the next global layout pass.
+  * Downloads: stable v1.0.1's proven checkSelectedDownload is restored
+    unchanged (Zversion 3 rewrote it with inverted conditionals, so even
+    the first download failed). Two surgical additions on top: an
+    existing file with no mission and a finished mission both fall
+    through to the app's own createUniqueFile() and start downloading
+    immediately, so a duplicate needs no taps and never overwrites.
+    Pending and running missions only show a cancel-only dialog and are
+    never overwritten. The dialog still starts with the real video
+    title.
 
 Every replacement is checked for an exact single match. The script also
 runs post-condition checks and exits non-zero if any anchor is missing, so
@@ -36,6 +43,11 @@ REPO = pathlib.Path(__file__).resolve().parent
 ASSETS = REPO / "assets" / "test-fix-4"
 
 SHORTS_LAYOUT = pathlib.Path("res/layout/reel_player_static_header.xml")
+# Shorts has a SECOND view with the same id (a plain white arrow) that is
+# <include>d by reel_non_video_page*.xml and reel_watch_survey_page.xml.
+# It must carry the brand loop too, otherwise findViewById() can hand the
+# plain arrow to the player code and the loop never shows.
+BACK_BUTTON_LAYOUT = pathlib.Path("res/layout/reel_player_back_button.xml")
 CONTROLS_LAYOUT = pathlib.Path("res/layout/youtube_controls_bottom_ui_container.xml")
 EXPLODER_CONTROLS_LAYOUT = pathlib.Path(
     "res/layout/youtube_video_exploder_controls_bottom_ui_container.xml"
@@ -61,7 +73,6 @@ NEW_BACK_ELEMENT = (
     '<com.gold.extension.youtube.brand.ZVersionReelBackView '
     'android:id="@id/reel_back_button" '
     'android:background="@drawable/tyt_reel_back_animation" '
-    'android:foreground="@drawable/tyt_reel_back_foreground" '
     'android:visibility="gone" android:layout_width="128.0dip" '
     'android:layout_height="48.0dip" android:layout_alignParentTop="true" '
     'android:contentDescription="@string/reel_accessibility_player_back_button" '
@@ -89,14 +100,6 @@ ANIMATION_XML = """<?xml version="1.0" encoding="utf-8"?>
     <item android:drawable="@drawable/tyt_brand_06_back50" android:duration="75" />
     <item android:drawable="@drawable/tyt_brand_07_back75" android:duration="75" />
 </animation-list>
-"""
-
-FOREGROUND_XML = """<?xml version="1.0" encoding="utf-8"?>
-<layer-list
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:gravity="start|center" android:width="48.0dip" android:height="48.0dip"
-      android:drawable="@drawable/reel_circular_button_background" />
-</layer-list>
 """
 
 REEL_BACK_SMALI_V2 = """.class public final Lcom/gold/extension/youtube/brand/ZVersionReelBackView;
@@ -370,6 +373,29 @@ REEL_BACK_SMALI_V2 = """.class public final Lcom/gold/extension/youtube/brand/ZV
     return-void
 .end method
 
+# AnimationDrawable.start() called while the view is still detached can drop
+# the first frame callback and freeze the loop on the opening arrow, which is
+# exactly the "Shorts still shows <--" symptom. Restarting once we really
+# have window focus guarantees the 8s loop is scheduled.
+.method public onWindowFocusChanged(Z)V
+    .locals 1
+
+    invoke-super {p0, p1}, Landroid/widget/ImageView;->onWindowFocusChanged(Z)V
+
+    if-eqz p1, :no_focus
+
+    invoke-virtual {p0}, Lcom/gold/extension/youtube/brand/ZVersionReelBackView;->isShown()Z
+
+    move-result v0
+
+    if-nez v0, :no_focus
+
+    invoke-direct {p0}, Lcom/gold/extension/youtube/brand/ZVersionReelBackView;->restartBrandAnimation()V
+
+    :no_focus
+    return-void
+.end method
+
 .method protected onDraw(Landroid/graphics/Canvas;)V
     .locals 1
 
@@ -403,17 +429,21 @@ CONTROLS_CLOSING_TAG = "</androidx.constraintlayout.widget.ConstraintLayout>"
 
 
 def watermark_element(ns: str, end_anchor: str) -> str:
-    """Build the controls-only watermark for one bottom-bar variant."""
+    """Build the controls-only watermark for one bottom-bar variant.
+
+    Anchored to the bottom of the control row (below the scrubber line) and
+    kept short so it never pushes the controls around.
+    """
     return (
         '<com.gold.extension.youtube.brand.ZVersionWatermark '
-        'android:textSize="18.0sp" android:textColor="@android:color/white" '
+        'android:textSize="14.0sp" android:textColor="@android:color/white" '
         'android:gravity="center" android:tag="tyt_watermark" '
         'android:visibility="invisible" android:layout_width="0.0dip" '
-        'android:layout_height="60.0dip" android:text="T YouTube" '
+        'android:layout_height="32.0dip" android:text="T YouTube" '
         'android:alpha="0.8" android:maxLines="1" android:ellipsize="end" '
         'android:importantForAccessibility="no" android:clickable="false" '
-        'android:focusable="false" '
-        f'{ns}:layout_constraintBottom_toTopOf="@id/quick_actions_container" '
+        'android:focusable="false" android:layout_marginBottom="4.0dip" '
+        f'{ns}:layout_constraintBottom_toBottomOf="parent" '
         f'{ns}:layout_constraintEnd_toStartOf="{end_anchor}" '
         f'{ns}:layout_constraintStart_toEndOf="@id/timestamps_container" '
         f'{ns}:youTubeSansFont="bold" />'
@@ -633,274 +663,436 @@ WATERMARK_SMALI = """.class public final Lcom/gold/extension/youtube/brand/ZVers
 
     return-void
 .end method
+
+# Fires the moment this view or ANY ancestor (the whole controls overlay)
+# changes visibility, so the watermark disappears with the controls instead
+# of waiting for the next global layout pass.
+.method protected onVisibilityChanged(Landroid/view/View;I)V
+    .locals 1
+
+    invoke-super {p0, p1, p2}, Lcom/google/android/libraries/youtube/common/ui/YouTubeTextView;->onVisibilityChanged(Landroid/view/View;I)V
+
+    if-nez p2, :ancestor_hidden
+
+    invoke-direct {p0}, Lcom/gold/extension/youtube/brand/ZVersionWatermark;->updateVisibility()V
+
+    return-void
+
+    :ancestor_hidden
+    const/4 v0, 0x4
+
+    invoke-virtual {p0, v0}, Lcom/gold/extension/youtube/brand/ZVersionWatermark;->setVisibility(I)V
+
+    return-void
+.end method
 """
 
 # ----------------------------------------------------- Download dialog ---
 
-NEW_CHECK_METHOD = """.method private checkSelectedDownload(Lcom/gold/youtube/om7753/streams/io/StoredDirectoryHelper;Landroid/net/Uri;Ljava/lang/String;Ljava/lang/String;)V
-    .locals 10
+NEW_CHECK_METHOD = """
+.method private checkSelectedDownload(Lcom/gold/youtube/om7753/streams/io/StoredDirectoryHelper;Landroid/net/Uri;Ljava/lang/String;Ljava/lang/String;)V
+    .locals 15
+
+    move-object v9, p0
+
+    move-object/from16 v0, p1
+
+    move-object/from16 v5, p2
+
+    move-object/from16 v7, p3
+
+    move-object/from16 v8, p4
+
+    const/4 v1, 0x0
+
+    if-nez v0, :cond_0
 
     :try_start_0
-    if-nez p1, :dir_null
+    new-instance v2, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;
 
-    if-nez p2, :dir_uri
+    iget-object v3, v9, Lcom/gold/youtube/om7753/download/DownloadDialog;->context:Landroid/content/Context;
 
-    new-instance v0, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;
+    const-string v4, ""
 
-    iget-object v1, p0, Lcom/gold/youtube/om7753/download/DownloadDialog;->context:Landroid/content/Context;
+    invoke-direct {v2, v3, v1, v5, v4}, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;-><init>(Landroid/content/Context;Landroid/net/Uri;Landroid/net/Uri;Ljava/lang/String;)V
 
-    invoke-virtual {p1}, Lcom/gold/youtube/om7753/streams/io/StoredDirectoryHelper;->getUri()Landroid/net/Uri;
+    :goto_0
+    move-object v4, v2
 
-    move-result-object v2
+    goto :goto_1
 
-    invoke-virtual {p1}, Lcom/gold/youtube/om7753/streams/io/StoredDirectoryHelper;->getTag()Ljava/lang/String;
+    :catch_0
+    move-exception v0
+
+    goto/16 :goto_5
+
+    :cond_0
+    if-nez v5, :cond_1
+
+    new-instance v2, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;
+
+    invoke-virtual/range {p1 .. p1}, Lcom/gold/youtube/om7753/streams/io/StoredDirectoryHelper;->getUri()Landroid/net/Uri;
 
     move-result-object v3
 
-    invoke-direct {v0, v1, v2, p2, v3}, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;-><init>(Landroid/content/Context;Landroid/net/Uri;Landroid/net/Uri;Ljava/lang/String;)V
+    invoke-virtual/range {p1 .. p1}, Lcom/gold/youtube/om7753/streams/io/StoredDirectoryHelper;->getTag()Ljava/lang/String;
 
-    goto :target_ready
+    move-result-object v4
 
-    :dir_null
-    new-instance v0, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;
+    invoke-direct {v2, v3, v7, v8, v4}, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;-><init>(Landroid/net/Uri;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 
-    iget-object v1, p0, Lcom/gold/youtube/om7753/download/DownloadDialog;->context:Landroid/content/Context;
+    goto :goto_0
 
-    const-string v2, ""
+    :cond_1
+    new-instance v2, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;
 
-    const/4 v3, 0x0
+    iget-object v3, v9, Lcom/gold/youtube/om7753/download/DownloadDialog;->context:Landroid/content/Context;
 
-    invoke-direct {v0, v1, v3, p2, v2}, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;-><init>(Landroid/content/Context;Landroid/net/Uri;Landroid/net/Uri;Ljava/lang/String;)V
+    invoke-virtual/range {p1 .. p1}, Lcom/gold/youtube/om7753/streams/io/StoredDirectoryHelper;->getUri()Landroid/net/Uri;
 
-    goto :target_ready
+    move-result-object v4
 
-    :dir_uri
-    new-instance v0, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;
+    invoke-virtual/range {p1 .. p1}, Lcom/gold/youtube/om7753/streams/io/StoredDirectoryHelper;->getTag()Ljava/lang/String;
 
-    invoke-virtual {p1}, Lcom/gold/youtube/om7753/streams/io/StoredDirectoryHelper;->getUri()Landroid/net/Uri;
+    move-result-object v6
 
-    move-result-object v1
-
-    invoke-virtual {p1}, Lcom/gold/youtube/om7753/streams/io/StoredDirectoryHelper;->getTag()Ljava/lang/String;
-
-    move-result-object v2
-
-    invoke-direct {v0, v1, p3, p4, v2}, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;-><init>(Landroid/net/Uri;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
-
-    :target_ready
+    invoke-direct {v2, v3, v4, v5, v6}, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;-><init>(Landroid/content/Context;Landroid/net/Uri;Landroid/net/Uri;Ljava/lang/String;)V
     :try_end_0
-    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_target
+    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0
 
-    goto :check_state
+    goto :goto_0
 
-    :catch_target
-    return-void
+    :goto_1
+    iget-object v2, v9, Lcom/gold/youtube/om7753/download/DownloadDialog;->downloadManager:Lus/shandian/giga/service/DownloadManager;
 
-    :check_state
-    iget-object v1, p0, Lcom/gold/youtube/om7753/download/DownloadDialog;->downloadManager:Lus/shandian/giga/service/DownloadManager;
+    invoke-virtual {v2, v4}, Lus/shandian/giga/service/DownloadManager;->checkForExistingMission(Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;)Lus/shandian/giga/service/MissionState;
 
-    invoke-virtual {v1, v0}, Lus/shandian/giga/service/DownloadManager;->checkForExistingMission(Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;)Lus/shandian/giga/service/MissionState;
-
-    move-result-object v1
+    move-result-object v3
 
     sget-object v2, Lcom/gold/youtube/om7753/download/DownloadDialog$3;->$SwitchMap$us$shandian$giga$service$MissionState:[I
 
-    invoke-virtual {v1}, Ljava/lang/Enum;->ordinal()I
+    invoke-virtual {v3}, Ljava/lang/Enum;->ordinal()I
 
-    move-result v3
+    move-result v6
 
-    aget v2, v2, v3
+    aget v6, v2, v6
 
-    const/4 v3, 0x2
+    const/4 v10, 0x2
 
-    if-ne v2, v3, :not_pending
+    const/4 v11, 0x1
 
-    const-string v3, "download_already_pending"
+    const-string v12, "overwrite"
 
-    goto :show_info
+    invoke-static {v12}, Lcom/gold/youtube/om7753/util/Utils;->getStringByName(Ljava/lang/String;)I
 
-    :not_pending
-    const/4 v3, 0x3
+    move-result v12
 
-    if-ne v2, v3, :not_running
+    if-eq v6, v11, :cond_b
 
-    const-string v3, "download_already_running"
+    if-eq v6, v10, :cond_a
 
-    goto :show_info
+    const/4 v13, 0x3
 
-    :not_running
-    const/4 v3, 0x1
+    if-eq v6, v13, :cond_9
 
-    if-ne v2, v3, :not_finished
+    const/4 v13, 0x4
 
-    invoke-virtual {v0}, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;->existsAsFile()Z
-
-    move-result v3
-
-    if-nez v3, :finished_missing
-
-    if-eqz p1, :create_target
-
-    goto :make_unique
-
-    :finished_missing
-    iget-object v3, p0, Lcom/gold/youtube/om7753/download/DownloadDialog;->downloadManager:Lus/shandian/giga/service/DownloadManager;
-
-    invoke-virtual {v3, v0}, Lus/shandian/giga/service/DownloadManager;->forgetMission(Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;)V
-
-    goto :create_target
-
-    :not_finished
-    if-eqz p1, :create_target
-
-    invoke-virtual {v0}, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;->existsAsFile()Z
-
-    move-result v3
-
-    if-nez v3, :create_target
-
-    goto :make_unique
-
-    :show_info
-    new-instance v4, Landroid/app/AlertDialog$Builder;
-
-    iget-object v5, p0, Lcom/gold/youtube/om7753/download/DownloadDialog;->context:Landroid/content/Context;
-
-    invoke-static {v5}, Lcom/gold/youtube/om7753/RouterActivity;->getThemeWrapperContext(Landroid/content/Context;)Landroid/content/Context;
-
-    move-result-object v5
-
-    invoke-direct {v4, v5}, Landroid/app/AlertDialog$Builder;-><init>(Landroid/content/Context;)V
-
-    const-string v5, "download_dialog_title"
-
-    invoke-static {v5}, Lcom/gold/youtube/om7753/util/Utils;->getStringByName(Ljava/lang/String;)I
-
-    move-result v5
-
-    invoke-virtual {v4, v5}, Landroid/app/AlertDialog$Builder;->setTitle(I)Landroid/app/AlertDialog$Builder;
-
-    move-result-object v4
-
-    invoke-static {v3}, Lcom/gold/youtube/om7753/util/Utils;->getStringByName(Ljava/lang/String;)I
-
-    move-result v3
-
-    invoke-virtual {v4, v3}, Landroid/app/AlertDialog$Builder;->setMessage(I)Landroid/app/AlertDialog$Builder;
-
-    move-result-object v4
-
-    const/high16 v5, 0x1040000
-
-    const/4 v6, 0x0
-
-    invoke-virtual {v4, v5, v6}, Landroid/app/AlertDialog$Builder;->setNegativeButton(ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
-
-    move-result-object v4
-
-    invoke-virtual {v4}, Landroid/app/AlertDialog$Builder;->create()Landroid/app/AlertDialog;
-
-    move-result-object v4
-
-    invoke-virtual {v4}, Landroid/app/AlertDialog;->show()V
+    if-eq v6, v13, :cond_2
 
     return-void
 
-    :make_unique
-    :try_start_unique
-    invoke-virtual {p1, p3, p4}, Lcom/gold/youtube/om7753/streams/io/StoredDirectoryHelper;->createUniqueFile(Ljava/lang/String;Ljava/lang/String;)Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;
+    :cond_2
+    const-string v6, "error_file_creation"
 
-    move-result-object v0
-    :try_end_unique
-    .catch Ljava/lang/Exception; {:try_start_unique .. :try_end_unique} :catch_unique
+    invoke-static {v6}, Lcom/gold/youtube/om7753/util/Utils;->getStringByName(Ljava/lang/String;)I
 
-    if-eqz v0, :have_target
+    move-result v6
 
-    goto :file_creation_failed
+    if-nez v0, :cond_4
 
-    :catch_unique
-    move-exception v0
+    invoke-virtual {v4}, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;->existsAsFile()Z
 
-    goto :file_creation_failed
+    move-result v0
 
-    :create_target
-    if-eqz p1, :create_save_as
+    if-nez v0, :cond_3
 
-    if-nez p2, :create_folder
+    invoke-virtual {v4}, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;->create()Z
 
-    invoke-virtual {v0}, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;->existsAsFile()Z
+    move-result v0
 
-    move-result v1
+    if-nez v0, :cond_3
 
-    if-eqz v1, :have_target
-
-    invoke-virtual {v0}, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;->create()Z
-
-    move-result v1
-
-    if-eqz v1, :have_target
-
-    goto :file_creation_failed
-
-    :create_folder
-    invoke-virtual {v0}, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;->existsAsFile()Z
-
-    move-result v1
-
-    if-eqz v1, :have_target
-
-    invoke-virtual {p1}, Lcom/gold/youtube/om7753/streams/io/StoredDirectoryHelper;->mkdirs()Z
-
-    move-result v1
-
-    if-eqz v1, :folder_ready
-
-    const-string v1, "error_path_creation"
-
-    invoke-static {v1}, Lcom/gold/youtube/om7753/util/Utils;->getStringByName(Ljava/lang/String;)I
-
-    move-result v1
-
-    invoke-direct {p0, v1}, Lcom/gold/youtube/om7753/download/DownloadDialog;->showFailedDialog(I)V
+    invoke-direct {p0, v6}, Lcom/gold/youtube/om7753/download/DownloadDialog;->showFailedDialog(I)V
 
     return-void
 
-    :folder_ready
-    invoke-virtual {p1, p3, p4}, Lcom/gold/youtube/om7753/streams/io/StoredDirectoryHelper;->createFile(Ljava/lang/String;Ljava/lang/String;)Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;
+    :cond_3
+    invoke-direct {p0, v4}, Lcom/gold/youtube/om7753/download/DownloadDialog;->continueSelectedDownload(Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;)V
+
+    return-void
+
+    :cond_4
+    if-nez v5, :cond_8
+
+    invoke-virtual/range {p1 .. p1}, Lcom/gold/youtube/om7753/streams/io/StoredDirectoryHelper;->mkdirs()Z
+
+    move-result v1
+
+    if-nez v1, :cond_5
+
+    const-string v0, "error_path_creation"
+
+    invoke-static {v0}, Lcom/gold/youtube/om7753/util/Utils;->getStringByName(Ljava/lang/String;)I
+
+    move-result v0
+
+    invoke-direct {p0, v0}, Lcom/gold/youtube/om7753/download/DownloadDialog;->showFailedDialog(I)V
+
+    return-void
+
+    :cond_5
+    invoke-virtual {v0, v7, v8}, Lcom/gold/youtube/om7753/streams/io/StoredDirectoryHelper;->createFile(Ljava/lang/String;Ljava/lang/String;)Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;
 
     move-result-object v0
 
-    if-eqz v0, :have_target
+    if-eqz v0, :cond_7
 
-    goto :file_creation_failed
-
-    :create_save_as
-    invoke-virtual {v0}, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;->existsAsFile()Z
+    invoke-virtual {v0}, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;->canWrite()Z
 
     move-result v1
 
-    if-eqz v1, :have_target
+    if-nez v1, :cond_6
 
-    invoke-virtual {v0}, Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;->create()Z
+    goto :goto_2
 
-    move-result v1
-
-    if-eqz v1, :have_target
-
-    :file_creation_failed
-    const-string v1, "error_file_creation"
-
-    invoke-static {v1}, Lcom/gold/youtube/om7753/util/Utils;->getStringByName(Ljava/lang/String;)I
-
-    move-result v1
-
-    invoke-direct {p0, v1}, Lcom/gold/youtube/om7753/download/DownloadDialog;->showFailedDialog(I)V
-
-    return-void
-
-    :have_target
+    :cond_6
     invoke-direct {p0, v0}, Lcom/gold/youtube/om7753/download/DownloadDialog;->continueSelectedDownload(Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;)V
 
+    return-void
+
+    :cond_7
+    :goto_2
+    invoke-direct {p0, v6}, Lcom/gold/youtube/om7753/download/DownloadDialog;->showFailedDialog(I)V
+
+    return-void
+
+    :cond_8
+
+    :try_start_u1
+    invoke-virtual {v0, v7, v8}, Lcom/gold/youtube/om7753/streams/io/StoredDirectoryHelper;->createUniqueFile(Ljava/lang/String;Ljava/lang/String;)Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;
+
+    move-result-object v13
+
+    :try_end_u1
+    .catch Ljava/lang/Exception; {:try_start_u1 .. :try_end_u1} :catch_u1
+
+    if-nez v13, :ok_u1
+
+    const-string v6, "error_file_creation"
+
+    invoke-static {v6}, Lcom/gold/youtube/om7753/util/Utils;->getStringByName(Ljava/lang/String;)I
+
+    move-result v6
+
+    invoke-direct {p0, v6}, Lcom/gold/youtube/om7753/download/DownloadDialog;->showFailedDialog(I)V
+
+    return-void
+
+    :ok_u1
+    invoke-direct {p0, v13}, Lcom/gold/youtube/om7753/download/DownloadDialog;->continueSelectedDownload(Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;)V
+
+    return-void
+
+    :catch_u1
+    const-string v6, "overwrite_unrelated_warning"
+
+    goto :goto_3
+
+
+
+    :cond_9
+
+    const-string v6, "download_already_running"
+
+    goto :info_dialog
+
+
+    :cond_a
+
+    const-string v6, "download_already_pending"
+
+    goto :info_dialog
+
+
+    :cond_b
+
+    if-nez v0, :catch_u2
+    :try_start_u2
+    invoke-virtual {v0, v7, v8}, Lcom/gold/youtube/om7753/streams/io/StoredDirectoryHelper;->createUniqueFile(Ljava/lang/String;Ljava/lang/String;)Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;
+
+    move-result-object v13
+
+    :try_end_u2
+    .catch Ljava/lang/Exception; {:try_start_u2 .. :try_end_u2} :catch_u2
+
+    if-nez v13, :ok_u2
+
+    const-string v6, "error_file_creation"
+
+    invoke-static {v6}, Lcom/gold/youtube/om7753/util/Utils;->getStringByName(Ljava/lang/String;)I
+
+    move-result v6
+
+    invoke-direct {p0, v6}, Lcom/gold/youtube/om7753/download/DownloadDialog;->showFailedDialog(I)V
+
+    return-void
+
+    :ok_u2
+    invoke-direct {p0, v13}, Lcom/gold/youtube/om7753/download/DownloadDialog;->continueSelectedDownload(Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;)V
+
+    return-void
+
+    :catch_u2
+    const-string v6, "overwrite_finished_warning"
+
+
+
+    :goto_3
+    invoke-static {v6}, Lcom/gold/youtube/om7753/util/Utils;->getStringByName(Ljava/lang/String;)I
+
+    move-result v6
+
+    new-instance v13, Landroid/app/AlertDialog$Builder;
+
+    iget-object v14, v9, Lcom/gold/youtube/om7753/download/DownloadDialog;->context:Landroid/content/Context;
+
+    invoke-static {v14}, Lcom/gold/youtube/om7753/RouterActivity;->getThemeWrapperContext(Landroid/content/Context;)Landroid/content/Context;
+
+    move-result-object v14
+
+    invoke-direct {v13, v14}, Landroid/app/AlertDialog$Builder;-><init>(Landroid/content/Context;)V
+
+    const-string v14, "download_dialog_title"
+
+    invoke-static {v14}, Lcom/gold/youtube/om7753/util/Utils;->getStringByName(Ljava/lang/String;)I
+
+    move-result v14
+
+    invoke-virtual {v13, v14}, Landroid/app/AlertDialog$Builder;->setTitle(I)Landroid/app/AlertDialog$Builder;
+
+    move-result-object v13
+
+    invoke-virtual {v13, v6}, Landroid/app/AlertDialog$Builder;->setMessage(I)Landroid/app/AlertDialog$Builder;
+
+    move-result-object v6
+
+    const/high16 v13, 0x1040000
+
+    invoke-virtual {v6, v13, v1}, Landroid/app/AlertDialog$Builder;->setNegativeButton(ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
+
+    move-result-object v13
+
+    if-nez v0, :cond_d
+
+    invoke-virtual {v3}, Ljava/lang/Enum;->ordinal()I
+
+    move-result v0
+
+    aget v0, v2, v0
+
+    if-eq v0, v11, :cond_c
+
+    if-eq v0, v10, :cond_c
+
+    goto :goto_4
+
+    :cond_c
+    new-instance v0, Lcom/gold/youtube/om7753/download/DownloadDialog$$ExternalSyntheticLambda12;
+
+    invoke-direct {v0, p0, v4}, Lcom/gold/youtube/om7753/download/DownloadDialog$$ExternalSyntheticLambda12;-><init>(Lcom/gold/youtube/om7753/download/DownloadDialog;Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;)V
+
+    invoke-virtual {v13, v12, v0}, Landroid/app/AlertDialog$Builder;->setPositiveButton(ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
+
+    :goto_4
+    invoke-virtual {v13}, Landroid/app/AlertDialog$Builder;->create()Landroid/app/AlertDialog;
+
+    move-result-object v0
+
+    invoke-virtual {v0}, Landroid/app/Dialog;->show()V
+
+    return-void
+
+    :cond_d
+    new-instance v10, Lcom/gold/youtube/om7753/download/DownloadDialog$$ExternalSyntheticLambda13;
+
+    move-object v1, v10
+
+    move-object v2, p0
+
+    move-object/from16 v5, p2
+
+    move-object/from16 v6, p1
+
+    move-object/from16 v7, p3
+
+    move-object/from16 v8, p4
+
+    invoke-direct/range {v1 .. v8}, Lcom/gold/youtube/om7753/download/DownloadDialog$$ExternalSyntheticLambda13;-><init>(Lcom/gold/youtube/om7753/download/DownloadDialog;Lus/shandian/giga/service/MissionState;Lcom/gold/youtube/om7753/streams/io/StoredFileHelper;Landroid/net/Uri;Lcom/gold/youtube/om7753/streams/io/StoredDirectoryHelper;Ljava/lang/String;Ljava/lang/String;)V
+
+    invoke-virtual {v13, v12, v10}, Landroid/app/AlertDialog$Builder;->setPositiveButton(ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
+
+    invoke-virtual {v13}, Landroid/app/AlertDialog$Builder;->create()Landroid/app/AlertDialog;
+
+    move-result-object v0
+
+    invoke-virtual {v0}, Landroid/app/Dialog;->show()V
+
+    return-void
+
+    :info_dialog
+    invoke-static {v6}, Lcom/gold/youtube/om7753/util/Utils;->getStringByName(Ljava/lang/String;)I
+
+    move-result v6
+
+    new-instance v13, Landroid/app/AlertDialog$Builder;
+
+    iget-object v14, v9, Lcom/gold/youtube/om7753/download/DownloadDialog;->context:Landroid/content/Context;
+
+    invoke-static {v14}, Lcom/gold/youtube/om7753/RouterActivity;->getThemeWrapperContext(Landroid/content/Context;)Landroid/content/Context;
+
+    move-result-object v14
+
+    invoke-direct {v13, v14}, Landroid/app/AlertDialog$Builder;-><init>(Landroid/content/Context;)V
+
+    const-string v14, "download_dialog_title"
+
+    invoke-static {v14}, Lcom/gold/youtube/om7753/util/Utils;->getStringByName(Ljava/lang/String;)I
+
+    move-result v14
+
+    invoke-virtual {v13, v14}, Landroid/app/AlertDialog$Builder;->setTitle(I)Landroid/app/AlertDialog$Builder;
+
+    move-result-object v13
+
+    invoke-virtual {v13, v6}, Landroid/app/AlertDialog$Builder;->setMessage(I)Landroid/app/AlertDialog$Builder;
+
+    move-result-object v13
+
+    const/high16 v6, 0x1040000
+
+    invoke-virtual {v13, v6, v1}, Landroid/app/AlertDialog$Builder;->setNegativeButton(ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
+
+    move-result-object v13
+
+    invoke-virtual {v13}, Landroid/app/AlertDialog$Builder;->create()Landroid/app/AlertDialog;
+
+    move-result-object v0
+
+    invoke-virtual {v0}, Landroid/app/Dialog;->show()V
+
+    return-void
+
+    :goto_5
     return-void
 .end method
 """
@@ -1017,6 +1209,12 @@ def main() -> int:
         "Shorts: replace the back ImageView with the brand-loop view",
     ):
         return 1
+    if not replace_line_containing(
+        root, BACK_BUTTON_LAYOUT, 'android:id="@id/reel_back_button"',
+        "    " + NEW_BACK_ELEMENT,
+        "Shorts: replace the second (plain white arrow) back ImageView too",
+    ):
+        return 1
     if not replace_once(
         root, SHORTS_LAYOUT, OLD_TITLE_ANCHOR, NEW_TITLE_ANCHOR,
         "Shorts: pin the contextual title at its old 65dp position",
@@ -1076,8 +1274,8 @@ def main() -> int:
         root, ABOUT_PREFS,
         'android:key="youtube_downloads_package_name" android:summary="21.20.402"',
         'android:key="youtube_downloads_package_name" '
-        'android:summary="21.20.402 (Zversion 3)"',
-        "About: add a visible Zversion 3 build marker",
+        'android:summary="21.20.402 (Zversion 4)"',
+        "About: add a visible Zversion 4 build marker",
     ):
         return 1
 
@@ -1090,14 +1288,12 @@ def main() -> int:
     if not write_new(root, pathlib.Path("res/drawable/tyt_reel_back_animation.xml"),
                      ANIMATION_XML, "Shorts: write the 8s animation-list"):
         return 1
-    if not write_new(root, pathlib.Path("res/drawable/tyt_reel_back_foreground.xml"),
-                     FOREGROUND_XML, "Shorts: write the 48dp ripple foreground"):
-        return 1
     if not copy_brand_frames(root):
         return 1
 
     # ---------------------------------------------------- post-conditions ---
     shorts = (root / SHORTS_LAYOUT).read_text(encoding="utf-8")
+    back_button = (root / BACK_BUTTON_LAYOUT).read_text(encoding="utf-8")
     legacy = (root / CONTROLS_LAYOUT).read_text(encoding="utf-8")
     exploder = (root / EXPLODER_CONTROLS_LAYOUT).read_text(encoding="utf-8")
     dialog = (root / DOWNLOAD_DIALOG).read_text(encoding="utf-8")
@@ -1113,16 +1309,23 @@ def main() -> int:
     dialog_end = dialog.index(".end method", dialog_start)
     check_method = dialog[dialog_start:dialog_end]
 
+    def watermark_el(text: str) -> str:
+        i = text.index("com.gold.extension.youtube.brand.ZVersionWatermark")
+        return text[i:text.index("/>", i)]
+
     def has_watermark(text: str, ns: str) -> bool:
+        el = watermark_el(text)
         return (
-            'com.gold.extension.youtube.brand.ZVersionWatermark' in text
-            and 'android:tag="tyt_watermark"' in text
-            and 'android:textSize="18.0sp"' in text
-            and 'android:alpha="0.8"' in text
-            and 'android:textColor="@android:color/white"' in text
-            and f'{ns}:youTubeSansFont="bold"' in text
-            and f'{ns}:layout_constraintStart_toEndOf="@id/timestamps_container"' in text
-            and f'{ns}:layout_constraintEnd_toStartOf="@id/bottom_end_container"' in text
+            'android:tag="tyt_watermark"' in el
+            and 'android:textSize="14.0sp"' in el
+            and 'android:layout_height="32.0dip"' in el
+            and 'android:alpha="0.8"' in el
+            and 'android:textColor="@android:color/white"' in el
+            and f'{ns}:youTubeSansFont="bold"' in el
+            and f'{ns}:layout_constraintBottom_toBottomOf="parent"' in el
+            and "quick_actions_container" not in el
+            and f'{ns}:layout_constraintStart_toEndOf="@id/timestamps_container"' in el
+            and f'{ns}:layout_constraintEnd_toStartOf="@id/bottom_end_container"' in el
         )
 
     checks = [
@@ -1133,6 +1336,15 @@ def main() -> int:
             and 'android:background="@drawable/tyt_reel_back_animation"' in shorts
             and 'android:contentDescription="@string/reel_accessibility_player_back_button"' in shorts,
             "Shorts back control is a 128x48 brand-loop target",
+        ),
+        (
+            'com.gold.extension.youtube.brand.ZVersionReelBackView' in back_button
+            and 'android:background="@drawable/tyt_reel_back_animation"' in back_button
+            and 'quantum_ic_arrow_back_white_24' not in back_button
+            and 'android:foreground=' not in back_button
+            and 'android:foreground=' not in shorts
+            and 'quantum_ic_arrow_back_white_24' not in shorts,
+            "Shorts: the second (same-id) back button carries the loop too",
         ),
         (
             'android:layout_marginStart="65.0dip"' in shorts
@@ -1148,16 +1360,21 @@ def main() -> int:
             "Fullscreen watermark is in the exploder bottom control row",
         ),
         (
-            'createUniqueFile' in check_method
+            check_method.count("createUniqueFile") == 2
+            and ":try_start_u1" in check_method
+            and ":try_start_u2" in check_method
+            and check_method.count("goto :info_dialog") == 2
+            and ":info_dialog" in check_method
             and 'download_already_pending' in check_method
             and 'download_already_running' in check_method
-            and 'forgetMission' in check_method
+            and 'overwrite_finished_warning' in check_method
             and 'continueSelectedDownload' in check_method
+            and 'checkForExistingMission' in check_method
             and 'generate_unique_name' not in check_method
-            and 'overwrite' not in check_method
+            and 'forgetMission' not in check_method
             and 'ZVersionDownloadUniqueAction' not in check_method
             and 'startUniqueDownload' not in check_method,
-            "Downloads: finished duplicates auto-rename; active missions are guarded",
+            "Downloads: v1.0.1 state machine restored + duplicates auto-rename",
         ),
         (
             'ZVersionDownloadUniqueAction' not in dialog
@@ -1184,15 +1401,23 @@ def main() -> int:
             "Shorts: the brand loop starts on the hidden-to-visible transition",
         ),
         (
-            'android:summary="21.20.402 (Zversion 3)"' in about_prefs,
-            "About: the Zversion 3 marker is visible",
+            'android:summary="21.20.402 (Zversion 4)"' in about_prefs,
+            "About: the Zversion 4 marker is visible",
         ),
         (
             'if-nez v0, :done' in watermark_view
             and 'if-eqz v0, :skip' in watermark_view
             and 'invoke-direct {p0}, Lcom/gold/extension/youtube/brand/'
-                'ZVersionWatermark;->updateVisibility()V' in watermark_view,
-            "Fullscreen: the watermark attaches and updates its layout listener",
+                'ZVersionWatermark;->updateVisibility()V' in watermark_view
+            and '.method protected onVisibilityChanged(Landroid/view/View;I)V'
+                in watermark_view
+            and '    :ancestor_hidden' in watermark_view,
+            "Fullscreen: the watermark hides with the controls, not a layout pass later",
+        ),
+        (
+            '.method public onWindowFocusChanged(Z)V' in brand_view
+            and 'restartBrandAnimation()V' in brand_view,
+            "Shorts: the loop is restarted once the view really has focus",
         ),
         (
             (root / BRAND_DIR / "ZVersionReelBackView.smali").is_file()
@@ -1202,7 +1427,6 @@ def main() -> int:
         ),
         (
             (root / "res/drawable/tyt_reel_back_animation.xml").is_file()
-            and (root / "res/drawable/tyt_reel_back_foreground.xml").is_file()
             and len(list((root / "res/drawable-xxhdpi").glob("tyt_brand_*.png"))) == 8,
             "Shorts animation resources and 8 brand frames are installed",
         ),
