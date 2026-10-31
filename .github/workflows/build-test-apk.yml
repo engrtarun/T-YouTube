@@ -1,13 +1,14 @@
 name: Build Zversion test APK
 
 # Heavy work (apktool decode/rebuild, signing) runs on GitHub's runners.
-# Trigger: push a tag named test-zversion-* (creates a prerelease with the
-# APK), or run this workflow manually from the Actions tab.
+# Trigger: push a tag named test-zversion-* or test-v* (creates a prerelease
+# with the APK), or run this workflow manually from the Actions tab.
 on:
   workflow_dispatch:
   push:
     tags:
       - "test-zversion-*"
+      - "test-v*"
 
 permissions:
   contents: write
@@ -97,7 +98,7 @@ jobs:
           echo "dex files: $DEX_COUNT"
           test "$DEX_COUNT" -eq 10
 
-          # Prove the Zversion 4 features made it into the APK.
+          # Prove the v1.1.0 features made it into the APK.
           grep -q "ZVersionReelBackView" work/res/layout/reel_player_static_header.xml
           # Root-cause fix: the SECOND same-id back button must carry the loop
           # too, and no plain arrow may remain anywhere in Shorts.
@@ -135,7 +136,7 @@ jobs:
           grep -q 'onWindowFocusChanged(Z)V' work/smali_classes10/com/gold/extension/youtube/brand/ZVersionReelBackView.smali
           grep -q 'if-nez v0, :done' work/smali_classes10/com/gold/extension/youtube/brand/ZVersionWatermark.smali
           grep -q 'onVisibilityChanged(Landroid/view/View;I)V' work/smali_classes10/com/gold/extension/youtube/brand/ZVersionWatermark.smali
-          grep -q "21.20.402 (Zversion 4)" work/res/xml/youtube_prefs.xml
+          grep -q "21.20.402 (v1.1.0)" work/res/xml/youtube_prefs.xml
           unzip -p dist/T-YouTube-Zversion.apk classes10.dex | grep -a -q "ZVersionReelBackView"
 
           SIZE="$(stat -c%s dist/T-YouTube-Zversion.apk)"
@@ -159,7 +160,7 @@ jobs:
           retention-days: 14
 
       - name: Publish prerelease (tag builds only)
-        if: startsWith(github.ref, 'refs/tags/test-zversion-')
+        if: startsWith(github.ref, 'refs/tags/test-zversion-') || startsWith(github.ref, 'refs/tags/test-v')
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -169,8 +170,8 @@ jobs:
               dist/T-YouTube-Zversion-TEST-README.txt --clobber
           else
             gh release create "$GITHUB_REF_NAME" \
-              --title "T YouTube Zversion $GITHUB_REF_NAME" \
-              --notes "Zversion 4 test build from stable v1.0.1 at commit $GITHUB_SHA. Shorts: fixes the real cause of the stuck plain arrow - a SECOND view with the same reel_back_button id (reel_player_back_button.xml) still shipped quantum_ic_arrow_back_white_24, so findViewById() could hand the player the arrow instead of the brand loop; both layouts now carry the 8s T YouTube loop, and onWindowFocusChanged restarts the AnimationDrawable once attached so it can no longer freeze on frame 0. Fullscreen watermark: now smaller (14sp, 32dp) and lower - anchored to the bottom of the control row below the scrubber line - and hidden in sync with the controls via onVisibilityChanged (fires when the view OR an ancestor changes visibility). Downloads: stable v1.0.1's proven checkSelectedDownload is restored unchanged (Zversion 3's rewrite had inverted conditionals and broke even the first download), plus two surgical changes: an existing file with no mission and a finished duplicate both fall through to createUniqueFile() and start downloading immediately - no taps, no overwrite - while pending/running missions only show a cancel-only dialog and are never overwritten; the filename still starts with the real video title. About screen shows '21.20.402 (Zversion 4)' so the installed build is easy to identify. Package, version code and AOSP testkey signature are unchanged, so it installs over v1.0.1 with data intact. Not a stable release - stable v1.0.1 remains the recommended download. See T-YouTube-Zversion-TEST-README.txt for the checklist." \
+              --title "T YouTube test build $GITHUB_REF_NAME" \
+              --notes "Release candidate for stable v1.1.0, built from stable v1.0.1 at commit $GITHUB_SHA. Shorts: fixes the real cause of the stuck plain arrow - a SECOND view with the same reel_back_button id (reel_player_back_button.xml) still shipped quantum_ic_arrow_back_white_24, so findViewById() could hand the player the arrow instead of the brand loop; both layouts now carry the 8s T YouTube loop, and onWindowFocusChanged restarts the AnimationDrawable once attached so it can no longer freeze on frame 0. Fullscreen watermark: now smaller (14sp, 32dp) and lower - anchored to the bottom of the control row below the scrubber line - and hidden in sync with the controls via onVisibilityChanged (fires when the view OR an ancestor changes visibility). Downloads: stable v1.0.1's proven checkSelectedDownload is restored unchanged (Zversion 3's rewrite had inverted conditionals and broke even the first download), plus two surgical changes: an existing file with no mission and a finished duplicate both fall through to createUniqueFile() and start downloading immediately - no taps, no overwrite - while pending/running missions only show a cancel-only dialog and are never overwritten; the filename still starts with the real video title. About screen shows '21.20.402 (v1.1.0)' so the installed build is easy to identify. Package, version code and AOSP testkey signature are unchanged, so it installs over v1.0.1 with data intact. See T-YouTube-Zversion-TEST-README.txt for the checklist." \
               --prerelease \
               dist/T-YouTube-Zversion.apk \
               dist/T-YouTube-Zversion-TEST-README.txt

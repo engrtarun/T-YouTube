@@ -1,5 +1,5 @@
-T YouTube Zversion 4 TEST build
-===============================
+T YouTube v1.1.0 release candidate (Zversion 4 test build)
+=========================================================
 
 Package: com.gold.android.youtube
 Base: T YouTube v1.0.1 (YouTube 21.26.364)
@@ -8,8 +8,8 @@ Min Android: 10 (API 29)
 APK size: 222584140 bytes
 SHA-256: 942a404e86b22f061bdbff25a6ab61dace88238d46dda57e6bc9b365cae6103d
 
-WHAT IS NEW IN ZVERSION 4
--------------------------
+WHAT IS NEW IN v1.1.0 (Zversion 4)
+----------------------------------
 This build fixes the three bugs that were still broken on the phone after
 Zversion 3, at their actual root cause. It keeps every v1.0.1
 playback/download/theme fix.
@@ -48,7 +48,7 @@ playback/download/theme fix.
    not clickable, no layout shift, absent inline/PiP/Shorts.
 
 4) Build marker
-   The About screen now shows "Play Store Version 21.20.402 (Zversion 4)"
+   The About screen now shows "Play Store Version 21.20.402 (v1.1.0)"
    so you can confirm the new build is installed. The actual app version
    remains 21.26.364.
 
@@ -71,7 +71,7 @@ installed", stop and report it - do not uninstall.
 
 TEST CHECKLIST
 --------------
-[ ] About screen shows "Play Store Version 21.20.402 (Zversion 4)".
+[ ] About screen shows "Play Store Version 21.20.402 (v1.1.0)".
 [ ] Install over the old app without uninstalling; logins, settings and
     downloads are still there.
 [ ] Shorts loop: open Shorts and watch the top-left control for 10s. It

@@ -1274,8 +1274,8 @@ def main() -> int:
         root, ABOUT_PREFS,
         'android:key="youtube_downloads_package_name" android:summary="21.20.402"',
         'android:key="youtube_downloads_package_name" '
-        'android:summary="21.20.402 (Zversion 4)"',
-        "About: add a visible Zversion 4 build marker",
+        'android:summary="21.20.402 (v1.1.0)"',
+        "About: add a visible v1.1.0 build marker",
     ):
         return 1
 
@@ -1401,8 +1401,8 @@ def main() -> int:
             "Shorts: the brand loop starts on the hidden-to-visible transition",
         ),
         (
-            'android:summary="21.20.402 (Zversion 4)"' in about_prefs,
-            "About: the Zversion 4 marker is visible",
+            'android:summary="21.20.402 (v1.1.0)"' in about_prefs,
+            "About: the v1.1.0 marker is visible",
         ),
         (
             'if-nez v0, :done' in watermark_view
