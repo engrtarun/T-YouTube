@@ -262,7 +262,7 @@
 <div class="hero">
   <div class="wrap">
     <span class="badge"><i></i> ~5 minute setup</span>
-    <span class="badge" style="color:#b6f0c9;border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.08)">✅ v1.0.1 stable update</span>
+    <span class="badge" style="color:#b6f0c9;border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.08)">✅ v1.1.0 stable update</span>
     <h1>Get <span>T YouTube</span><br>running on your phone</h1>
     <p class="sub">
       Most people get stuck on one thing only: this app needs <b>microG-RE</b> instead of
@@ -358,7 +358,7 @@
         <div class="num">04</div>
         <div>
           <h3>Install T YouTube</h3>
-          <p>Tap the second button, open <span class="k">T-YouTube-v1.0.1.apk</span>, tap
+          <p>Tap the second button, open <span class="k">T-YouTube-v1.1.0.apk</span>, tap
              <b>Install</b>. Allow the unknown-app prompt if it appears.</p>
           <div class="note ok">
             Already have YouTube Pro v59 on the phone? It installs straight on top —
@@ -433,118 +433,82 @@
       </div>
       <div class="dcard">
         <span class="n">The app · after microG-RE</span>
-        <h4>T YouTube v1.0.1</h4>
-        <p>The official stable update. Installs straight over v1.0.0 or any earlier test
+        <h4>T YouTube v1.1.0</h4>
+        <p>The official stable update. Installs straight over v1.0.1 or any earlier test
            build without touching your logins, settings or downloads.</p>
         <span class="sz">212 MB · Android 10+ · universal</span>
-        <a class="btn btn-p" href="https://github.com/engrtarun/T-YouTube/releases/download/v1.0.1/T-YouTube-v1.0.1.apk">Download T YouTube</a>
+        <a class="btn btn-p" href="https://github.com/engrtarun/T-YouTube/releases/download/v1.1.0/T-YouTube-v1.1.0.apk">Download T YouTube</a>
       </div>
     </div>
     <p class="lede" style="margin-top:22px;font-size:13.6px">
-      SHA-256 for T YouTube v1.0.1 (stable) ·
-      <span class="k">71B0F782702129A0DDCC80EE0A7150F52FE0099671AB62692766B1C605EBE7FE</span>
+      SHA-256 for T YouTube v1.1.0 (stable) ·
+      <span class="k">337f55a17c8fdd1ae458a4ab9e76ca3bd1335c3865ca0bb5de055fd078496d5c</span>
     </p>
 
     <div class="stableupdate" id="update">
-      <span class="su-tag">✅ Official stable update · v1.0.1</span>
-      <h3>The download crash is fixed — this is now the stable build</h3>
+      <span class="su-tag">✅ Official stable update · v1.1.0</span>
+      <h3>Shorts branding, the watermark and the download button are now stable</h3>
       <p>
-        Everything tested in the preview is now official. <b>v1.0.1</b> fixes the reported
-        bugs — tapping Download no longer closes the app, downloads complete, long videos no
-        longer freeze after seeking, and Shorts no longer stall — and keeps the new
-        <b>dark theme</b> and logo-coloured seekbar (<b>#00FCFF</b> primary,
-        <b>#F3024E</b> accent). It replaces v1.0.0 as the recommended download.
+        Everything that was first shipped and verified as the <b>Zversion 4</b> test build is
+        now the recommended download. <b>v1.1.0</b> fixes the three things that were still
+        broken on the phone &mdash; the Shorts arrow never became the brand loop, tapping the
+        toolbar download button did nothing, and the watermark sat too high &mdash; each at its
+        actual root cause, and it keeps <b>every</b> v1.0.1 playback/download/theme fix.
       </p>
       <ul>
-        <li><b>Download crash fixed.</b> The previous build cut every title at 80 characters;
-            short titles hit an invalid cut and the dialog crashed the app. The cap now applies
-            only when a title is actually longer than 80 characters.</li>
-        <li><b>Downloads complete.</b> Filenames are cleaned before saving, and the downloader
-            gets extra unthrottled stream URLs from the iOS source.</li>
-        <li><b>Seeking works.</b> visionOS is the default playback client, so 20+ minute jumps
-            resume at the selected quality instead of freezing or dropping to 144p.</li>
-        <li><b>Shorts start immediately.</b> Same stream-resolver fix, no 1–2 minute stall.</li>
-        <li><b>Installs straight over v1.0.0 or any test build</b> — same signature, same
-            version number (21.26.364). Your logins, settings and downloads stay.</li>
-        <li><b>Saved settings still win.</b> If the app is already light or the seekbar was
-            customised, change it in Settings → General → Appearance and
-            Settings → Player → Seekbar.</li>
-        <li><b>To go back:</b> install v1.0.0 again over it. No data is lost.</li>
+        <li><b>Shorts brand loop, on every Shorts page.</b> Shorts had <b>two</b> views with the
+            same <code>reel_back_button</code> id: the non-video and survey pages
+            <code>&lt;include&gt;</code> a second layout that still shipped the plain white arrow,
+            so <code>findViewById()</code> could hand the player that arrow instead of the loop.
+            Both now carry the 8-second loop, and it restarts once the view really has focus so
+            it can no longer freeze on the arrow.</li>
+        <li><b>The download confirm button works again.</b> v1.0.1&rsquo;s proven
+            <code>checkSelectedDownload</code> is restored <b>byte for byte</b> (verified with a
+            diff &mdash; only 4 hunks) and only gains the duplicate handling below.</li>
+        <li><b>Automatic duplicate naming &mdash; no extra taps.</b> Downloading the same title
+            again saves <b>Title (1).mp4</b> and starts immediately. No prompt, no overwrite.
+            Pending and Running downloads only show a Cancel-only dialog and are never
+            overwritten. The filename still opens with the real video title.</li>
+        <li><b>Watermark smaller and lower.</b> A subtle 14 sp <b>T YouTube</b> wordmark (32 dp)
+            at the <b>bottom of the control row, below the scrubber line</b>, hidden in sync with
+            the controls. Fullscreen portrait and landscape only &mdash; absent inline, in PiP and
+            in Shorts.</li>
+        <li><b>Installs straight over v1.0.1</b> &mdash; same signature, same version number
+            (21.26.364). The About screen shows <b>21.20.402 (v1.1.0)</b> so you can confirm it.</li>
+        <li><b>Everything in v1.0.1 is kept:</b> the short-title download crash stays fixed,
+            downloads complete, long-video seeking resumes at the chosen quality, Shorts do not
+            stall, and dark theme stays the default.</li>
+        <li><b>To go back:</b> install v1.0.1 again over it. No data is lost.</li>
       </ul>
       <div class="su-actions">
-        <a class="btn btn-p" href="https://github.com/engrtarun/T-YouTube/releases/download/v1.0.1/T-YouTube-v1.0.1.apk">Download stable v1.0.1 (212 MB)</a>
-        <a class="su-link" href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.0.1">Release notes &amp; checksum ↗</a>
+        <a class="btn btn-p" href="https://github.com/engrtarun/T-YouTube/releases/download/v1.1.0/T-YouTube-v1.1.0.apk">Download stable v1.1.0 (212 MB)</a>
+        <a class="su-link" href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.1.0">Release notes &amp; checksum ↗</a>
       </div>
       <p class="su-sum">
-        Verified APK · promoted from test-fix-3 without rebuilding ·
-        SHA-256 <span class="k">71B0F782702129A0DDCC80EE0A7150F52FE0099671AB62692766B1C605EBE7FE</span>
+        Verified APK · promoted from test-v1.1.0 without rebuilding ·
+        SHA-256 <span class="k">337f55a17c8fdd1ae458a4ab9e76ca3bd1335c3865ca0bb5de055fd078496d5c</span>
       </p>
     </div>
 
     <div class="testbuild" id="preview">
-      <span class="tb-tag">Preview &mdash; test-zversion-4 (optional)</span>
-      <h3>Shorts branding, watermark and downloads fixed at the root cause</h3>
+      <span class="tb-tag">Previous stable &mdash; v1.0.1</span>
+      <h3>The previous recommended download</h3>
       <p>
-        A separate <b>Zversion 4</b> test build decoded from stable v1.0.1. It is
-        <b>optional</b> &mdash; stable v1.0.1 above is still the recommended download.
-        Zversion 3 built and installed, but three things were still broken on the
-        phone. Zversion 4 fixes the actual root cause of each one.
+        <b>v1.0.1</b> is still published and still installs in place. Install it over v1.1.0 if
+        you ever want to go back &mdash; same signature, no data loss. It fixed the download crash
+        on short titles, made downloads complete, restored long-video seeking, stopped Shorts
+        from stalling, and set the dark theme as the default.
       </p>
-      <ul>
-        <li><b>Shorts brand loop.</b> Shorts had <b>two</b> views with the same
-            <code>reel_back_button</code> id: the patched header, and
-            <code>reel_player_back_button.xml</code> (included by the non-video and
-            survey pages) which still shipped the plain white arrow, so
-            <code>findViewById()</code> could hand the player that arrow instead of the
-            loop. Both now carry the 8-second loop
-            (arrow &rarr; crossfade &rarr; <b>T YouTube</b> &rarr; crossfade &rarr; arrow),
-            the whole 128x48 dp strip is one Back target, the title does not move, and
-            <code>onWindowFocusChanged</code> restarts the animation once the view really
-            has focus so it can no longer freeze on the arrow.</li>
-        <li><b>Download confirm button.</b> Zversion 3 had rewritten
-            <code>checkSelectedDownload</code> (305 &rarr; 266 lines) with a silent
-            <code>return-void</code> in its catch block, so tapping the toolbar download
-            icon did nothing. Zversion 4 restores the original v1.0.1 method byte for
-            byte (verified with a diff &mdash; only 4 hunks) and layers the duplicate
-            handling on top.</li>
-        <li><b>Fullscreen watermark.</b> A subtle <b>14 sp</b> bold <b>T YouTube</b>
-            wordmark (32 dp) anchored to the <b>bottom of the control row, below the
-            scrubber line</b>. <code>onVisibilityChanged</code> hides it the moment the
-            controls overlay hides. It is in <b>both</b> bottom-control layouts, shows
-            only in fullscreen while controls are visible, and is absent inline, in PiP
-            and in Shorts.</li>
-        <li><b>Download filename.</b> The dialog starts with the real video title.
-            v1.0.1&rsquo;s <code>FilenameUtils</code> fix is kept (its inverted
-            <code>isEmpty()</code> check used to replace every title with
-            &ldquo;download&rdquo;).</li>
-        <li><b>Automatic duplicate naming.</b> Downloading the same title again just
-            works: the app runs its own <code>createUniqueFile()</code> and starts
-            downloading <b>Title (1).mp4</b> immediately &mdash; no prompt, no extra tap,
-            no overwrite.</li>
-        <li><b>Active downloads.</b> Pending and Running downloads show an information
-            dialog with only a Cancel button and are never overwritten.</li>
-        <li><b>Build marker.</b> The About screen shows
-            <b>21.20.402 (Zversion 4)</b> so you can confirm the installed build.
-            The app version stays 21.26.364.</li>
-        <li><b>YouTube link guide (optional).</b> Want youtube.com links to open in T YouTube
-            instead of the official app? Follow the <a href="#links">short guide</a> &mdash; or
-            skip it; nothing else in the app depends on it.</li>
-      </ul>
       <div class="tb-actions">
-        <a class="btn btn-amber" href="https://github.com/engrtarun/T-YouTube/releases/download/test-zversion-4/T-YouTube-Zversion.apk">Download Zversion 4 test build</a>
-        <a class="tb-link" href="https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-4">Release notes &amp; checksum &rarr;</a>
-        <a class="tb-link" href="#links">Link setup guide &rarr;</a>
+        <a class="btn btn-amber" href="https://github.com/engrtarun/T-YouTube/releases/download/v1.0.1/T-YouTube-v1.0.1.apk">Download stable v1.0.1 (212 MB)</a>
+        <a class="tb-link" href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.0.1">Release notes &amp; checksum &rarr;</a>
       </div>
       <p class="tb-sum">
-        <b>Size:</b> 222,584,140 bytes<br>
-        <b>SHA-256:</b> <code>942a404e86b22f061bdbff25a6ab61dace88238d46dda57e6bc9b365cae6103d</code>
-      </p>
-      <p class="tb-sum">
-        Same signature and version as v1.0.1, so it installs in place &mdash; your logins,
-        settings and downloads stay. You can install it directly over v1.0.1 or any
-        Zversion build. Go back by installing v1.0.1 over it.
+        <b>Size:</b> 222,566,961 bytes<br>
+        <b>SHA-256:</b> <code>71B0F782702129A0DDCC80EE0A7150F52FE0099671AB62692766B1C605EBE7FE</code>
       </p>
     </div>
+
   </div>
 </section>
 

@@ -24,7 +24,7 @@ step-by-step, and check what each screen should look like.
     <img src="https://img.shields.io/badge/1%C2%B7%20Download%20microG-RE%20(107%20MB)-3DDC84?style=for-the-badge&logo=google-play&logoColor=white" alt="Download microG-RE">
   </a>
 
-  <a href="https://github.com/engrtarun/T-YouTube/releases/download/v1.0.1/T-YouTube-v1.0.1.apk">
+  <a href="https://github.com/engrtarun/T-YouTube/releases/download/v1.1.0/T-YouTube-v1.1.0.apk">
     <img src="https://img.shields.io/badge/2%C2%B7%20Download%20T%20YouTube%20(212%20MB)-FF1744?style=for-the-badge&logo=android&logoColor=white" alt="Download T YouTube APK">
   </a>
 
@@ -45,8 +45,8 @@ step-by-step, and check what each screen should look like.
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](#-contributing)
 
   <sub>
-    <a href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.0.1">Release notes &amp; checksums</a> ·
-    <a href="https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-4">Preview build test-zversion-4</a>
+    <a href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.1.0">Release notes &amp; checksums</a> ·
+    <a href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.0.1">Previous stable v1.0.1</a>
   </sub>
 </div>
 
@@ -117,56 +117,46 @@ watch history.
 
 ---
 
-## v1.0.1 — stable update
+## v1.1.0 — stable update
 
-**The Download crash is fixed, and the playback/download fixes tested in
-`test-fix-3` are now the stable build.** No new menus or buttons.
+**Shorts branding, the fullscreen watermark, and the download confirm button
+are now the recommended stable build.** Everything below was first shipped and
+verified as the `test-zversion-4` / `test-v1.1.0` builds, then promoted
+**without rebuilding**, so the checksum published here matches the build that
+was actually tested.
 
 | Fix | What changed |
 |:--|:--|
-| **Download crash** | The 80-character filename cap had an inverted comparison, so a normal short title still hit `substring(0, 80)` and threw `StringIndexOutOfBoundsException` as the dialog opened. The cap now applies only to titles longer than 80 characters. |
-| **Downloads complete** | Filenames are cleaned with the app's charset before saving, and the built-in downloader's iOS stream source is enabled, adding unthrottled stream URLs to the quality picker. |
-| **Seeking / quality** | Default playback client is now **visionOS** instead of Android Reel, so 20+ minute seeks resume at the selected quality instead of freezing and dropping to 144p/360p. |
-| **Shorts** | Same stream-resolver change; Shorts no longer stall for 1–2 minutes. |
-| **Defaults** | Dark theme, seekbar `#00FCFF` primary + `#F3024E` accent, and the test-fix-1 PiP behaviour. |
-
-`v1.0.1` is the exact APK that passed testing as `test-fix-3`, promoted without
-rebuilding — so the checksum published here matches the build testers installed.
-Same package, version name, version code and AOSP `testkey` signature: it
-installs straight over v1.0.0 or any earlier test build with data intact.
-
----
-
-## test-zversion-4 - the three Zversion 3 bugs fixed at their root cause
-
-An **optional Zversion 4 test build** decoded from the published **v1.0.1**
-APK. Stable **v1.0.1 remains the recommended download**. Zversion 3 built and
-installed, but three things were still broken on the phone: the Shorts arrow
-never became the brand loop, the download confirm button did nothing, and the
-watermark sat too high. Zversion 4 fixes the actual root causes:
-
-| Change | What to expect |
-|:--|:--|
-| **Shorts brand loop** | The top-left Shorts back control cycles every 8 seconds: arrow -> 225 ms crossfade -> **T YouTube** -> 225 ms crossfade -> arrow. The whole 128x48 dp strip is one Back target and the title does not move. Root cause: a **second** view with the same `reel_back_button` id (`reel_player_back_button.xml`, included by the non-video/survey pages) still shipped the plain `quantum_ic_arrow_back_white_24` arrow, so `findViewById()` could hand the player that arrow instead of the loop. Both layouts now carry the loop, and `onWindowFocusChanged` restarts the `AnimationDrawable` once the view is really attached so it can no longer freeze on the opening arrow. |
-| **Fullscreen watermark** | A subtle **14 sp** bold **T YouTube** wordmark anchored to the **bottom of the control row, below the scrubber line** (32 dp tall, so nothing shifts). `onVisibilityChanged` hides it the instant the controls overlay hides - Android documents that callback as firing when the view *or an ancestor* changes visibility. It is in **both** bottom-control layouts, shows only in fullscreen while controls are visible, and is absent inline, in PiP and in Shorts. |
-| **Download confirm button** | The toolbar download button actually starts the download again. Zversion 3 had rewritten `checkSelectedDownload` (305 -> 266 lines) with a silent `return-void` in its catch block, so a tap did nothing. Zversion 4 restores the original v1.0.1 method **byte for byte** (verified with `git diff` - only 4 hunks) and adds the duplicate handling on top. |
-| **Download filename** | The dialog starts with the real video title. v1.0.1's `FilenameUtils` had an inverted `isEmpty()` check that replaced every non-empty title with `"download"`; that fix is kept. |
+| **Shorts brand loop** | The top-left Shorts back control cycles every 8 seconds: arrow -> 225 ms crossfade -> **T YouTube** -> 225 ms crossfade -> arrow. The whole 128x48 dp strip is one Back target and the title does not move. Root cause of the old stuck arrow: Shorts had **two** views with the same `reel_back_button` id - `reel_player_back_button.xml` (included by the non-video/survey pages) still shipped the plain `quantum_ic_arrow_back_white_24` arrow, so `findViewById()` could hand the player that arrow instead of the loop. Both layouts now carry the loop, and `onWindowFocusChanged` restarts the `AnimationDrawable` once the view really has focus so it can no longer freeze on the opening arrow. |
+| **Download confirm button** | Tapping the toolbar download icon actually starts the download. v1.0.1's proven `checkSelectedDownload` is restored **byte for byte** (verified with `git diff` - only 4 hunks) and gains the duplicate handling below. |
 | **Duplicate names** | Downloading the same title again just works: the app saves `Title (1).mp4` immediately with its own `createUniqueFile()` and starts downloading - no prompt, no extra tap, no overwrite. |
 | **Active downloads** | Pending and Running downloads show an information dialog with only a Cancel button and are never overwritten. |
-| **Build marker** | The About screen shows `Play Store Version 21.20.402 (Zversion 4)` so you can confirm the installed build. The app version stays `21.26.364`. |
-| **YouTube links (optional)** | See [Open YouTube links in T YouTube](#open-youtube-links-in-t-youtube). You can skip it; nothing else depends on it. |
+| **Download filename** | The dialog starts with the real video title. v1.0.1's `FilenameUtils` fix is kept (its inverted `isEmpty()` check used to replace every title with `"download"`). |
+| **Fullscreen watermark** | A subtle **14 sp** bold **T YouTube** wordmark (32 dp) anchored to the **bottom of the control row, below the scrubber line**. `onVisibilityChanged` hides it the instant the controls overlay hides - Android documents that callback as firing when the view *or an ancestor* changes visibility. It is in **both** bottom-control layouts, shows only in fullscreen while controls are visible, and is absent inline, in PiP and in Shorts. |
+| **Build marker** | The About screen shows `Play Store Version 21.20.402 (v1.1.0)` so you can confirm the installed build. The app version stays `21.26.364`. |
 
-**[Download Zversion 4 test build](https://github.com/engrtarun/T-YouTube/releases/download/test-zversion-4/T-YouTube-Zversion.apk)** -
-[same signature and version as v1.0.1](https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-4),
-so it installs in place and keeps your data. You can install it directly over
-v1.0.1 or any Zversion build.
+**[Download T YouTube v1.1.0](https://github.com/engrtarun/T-YouTube/releases/download/v1.1.0/T-YouTube-v1.1.0.apk)** -
+[release notes, size and checksum](https://github.com/engrtarun/T-YouTube/releases/tag/v1.1.0).
+Same package, version code and AOSP `testkey` signature as v1.0.1, so it
+installs in place over v1.0.1 (or any test build) and keeps your data. Install
+the APK as an update - do **not** uninstall the old app first.
 
-Rollback: install v1.0.1 over it. No data is lost.
+**Size:** 222,584,140 bytes (212.3 MiB)
+**SHA-256:** `337f55a17c8fdd1ae458a4ab9e76ca3bd1335c3865ca0bb5de055fd078496d5c`
 
-**Size:** 222,584,140 bytes
-**SHA-256:** `942a404e86b22f061bdbff25a6ab61dace88238d46dda57e6bc9b365cae6103d`
+Rollback: install [v1.0.1](https://github.com/engrtarun/T-YouTube/releases/download/v1.0.1/T-YouTube-v1.0.1.apk)
+over it. No data is lost.
 
-Full change log for every test build, including the withdrawn test-fix-4:
+**Also in v1.1.0 (carried over from v1.0.1):** the download crash on short
+titles stays fixed, downloads complete with unthrottled stream URLs, long-video
+seeking resumes at the selected quality, Shorts no longer stall, and dark theme
+is the default.
+
+YouTube links (optional): see
+[Open YouTube links in T YouTube](#open-youtube-links-in-t-youtube). You can
+skip it; nothing else depends on it.
+
+Full change log for every build, including the withdrawn test-fix-4:
 **[TEST-CHANGES.md](TEST-CHANGES.md)**.
 
 Shorts/fullscreen branding specs:
@@ -269,7 +259,7 @@ Without this the app installs but sign-in, playback and most API calls fail.
 
 ### Step 3 — Install T YouTube
 
-1. Download `T-YouTube-v1.0.1.apk` from the link at the top
+1. Download `T-YouTube-v1.1.0.apk` from the link at the top
 2. Open it — allow **"Install unknown apps"** for your file manager/browser
 3. Tap **Install**
 
@@ -374,13 +364,19 @@ endorsed by Google. See [Legal](#-legal--disclaimer).
 
 ```powershell
 # signature
-apksigner verify --print-certs T-YouTube-v1.0.1.apk
+apksigner verify --print-certs T-YouTube-v1.1.0.apk
 
 # checksum
-Get-FileHash T-YouTube-v1.0.1.apk -Algorithm SHA256
+Get-FileHash T-YouTube-v1.1.0.apk -Algorithm SHA256
 ```
 
-**SHA-256 for v1.0.1**
+**SHA-256 for v1.1.0 (current stable)**
+
+```
+337f55a17c8fdd1ae458a4ab9e76ca3bd1335c3865ca0bb5de055fd078496d5c
+```
+
+**SHA-256 for v1.0.1 (previous stable)**
 
 ```
 71B0F782702129A0DDCC80EE0A7150F52FE0099671AB62692766B1C605EBE7FE

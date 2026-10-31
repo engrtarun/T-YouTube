@@ -14,14 +14,35 @@ reference.
 | `test-zversion-1` | Superseded | stable v1.0.1 | Shorts brand loop, fullscreen watermark, download dialog fix |
 | `test-zversion-2` | Superseded | stable v1.0.1 | Fixed Shorts loop, both-layout watermark, automatic duplicate naming |
 | `test-zversion-3` | Superseded | stable v1.0.1 | Fixed the hidden-to-visible guard, listener registration and filename check so Zversion 2 actually runs |
-| `test-zversion-4` | **Current optional test build** | stable v1.0.1 | Root-cause fixes: the second same-id Shorts back button, the silently rewritten download state machine, and a lower/smaller watermark |
+| `test-zversion-4` | **Promoted to v1.1.0** | stable v1.0.1 | Root-cause fixes: the second same-id Shorts back button, the silently rewritten download state machine, and a lower/smaller watermark |
+| `test-v1.1.0` | **Promoted to v1.1.0** | stable v1.0.1 | Release candidate: the same Zversion 4 fixes rebuilt with the `(v1.1.0)` About marker |
 
-Stable **v1.0.1 remains the recommended download**. Test builds are optional
-and are published as GitHub prereleases.
+Stable **v1.1.0 is the recommended download**. Older test builds remain
+published as GitHub prereleases.
 
 ---
 
-## test-zversion-4 - the three Zversion 3 bugs fixed at their root cause (current)
+## v1.1.0 - stable (promoted from test-v1.1.0)
+
+**Release:** https://github.com/engrtarun/T-YouTube/releases/tag/v1.1.0
+**Release candidate:** https://github.com/engrtarun/T-YouTube/releases/tag/test-v1.1.0
+
+The Zversion 4 fixes were rebuilt once with the About marker changed to
+`21.20.402 (v1.1.0)`, verified in CI (run #15, tag `test-v1.1.0`), then promoted
+**without rebuilding** so the published checksum is exactly the tested APK.
+
+- Base APK: **stable v1.0.1**
+- Patch: `scripts/apply-zversion.py` only (marker `21.20.402 (v1.1.0)`)
+- CI: build run #15 (tag `test-v1.1.0`) → promote run #2 (tag `v1.1.0`)
+- APK: `T-YouTube-v1.1.0.apk` (222,584,140 bytes / 212.3 MiB)
+- SHA-256:
+  `337f55a17c8fdd1ae458a4ab9e76ca3bd1335c3865ca0bb5de055fd078496d5c`
+- The four fixes and their root causes are documented under
+  `test-zversion-4` below.
+
+---
+
+## test-zversion-4 - the three Zversion 3 bugs fixed at their root cause
 
 **Release:** https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-4
 
@@ -517,12 +538,32 @@ file testers installed as test-fix-3.
 
 ---
 
+## Stable v1.1.0
+
+**Release:** https://github.com/engrtarun/T-YouTube/releases/tag/v1.1.0
+
+**Current recommended download.** It is the exact APK that passed CI as
+`test-v1.1.0` (run #15), promoted without rebuilding by
+`.github/workflows/promote-stable.yml`.
+
+- APK: `T-YouTube-v1.1.0.apk`
+- Size: **222,584,140 bytes** (212.3 MiB)
+- SHA-256: `337f55a17c8fdd1ae458a4ab9e76ca3bd1335c3865ca0bb5de055fd078496d5c`
+- Package: `com.gold.android.youtube`
+- Version: `21.26.364` / versionCode `2147483647`
+- Signature: AOSP `testkey`
+- Contents: every v1.0.1 fix, plus the four changes documented under
+  `test-zversion-4` above, with the About marker `21.20.402 (v1.1.0)`.
+
+---
+
 ## Stable v1.0.1
 
 **Release:** https://github.com/engrtarun/T-YouTube/releases/tag/v1.0.1
 
-Recommended download. It is the exact APK that passed testing as test-fix-3,
-promoted without rebuilding.
+The previous stable release. It is the exact APK that passed testing as
+test-fix-3, promoted without rebuilding. Still installs in place and is the
+documented rollback target for v1.1.0.
 
 - APK: `T-YouTube-v1.0.1.apk`
 - Size: **222,566,961 bytes** (212 MB)
@@ -536,7 +577,8 @@ promoted without rebuilding.
 ## Install and rollback
 
 All builds use the same package name, version code and AOSP `testkey`
-signature, so they install in place over v1.0.0, v1.0.1 and any test build.
+signature, so they install in place over v1.0.0, v1.0.1, v1.1.0 and any test
+build.
 
 1. Download the APK on the phone.
 2. Open it and install as an **update**.
@@ -545,7 +587,7 @@ signature, so they install in place over v1.0.0, v1.0.1 and any test build.
 4. If Android says “App not installed”, stop and report it instead of
    uninstalling.
 
-**Rollback:** install v1.0.1 over the test build. No data is lost.
+**Rollback:** install v1.0.1 over v1.1.0. No data is lost.
 
 ---
 
@@ -553,13 +595,20 @@ signature, so they install in place over v1.0.0, v1.0.1 and any test build.
 
 The CI workflow is `.github/workflows/build-test-apk.yml`.
 
-1. Download the v1.0.0 base APK and verify its SHA-256.
+1. Download the stable base APK and verify its SHA-256 (v1.0.1 for the
+   Zversion line).
 2. Decode with apktool 2.11.1.
-3. Apply `scripts/apply-fixes.py` (the v1.0.1 fixes).
-4. Apply `scripts/apply-test-fix-5.py` (download dialog only).
-5. Rebuild, zipalign and sign with the AOSP `testkey`.
-6. Verify the APK, then publish it as a prerelease when the pushed tag matches
-   `test-fix-*`.
+3. Apply `scripts/apply-zversion.py` (all Zversion fixes + the build marker).
+4. Rebuild, zipalign and sign with the AOSP `testkey`.
+5. Verify the APK (package, version, certificate, dex count, and a set of
+   greps that must each match the patched files), then publish it as a
+   prerelease when the pushed tag matches `test-zversion-*` or `test-v*`.
+
+Stable releases are made by `.github/workflows/promote-stable.yml`: pushing a
+`v1.*` tag downloads the already-tested APK from the recorded source tag,
+re-checks its SHA-256, and publishes it as the latest stable release. Nothing
+is rebuilt, so the published checksum matches the build that was actually
+tested.
 
 Every patch replacement must match exactly once. If the upstream dialog
 changes, the build fails instead of shipping a half-patched APK.
