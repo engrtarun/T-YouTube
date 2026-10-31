@@ -13,14 +13,110 @@ reference.
 | `test-fix-5` | Superseded | v1.0.0 + v1.0.1 fixes | Download dialog only; complete stable v1.0.1 UI |
 | `test-zversion-1` | Superseded | stable v1.0.1 | Shorts brand loop, fullscreen watermark, download dialog fix |
 | `test-zversion-2` | Superseded | stable v1.0.1 | Fixed Shorts loop, both-layout watermark, automatic duplicate naming |
-| `test-zversion-3` | **Current optional test build** | stable v1.0.1 | Fixed the hidden-to-visible guard, listener registration and filename check so Zversion 2 actually runs |
+| `test-zversion-3` | Superseded | stable v1.0.1 | Fixed the hidden-to-visible guard, listener registration and filename check so Zversion 2 actually runs |
+| `test-zversion-4` | **Current optional test build** | stable v1.0.1 | Root-cause fixes: the second same-id Shorts back button, the silently rewritten download state machine, and a lower/smaller watermark |
 
 Stable **v1.0.1 remains the recommended download**. Test builds are optional
 and are published as GitHub prereleases.
 
 ---
 
-## test-zversion-3 - the Zversion 2 fixes actually run (current)
+## test-zversion-4 - the three Zversion 3 bugs fixed at their root cause (current)
+
+**Release:** https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-4
+
+Zversion 3 built and installed, but on the phone three things were still
+wrong: the Shorts arrow never became the brand loop, tapping the toolbar
+download button did nothing, and the watermark sat too high. Each one turned
+out to have a concrete, findable cause - no guessing.
+
+### 1. Shorts brand loop - a second view with the same id
+
+- `res/layout/reel_player_static_header.xml` was patched, but
+  `res/layout/reel_player_back_button.xml` also declares
+  `android:id="@id/reel_back_button"` and still held a plain
+  `quantum_ic_arrow_back_white_24` arrow. It is `<include>`d by
+  `reel_non_video_page.xml`, `reel_non_video_page_v2.xml` and
+  `reel_watch_survey_page.xml` (all `RelativeLayout` roots).
+- Because both views share the id, `findViewById(0x7f0b10c3)` could hand the
+  player the **arrow** layout instead of the brand loop - which is exactly the
+  "Shorts still shows <--" symptom.
+- Zversion 4 replaces the element in **both** layouts with
+  `ZVersionReelBackView`, drops the transparent foreground (it never hid
+  anything: `reel_circular_button_background_default.xml` is an unfilled oval
+  plus a borderless ripple), and adds `onWindowFocusChanged(Z)` to restart the
+  `AnimationDrawable` once the view has real window focus, because `start()`
+  while detached can drop the first frame callback and freeze on frame 0.
+- Unchanged: 8 s timing (4.8 s arrow, 225 ms crossfade, 2.75 s wordmark,
+  225 ms crossfade), 128x48 dp single Back target, 65 dp title anchor,
+  TalkBack description.
+
+### 2. Download confirm button - a rewritten state machine
+
+- Zversion 3 replaced `checkSelectedDownload` (305 -> 266 lines). Its catch
+  block was reduced to `:catch_target / return-void`, so any failure - and the
+  inverted branch selection - returned **silently**: the dialog neither
+  dismissed nor started anything. That is why the toolbar download icon looked
+  dead.
+- The rest of the click chain was verified byte-identical to v1.0.1:
+  `initToolbar`, `lambda$initToolbar$1` (the `okay` menu handler) and
+  `prepareSelectedDownload` are all unchanged, and `DownloadDialog$1` still
+  enables `okButton` on `onServiceConnected`. Only `checkSelectedDownload`
+  differed.
+- Zversion 4 restores the original method and applies exactly **four** hunks
+  (verified with `git diff`):
+  - `:cond_8` (file exists, no mission) -> `createUniqueFile()` +
+    `continueSelectedDownload()`, falling back to the original overwrite
+    dialog on any exception;
+  - `:cond_b` (finished duplicate mission) -> the same auto-rename path;
+  - `:cond_a` / `:cond_9` (pending / running) -> `goto :info_dialog`, a
+    title + message dialog with only a Cancel button;
+  - a new `:info_dialog` block before the catch-all return.
+- Nothing else moved: the status-4 fresh-create path (`mkdirs` -> `createFile`
+  -> `canWrite` -> `continueSelectedDownload`) is the original code again.
+- The `FilenameUtils` title fix from Zversion 3 is kept.
+
+### 3. Fullscreen watermark - lower and smaller
+
+- Position: anchored with `app:layout_constraintBottom_toBottomOf="parent"`
+  and `layout_marginBottom="4.0dip"`, so it sits at the **bottom of the
+  control row, below the scrubber line**, not above the quick-actions row.
+- Size: **14 sp** and **32.0dip** tall (was 18 sp / 60 dp), so it cannot push
+  the controls around.
+- Hide sync: a new `onVisibilityChanged(View, int)` override calls
+  `updateVisibility()` when visible and forces `INVISIBLE` otherwise. The
+  Android reference documents this callback as *"Called when the visibility of
+  the view **or an ancestor** of the view has changed"*, so the watermark
+  disappears together with the controls overlay instead of waiting for the
+  next global layout pass.
+- Unchanged: controls-only, portrait and landscape, `importantForAccessibility
+  ="no"`, not clickable, absent inline/PiP/Shorts, present in both
+  bottom-control layouts.
+
+### 4. Build marker
+
+- The About screen summary is now `21.20.402 (Zversion 4)` so the installed
+  build is easy to identify. The actual version name remains `21.26.364`.
+
+### Build
+
+- Base APK: **stable v1.0.1**
+  (`T-YouTube-v1.0.1.apk`, SHA-256
+  `71B0F782702129A0DDCC80EE0A7150F52FE0099671AB62692766B1C605EBE7FE`)
+- Patch: `scripts/apply-zversion.py` only
+- CI: `.github/workflows/build-test-apk.yml`, run #14 (tag `test-zversion-4`)
+- APK: `T-YouTube-Zversion.apk` (222,584,140 bytes / 212.3 MiB)
+- SHA-256:
+  `942a404e86b22f061bdbff25a6ab61dace88238d46dda57e6bc9b365cae6103d`
+- Proof: `scripts/device-proof.ps1` drives a connected phone and writes
+  screenshots, `uiautomator` dumps, logcat and a PASS/FAIL `PROOF.md`.
+- Local verification: all 26 post-conditions in `apply-zversion.py` pass, and
+  `DownloadDialog.smali`, `FilenameUtils.smali`, `ZVersionReelBackView.smali`
+  and `ZVersionWatermark.smali` assemble cleanly with `smali.jar`.
+
+---
+
+## test-zversion-3 - the Zversion 2 fixes actually run (superseded)
 
 **Release:** https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-3
 

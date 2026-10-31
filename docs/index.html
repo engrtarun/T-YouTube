@@ -482,51 +482,62 @@
     </div>
 
     <div class="testbuild" id="preview">
-      <span class="tb-tag">Preview &mdash; test-zversion-3 (optional)</span>
-      <h3>Shorts branding, fullscreen watermark and automatic duplicate naming</h3>
+      <span class="tb-tag">Preview &mdash; test-zversion-4 (optional)</span>
+      <h3>Shorts branding, watermark and downloads fixed at the root cause</h3>
       <p>
-        A separate <b>Zversion 3</b> test build decoded from stable v1.0.1. It is
+        A separate <b>Zversion 4</b> test build decoded from stable v1.0.1. It is
         <b>optional</b> &mdash; stable v1.0.1 above is still the recommended download.
-        Zversion 2 built and installed, but three boolean checks kept the new UI
-        and filename logic from running. Zversion 3 fixes the checks.
+        Zversion 3 built and installed, but three things were still broken on the
+        phone. Zversion 4 fixes the actual root cause of each one.
       </p>
       <ul>
-        <li><b>Shorts brand loop.</b> The top-left back control cycles every 8 seconds:
-            arrow &rarr; crossfade &rarr; <b>T YouTube</b> &rarr; crossfade &rarr; arrow. The whole
-            128x48 dp strip is one Back target and the title does not move. Zversion 3
-            starts the loop on the hidden-to-visible transition; Zversion 2 skipped it.</li>
-        <li><b>Fullscreen watermark.</b> A subtle 18 sp bold <b>T YouTube</b> wordmark
-            in the bottom control row, between the left controls and &ldquo;More videos&rdquo;.
-            Zversion 3 registers the layout listener that Zversion 2 skipped, so the
-            watermark actually appears. It is in <b>both</b> bottom-control layouts,
-            shows only in fullscreen while controls are visible, and is absent inline,
-            in PiP and in Shorts.</li>
-        <li><b>Download filename.</b> The dialog now starts with the real video title.
-            v1.0.1&rsquo;s <code>FilenameUtils</code> had an inverted <code>isEmpty()</code>
-            check that replaced every non-empty title with &ldquo;download&rdquo;;
-            Zversion 3 fixes it.</li>
+        <li><b>Shorts brand loop.</b> Shorts had <b>two</b> views with the same
+            <code>reel_back_button</code> id: the patched header, and
+            <code>reel_player_back_button.xml</code> (included by the non-video and
+            survey pages) which still shipped the plain white arrow, so
+            <code>findViewById()</code> could hand the player that arrow instead of the
+            loop. Both now carry the 8-second loop
+            (arrow &rarr; crossfade &rarr; <b>T YouTube</b> &rarr; crossfade &rarr; arrow),
+            the whole 128x48 dp strip is one Back target, the title does not move, and
+            <code>onWindowFocusChanged</code> restarts the animation once the view really
+            has focus so it can no longer freeze on the arrow.</li>
+        <li><b>Download confirm button.</b> Zversion 3 had rewritten
+            <code>checkSelectedDownload</code> (305 &rarr; 266 lines) with a silent
+            <code>return-void</code> in its catch block, so tapping the toolbar download
+            icon did nothing. Zversion 4 restores the original v1.0.1 method byte for
+            byte (verified with a diff &mdash; only 4 hunks) and layers the duplicate
+            handling on top.</li>
+        <li><b>Fullscreen watermark.</b> A subtle <b>14 sp</b> bold <b>T YouTube</b>
+            wordmark (32 dp) anchored to the <b>bottom of the control row, below the
+            scrubber line</b>. <code>onVisibilityChanged</code> hides it the moment the
+            controls overlay hides. It is in <b>both</b> bottom-control layouts, shows
+            only in fullscreen while controls are visible, and is absent inline, in PiP
+            and in Shorts.</li>
+        <li><b>Download filename.</b> The dialog starts with the real video title.
+            v1.0.1&rsquo;s <code>FilenameUtils</code> fix is kept (its inverted
+            <code>isEmpty()</code> check used to replace every title with
+            &ldquo;download&rdquo;).</li>
         <li><b>Automatic duplicate naming.</b> Downloading the same title again just
-            works: the app silently saves a second file with its own unique name
-            (for example <b>Title (1).mp4</b>). There is no <b>Generate unique name</b>
-            button and no extra tap.</li>
+            works: the app runs its own <code>createUniqueFile()</code> and starts
+            downloading <b>Title (1).mp4</b> immediately &mdash; no prompt, no extra tap,
+            no overwrite.</li>
         <li><b>Active downloads.</b> Pending and Running downloads show an information
-            dialog only and are never overwritten. A finished entry whose file was
-            deleted no longer blocks a new download.</li>
+            dialog with only a Cancel button and are never overwritten.</li>
         <li><b>Build marker.</b> The About screen shows
-            <b>21.20.402 (Zversion 3)</b> so you can confirm the installed build.
+            <b>21.20.402 (Zversion 4)</b> so you can confirm the installed build.
             The app version stays 21.26.364.</li>
         <li><b>YouTube link guide (optional).</b> Want youtube.com links to open in T YouTube
             instead of the official app? Follow the <a href="#links">short guide</a> &mdash; or
             skip it; nothing else in the app depends on it.</li>
       </ul>
       <div class="tb-actions">
-        <a class="btn btn-amber" href="https://github.com/engrtarun/T-YouTube/releases/download/test-zversion-3/T-YouTube-Zversion.apk">Download Zversion 3 test build</a>
-        <a class="tb-link" href="https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-3">Release notes &amp; checksum &rarr;</a>
+        <a class="btn btn-amber" href="https://github.com/engrtarun/T-YouTube/releases/download/test-zversion-4/T-YouTube-Zversion.apk">Download Zversion 4 test build</a>
+        <a class="tb-link" href="https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-4">Release notes &amp; checksum &rarr;</a>
         <a class="tb-link" href="#links">Link setup guide &rarr;</a>
       </div>
       <p class="tb-sum">
-        <b>Size:</b> 222,584,227 bytes<br>
-        <b>SHA-256:</b> <code>181aa22e700d59e3e2d3910064d1ba1b1ac4d6cd6a3a9024ea6c48962969e4a3</code>
+        <b>Size:</b> 222,584,140 bytes<br>
+        <b>SHA-256:</b> <code>942a404e86b22f061bdbff25a6ab61dace88238d46dda57e6bc9b365cae6103d</code>
       </p>
       <p class="tb-sum">
         Same signature and version as v1.0.1, so it installs in place &mdash; your logins,

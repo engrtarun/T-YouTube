@@ -46,7 +46,7 @@ step-by-step, and check what each screen should look like.
 
   <sub>
     <a href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.0.1">Release notes &amp; checksums</a> ·
-    <a href="https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-3">Preview build test-zversion-3</a>
+    <a href="https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-4">Preview build test-zversion-4</a>
   </sub>
 </div>
 
@@ -137,32 +137,34 @@ installs straight over v1.0.0 or any earlier test build with data intact.
 
 ---
 
-## test-zversion-3 - the Zversion 2 fixes actually run
+## test-zversion-4 - the three Zversion 3 bugs fixed at their root cause
 
-An **optional Zversion 3 test build** decoded from the published **v1.0.1**
-APK. Stable **v1.0.1 remains the recommended download**. Zversion 2 built and
-installed, but three boolean checks kept the new UI and filename logic from
-running. Zversion 3 fixes the checks:
+An **optional Zversion 4 test build** decoded from the published **v1.0.1**
+APK. Stable **v1.0.1 remains the recommended download**. Zversion 3 built and
+installed, but three things were still broken on the phone: the Shorts arrow
+never became the brand loop, the download confirm button did nothing, and the
+watermark sat too high. Zversion 4 fixes the actual root causes:
 
 | Change | What to expect |
 |:--|:--|
-| **Shorts brand loop** | The top-left Shorts back control cycles every 8 seconds: arrow -> 225 ms crossfade -> **T YouTube** -> 225 ms crossfade -> arrow. The whole 128x48 dp strip is one Back target and the title does not move. Zversion 3 starts the loop on the hidden-to-visible transition; Zversion 2 skipped that transition. |
-| **Fullscreen watermark** | A subtle 18 sp bold **T YouTube** wordmark in the bottom control row, between the left controls and "More videos". Zversion 3 registers the layout listener that Zversion 2 skipped, so the watermark actually appears. It is in **both** bottom-control layouts, shows only in fullscreen while controls are visible, and is absent inline, in PiP and in Shorts. |
-| **Download filename** | The dialog now starts with the real video title. v1.0.1's `FilenameUtils` had an inverted `isEmpty()` check that replaced every non-empty title with `"download"`; Zversion 3 fixes it. |
-| **Duplicate names** | Downloading the same title again just works: the app silently saves a second file with its own unique name (e.g. `Title (1).mp4`). There is no **Generate unique name** button and no extra tap. |
-| **Active downloads** | Pending and Running downloads show an information dialog only and are never overwritten. A finished mission whose file was deleted can be downloaded again. |
-| **Build marker** | The About screen shows `Play Store Version 21.20.402 (Zversion 3)` so you can confirm the installed build. The app version stays `21.26.364`. |
+| **Shorts brand loop** | The top-left Shorts back control cycles every 8 seconds: arrow -> 225 ms crossfade -> **T YouTube** -> 225 ms crossfade -> arrow. The whole 128x48 dp strip is one Back target and the title does not move. Root cause: a **second** view with the same `reel_back_button` id (`reel_player_back_button.xml`, included by the non-video/survey pages) still shipped the plain `quantum_ic_arrow_back_white_24` arrow, so `findViewById()` could hand the player that arrow instead of the loop. Both layouts now carry the loop, and `onWindowFocusChanged` restarts the `AnimationDrawable` once the view is really attached so it can no longer freeze on the opening arrow. |
+| **Fullscreen watermark** | A subtle **14 sp** bold **T YouTube** wordmark anchored to the **bottom of the control row, below the scrubber line** (32 dp tall, so nothing shifts). `onVisibilityChanged` hides it the instant the controls overlay hides - Android documents that callback as firing when the view *or an ancestor* changes visibility. It is in **both** bottom-control layouts, shows only in fullscreen while controls are visible, and is absent inline, in PiP and in Shorts. |
+| **Download confirm button** | The toolbar download button actually starts the download again. Zversion 3 had rewritten `checkSelectedDownload` (305 -> 266 lines) with a silent `return-void` in its catch block, so a tap did nothing. Zversion 4 restores the original v1.0.1 method **byte for byte** (verified with `git diff` - only 4 hunks) and adds the duplicate handling on top. |
+| **Download filename** | The dialog starts with the real video title. v1.0.1's `FilenameUtils` had an inverted `isEmpty()` check that replaced every non-empty title with `"download"`; that fix is kept. |
+| **Duplicate names** | Downloading the same title again just works: the app saves `Title (1).mp4` immediately with its own `createUniqueFile()` and starts downloading - no prompt, no extra tap, no overwrite. |
+| **Active downloads** | Pending and Running downloads show an information dialog with only a Cancel button and are never overwritten. |
+| **Build marker** | The About screen shows `Play Store Version 21.20.402 (Zversion 4)` so you can confirm the installed build. The app version stays `21.26.364`. |
 | **YouTube links (optional)** | See [Open YouTube links in T YouTube](#open-youtube-links-in-t-youtube). You can skip it; nothing else depends on it. |
 
-**[Download Zversion 3 test build](https://github.com/engrtarun/T-YouTube/releases/download/test-zversion-3/T-YouTube-Zversion.apk)** -
-[same signature and version as v1.0.1](https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-3),
+**[Download Zversion 4 test build](https://github.com/engrtarun/T-YouTube/releases/download/test-zversion-4/T-YouTube-Zversion.apk)** -
+[same signature and version as v1.0.1](https://github.com/engrtarun/T-YouTube/releases/tag/test-zversion-4),
 so it installs in place and keeps your data. You can install it directly over
 v1.0.1 or any Zversion build.
 
 Rollback: install v1.0.1 over it. No data is lost.
 
-**Size:** 222,584,227 bytes
-**SHA-256:** `181aa22e700d59e3e2d3910064d1ba1b1ac4d6cd6a3a9024ea6c48962969e4a3`
+**Size:** 222,584,140 bytes
+**SHA-256:** `942a404e86b22f061bdbff25a6ab61dace88238d46dda57e6bc9b365cae6103d`
 
 Full change log for every test build, including the withdrawn test-fix-4:
 **[TEST-CHANGES.md](TEST-CHANGES.md)**.
