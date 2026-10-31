@@ -1,38 +1,61 @@
-# T YouTube v1.0.1 — stable update
+# T YouTube v1.1.0 — stable update
 
-The Download crash is fixed, and everything tested in `test-fix-3` is now the
-stable build.
+Shorts branding, the fullscreen watermark, and the download confirm button are
+now the recommended stable build. Every change here was first shipped as the
+`test-zversion-4` build and verified with a `git diff` against v1.0.1.
 
 ## What changed
 
-- **Tapping Download no longer closes the app.** The 80-character filename cap
-  added in test-fix-2 had its comparison inverted: titles shorter than 80
-  characters were still passed to `substring(0, 80)`, which threw
-  `StringIndexOutOfBoundsException` as soon as the download dialog opened. The
-  cap now applies only to titles that are actually longer than 80 characters.
-- **Downloads complete.** Titles are cleaned with the app's filename charset
-  before saving, and the downloader's iOS stream source is enabled, giving the
-  quality picker extra unthrottled stream URLs.
-- **Seeking long videos works.** The default playback client is now **visionOS**
-  instead of Android Reel. Jumps to 20+ minutes resume at the selected quality
-  instead of freezing and dropping to 144p/360p.
-- **Shorts no longer stall.** Shorts use the same stream resolver, so they get
-  the same fix.
-- **Dark theme by default.** Settings → General → Appearance defaults to Dark.
-- **Seekbar in the logo colours.** `#00FCFF` primary, `#F3024E` accent, enabled
-  by default.
-- **Picture-in-picture.** The PiP behaviour from test-fix-1 is kept: press Home
-  and the video keeps playing in a floating window.
+- **Shorts show the T YouTube brand loop, on every Shorts page.** The top-left
+  back control cycles every 8 seconds: arrow → 225 ms crossfade → **T YouTube**
+  → 225 ms crossfade → arrow. The whole 128x48 dp strip is one Back target and
+  the title does not move. Root cause of the old stuck arrow: Shorts had **two**
+  views with the same `reel_back_button` id — the non-video and survey pages
+  `<include>` a second layout that still shipped the plain white arrow, so
+  `findViewById()` could hand the player that arrow instead of the loop. Both
+  layouts now carry the loop, and the animation restarts once the view really
+  has window focus, so it can no longer freeze on the opening arrow.
+- **Tapping the toolbar download button actually starts the download again.**
+  The current v1.0.1 state machine (`checkSelectedDownload`) is restored byte
+  for byte and only gains the duplicate handling below — the same method that
+  already worked in stable v1.0.1.
+- **Automatic duplicate naming — no user effort.** Downloading the same title
+  again just works: the app runs its own `createUniqueFile()` and starts
+  downloading `Title (1).mp4` immediately. No prompt, no extra tap, no
+  overwrite. The download dialog also opens with the **real video title**
+  instead of the literal `download`.
+- **Pending and Running downloads are never overwritten.** They show an
+  information dialog with only a Cancel button, and an entry whose file was
+  deleted can be downloaded again.
+- **Fullscreen watermark is smaller and lower.** A subtle 14 sp bold **T YouTube**
+  wordmark (32 dp) anchored to the **bottom of the control row, below the
+  scrubber line**, hidden in sync with the controls. Portrait and landscape,
+  fullscreen controls only, not clickable, no layout shift, absent inline /
+  PiP / Shorts.
+- **Build marker.** The About screen shows `21.20.402 (v1.1.0)` so the
+  installed build is easy to identify. The app version stays `21.26.364`.
 
-No new menus or buttons. The package name, version name (`21.26.364`), version
-code and AOSP `testkey` signature are unchanged, so this installs directly over
-v1.0.0 or any earlier test build with your data intact.
+## Everything in v1.0.1 is kept
 
-## Verify
+Download crash on short titles, completing downloads, seeking long videos at
+the chosen quality, non-stalling Shorts, dark theme by default, auto-brightness,
+PiP default, notification channels, and the theme colours.
 
-- APK: `T-YouTube-v1.0.1.apk`
-- Size: 222,566,961 bytes (212 MB)
-- SHA-256: `71B0F782702129A0DDCC80EE0A7150F52FE0099671AB62692766B1C605EBE7FE`
+## Install
 
-This is the exact APK that passed testing as `test-fix-3`; it is promoted
-without rebuilding, so the checksum matches the build testers installed.
+- **Size:** 222,584,140 bytes (212.3 MiB)
+- **SHA-256:** `337f55a17c8fdd1ae458a4ab9e76ca3bd1335c3865ca0bb5de055fd078496d5c`
+- Same package (`com.gold.android.youtube`), version code and AOSP testkey
+  signature as v1.0.1, so it installs **over** v1.0.1 with data intact.
+
+Install the APK as an update — do **not** uninstall the old app first.
+
+## Rollback
+
+Install [v1.0.1](https://github.com/engrtarun/T-YouTube/releases/download/v1.0.1/T-YouTube-v1.0.1.apk)
+over it. Same signature, no data loss.
+
+## If something fails
+
+Phone model, Android version, a screenshot/recording and the exact step. If
+you ran `scripts/device-proof.ps1`, send the whole `proof/<timestamp>` folder.

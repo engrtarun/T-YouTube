@@ -6,7 +6,7 @@ Base: T YouTube v1.0.1 (YouTube 21.26.364)
 Signature: same AOSP testkey as v1.0.1, installs as an in-place update
 Min Android: 10 (API 29)
 APK size: 222584140 bytes
-SHA-256: 942a404e86b22f061bdbff25a6ab61dace88238d46dda57e6bc9b365cae6103d
+SHA-256: 337f55a17c8fdd1ae458a4ab9e76ca3bd1335c3865ca0bb5de055fd078496d5c
 
 WHAT IS NEW IN v1.1.0 (Zversion 4)
 ----------------------------------
