@@ -113,12 +113,21 @@ jobs:
           test ! -e work/res/drawable/tyt_reel_back_foreground.xml
           test "$(find work/res/drawable-xxhdpi -name 'tyt_brand_*.png' | wc -l)" -eq 8
           # Download: original v1.0.1 state machine + two surgical auto-rename
-          # blocks + the cancel-only info dialog.
-          test "$(grep -c 'createUniqueFile' work/smali_classes10/com/gold/youtube/om7753/download/DownloadDialog.smali)" -eq 2
-          grep -q 'try_start_u1' work/smali_classes10/com/gold/youtube/om7753/download/DownloadDialog.smali
-          grep -q 'try_start_u2' work/smali_classes10/com/gold/youtube/om7753/download/DownloadDialog.smali
-          grep -q ':info_dialog' work/smali_classes10/com/gold/youtube/om7753/download/DownloadDialog.smali
-          grep -q 'continueSelectedDownload' work/smali_classes10/com/gold/youtube/om7753/download/DownloadDialog.smali
+          # blocks + the cancel-only info dialog. Count inside the method only -
+          # the untouched lambda$checkSelectedDownload$9 also calls
+          # createUniqueFile, so a whole-file count would be wrong.
+          awk '/^\.method private checkSelectedDownload\(/,/^\.end method/' \
+            work/smali_classes10/com/gold/youtube/om7753/download/DownloadDialog.smali \
+            > /tmp/check_method.smali
+          test "$(grep -c 'createUniqueFile' /tmp/check_method.smali)" -eq 2
+          test "$(grep -c 'goto :info_dialog' /tmp/check_method.smali)" -eq 2
+          grep -q 'try_start_u1' /tmp/check_method.smali
+          grep -q 'try_start_u2' /tmp/check_method.smali
+          grep -q ':info_dialog' /tmp/check_method.smali
+          grep -q 'continueSelectedDownload' /tmp/check_method.smali
+          # the restored state machine must still read the mission state
+          grep -q 'checkForExistingMission' /tmp/check_method.smali
+          rm -f /tmp/check_method.smali
           test ! -e work/smali_classes10/com/gold/youtube/om7753/download/ZVersionDownloadUniqueAction.smali
           grep -q 'if-eqz p1, :cond_0' work/smali_classes10/com/gold/youtube/om7753/util/FilenameUtils.smali
           grep -q 'if-nez v0, :done' work/smali_classes10/com/gold/extension/youtube/brand/ZVersionReelBackView.smali
