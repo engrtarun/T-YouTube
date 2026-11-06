@@ -17,16 +17,20 @@ reference.
 | `test-zversion-4` | **Promoted to v1.1.0** | stable v1.0.1 | Root-cause fixes: the second same-id Shorts back button, the silently rewritten download state machine, and a lower/smaller watermark |
 | `test-v1.1.0` | **Promoted to v1.1.0** | stable v1.0.1 | Release candidate: the same Zversion 4 fixes rebuilt with the `(v1.1.0)` About marker |
 | `test-v1.2.0-1` | Superseded | stable v1.0.1 | First one-app build; setup UI strings were double-encoded |
-| `test-v1.2.0-2` | **Release candidate** | stable v1.0.1 | One-app setup: bundled MicroG-RE 7.3.0 `-noicon`, first-run installer, one launcher icon, Issue #2 watermark fix |
+| `test-v1.2.0-2` | **Promoted to v1.2.0** | stable v1.0.1 | One-app setup: bundled MicroG-RE 7.3.0 `-noicon`, first-run installer, one launcher icon, Issue #2 watermark fix |
 
-Stable **v1.1.0 is the previous download**. **v1.2.0** is the current release
-candidate. Older test builds remain published as GitHub prereleases.
+**v1.2.0 is the current stable download**; v1.1.0 is the previous stable.
+Older test builds remain published as GitHub prereleases.
 
 ---
 
-## v1.2.0 - one app, bundled microG (release candidate)
+## v1.2.0 - one app, bundled microG
 
-**Release:** https://github.com/engrtarun/T-YouTube/releases/tag/test-v1.2.0-2
+**Stable release:** https://github.com/engrtarun/T-YouTube/releases/tag/v1.2.0
+**Tested build:** https://github.com/engrtarun/T-YouTube/releases/tag/test-v1.2.0-2
+
+The stable APK is the exact file tested as `test-v1.2.0-2` — copied, checksum
+verified, renamed and published. It was not rebuilt.
 
 `test-v1.2.0-1` proved the pipeline end to end but shipped double-encoded
 UTF-8 in the setup screen (`Â·`, `âœ“`); it is superseded. `test-v1.2.0-2`

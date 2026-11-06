@@ -65,7 +65,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done, `[!]` blocked
 - [x] `docs/index.html`: one-download tutorial, v1.2.0 cards, FAQ.
 - [x] `ci/STABLE-RELEASE-NOTES.md` / release notes.
 - [x] Update `TEST-CHANGES.md` build marker to v1.2.0.
-- [ ] Close/mention issue #2 (watermark) after a successful verified build.
+- [x] Close/mention issue #2 (watermark) after a successful verified build.
 
 ## 6. Build and verify
 - [x] Push `test-v1.2.0-1` tag; CI passed end to end.
@@ -73,6 +73,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done, `[!]` blocked
 - [x] Push `test-v1.2.0-2` tag; CI passed end to end.
 - [x] Inspect CI verification report + asset hashes + dex count.
 - [x] Download artifact, check `aapt2 badging` and `apksigner`.
+- [x] Promote `test-v1.2.0-2` to stable `v1.2.0` (checksum copied, not rebuilt).
 - [ ] Hand the device checklist to the user; cannot test on-device remotely.
 
 ## Blocked / notes
