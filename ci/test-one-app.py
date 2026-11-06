@@ -56,6 +56,19 @@ def sha256_file(path: pathlib.Path) -> str:
     return digest.hexdigest()
 
 
+def test_sources() -> None:
+    """Catch double-encoded UTF-8 in the setup UI before it reaches a dex."""
+    root = pathlib.Path(__file__).resolve().parent.parent
+    mojibake = ("\u00c2\u00b7", "\u00e2\u2014\u2039", "\u00e2\u0153\u201c",
+                "\u00e2\u20ac\u00b9", "\u00e2\u20ac\u201d", "\u00e2\u20ac\u00a6")
+    for path in sorted((root / "setup-src").rglob("*.java")):
+        text = path.read_text(encoding="utf-8")
+        check(f"source: {path.name} has no mojibake",
+              not any(seq in text for seq in mojibake))
+        check(f"source: {path.name} has no replacement character",
+              "\ufffd" not in text)
+
+
 def test_work(work: pathlib.Path) -> None:
     manifest = (work / "AndroidManifest.xml").read_text(encoding="utf-8")
     prefs = (work / "res/xml/youtube_prefs.xml").read_text(encoding="utf-8")
@@ -236,6 +249,7 @@ def main() -> int:
         test_dex(args.dex)
     if args.apk:
         test_apk(args.apk)
+    test_sources()
 
     print(f"\n{checks - len(failures)}/{checks} checks passed")
     if failures:
