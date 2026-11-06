@@ -1,0 +1,3 @@
+[submodule "vendor/microg-RE"]
+	path = vendor/microg-RE
+	url = https://github.com/morpheapp/microg-RE

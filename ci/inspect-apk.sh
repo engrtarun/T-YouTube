@@ -85,11 +85,54 @@ MANIFEST="AndroidManifest.xml"
   echo "## The app's current microG-not-installed text (all resources)"
   grep -Rin -E 'MicroG Not Installed|microg_not|not installed|install microg' res 2>/dev/null | head -200 || true
   echo
+
+  echo "## ReVanced settings preference XML (youtube_prefs.xml)"
+  cat res/xml/youtube_prefs.xml 2>/dev/null || true
+  echo
+
+  echo "## Launcher shortcuts XML (main_shortcuts.xml)"
+  cat res/xml/main_shortcuts.xml 2>/dev/null || true
+  echo
+
+  echo "## microG string resource IDs and their smali users"
+  for name in microg_settings_title microg_settings_summary microg_msg microg_msg_sum microg_download gms_core_toast_not_installed_message; do
+    id="$(grep -oP 'name="'"$name"'" id="\K[^"]+' res/values/public.xml 2>/dev/null | head -n1 || true)"
+    echo "### $name = ${id:-not-found}"
+    if [ -n "$id" ]; then
+      grep -RIn -F "$id" smali* 2>/dev/null | head -20 || true
+    fi
+    echo
+  done
+
+  echo "## GmsCoreSupportPatch method list"
+  grep -n '^\.method' smali_classes10/com/gold/extension/shared/patches/GmsCoreSupportPatch.smali 2>/dev/null || true
+  echo
+
+  echo "## GmsCoreSupportPatch.checkGmsCore body"
+  awk '/^\.method public static checkGmsCore\(Landroid\/app\/Activity;\)V/,/^\.end method/' \
+    smali_classes10/com/gold/extension/shared/patches/GmsCoreSupportPatch.smali 2>/dev/null || true
+  echo
+
+  echo "## ReVanced settings classes"
+  find smali* -type f -path '*com/gold/youtube/om7753/settings*' 2>/dev/null | sort || true
+  find smali* -type f -iname '*SettingsFragment*.smali' 2>/dev/null | sort | head -100 || true
+  echo
+
+  echo "## youtube_prefs.xml references in smali"
+  grep -RIn 'youtube_prefs' smali* 2>/dev/null | head -40 || true
+  echo
+
+  echo "## Theme.YouTube.Settings style definition"
+  grep -n -A 12 'name="Theme.YouTube.Settings"' res/values/styles.xml 2>/dev/null || true
+  echo
 } > "$OUT/inspect-report.txt"
 
 cp "$MANIFEST" "$OUT/AndroidManifest.xml"
 cp apktool.yml "$OUT/apktool.yml" 2>/dev/null || true
 cp res/values/strings.xml "$OUT/strings.xml" 2>/dev/null || true
+cp res/values/public.xml "$OUT/public.xml" 2>/dev/null || true
+cp res/xml/youtube_prefs.xml "$OUT/youtube_prefs.xml" 2>/dev/null || true
+cp res/xml/main_shortcuts.xml "$OUT/main_shortcuts.xml" 2>/dev/null || true
 find smali* -type f -name '*.smali' | wc -l > "$OUT/smali-file-count.txt"
 
 echo "Wrote inspection report to $OUT/inspect-report.txt"
