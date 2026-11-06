@@ -18,21 +18,18 @@ step-by-step, and check what each screen should look like.
 
   ### Download
 
-**① microG-RE first** — then **② T YouTube**. Both buttons go straight to the file.
+**One APK. microG is already inside it.** Install T YouTube, open it, and tap
+**Start setup**. The app installs the bundled official MicroG-RE build for you.
 
-  <a href="https://github.com/MorpheApp/MicroG-RE/releases/download/7.2.1/microg-7.2.1.apk">
-    <img src="https://img.shields.io/badge/1%C2%B7%20Download%20microG-RE%20(107%20MB)-3DDC84?style=for-the-badge&logo=google-play&logoColor=white" alt="Download microG-RE">
-  </a>
-
-  <a href="https://github.com/engrtarun/T-YouTube/releases/download/v1.1.0/T-YouTube-v1.1.0.apk">
-    <img src="https://img.shields.io/badge/2%C2%B7%20Download%20T%20YouTube%20(212%20MB)-FF1744?style=for-the-badge&logo=android&logoColor=white" alt="Download T YouTube APK">
+  <a href="https://github.com/engrtarun/T-YouTube/releases">
+    <img src="https://img.shields.io/badge/Download%20T%20YouTube%20v1.2.0%20test-FF1744?style=for-the-badge&logo=android&logoColor=white" alt="Download T YouTube APK">
   </a>
 
   <br>
   <sub>
-    <b> Install order matters:</b> microG-RE <b>pehle</b>, phir T YouTube.<br>
-    Android will ask you to allow <b>"Install unknown apps"</b> for your browser the first time.<br>
-    T YouTube will not run without it — it cannot use Google Play Services.
+    v1.2.0 bundles microG-RE 7.3.0 <b>-noicon</b> for arm64-v8a and armeabi-v7a.<br>
+    Android shows one normal installer confirmation. Only T YouTube gets an icon.<br>
+    Upgrading from v1.1.0? Install it over the old build; data stays.
   </sub>
 
   <br><br>
@@ -40,13 +37,13 @@ step-by-step, and check what each screen should look like.
   [![Version](https://img.shields.io/github/v/release/engrtarun/T-YouTube?style=flat-square&label=Version&color=FF1744)](https://github.com/engrtarun/T-YouTube/releases/latest)
   [![Downloads](https://img.shields.io/github/downloads/engrtarun/T-YouTube/total?style=flat-square&label=Downloads&color=2563EB)](https://github.com/engrtarun/T-YouTube/releases)
   [![Android](https://img.shields.io/badge/Android-10%2B-3DDC84?style=flat-square&logo=android&logoColor=white)](https://developer.android.com/)
-  [![Size](https://img.shields.io/badge/APK-212%20MB-8B5CF6?style=flat-square)](https://github.com/engrtarun/T-YouTube/releases/latest)
+  [![Size](https://img.shields.io/badge/APK-~300%20MB-8B5CF6?style=flat-square)](https://github.com/engrtarun/T-YouTube/releases/latest)
   [![microG-RE](https://img.shields.io/badge/powered%20by-microG--RE-34A853?style=flat-square&logo=google-play&logoColor=white)](https://github.com/MorpheApp/MicroG-RE)
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](#-contributing)
 
   <sub>
-    <a href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.1.0">Release notes &amp; checksums</a> ·
-    <a href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.0.1">Previous stable v1.0.1</a>
+    <a href="https://github.com/engrtarun/T-YouTube/releases">Release notes &amp; checksums</a> ·
+    <a href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.1.0">Previous stable v1.1.0</a>
   </sub>
 </div>
 
@@ -66,7 +63,7 @@ step-by-step, and check what each screen should look like.
 
 ## Screenshots
 
-Captions describe the current **v1.1.0** build. The images are from the
+Captions describe the current **v1.2.0** build. The images are from the
 v1.0.0 era, so a few details on screen differ from what ships today.
 
 **Player** — one frame that shows three working features at once: the download
@@ -101,9 +98,9 @@ build, and both headers read **T YouTube**. On the base build this spot said
 </tr>
 </table>
 
-Shorts and the fullscreen watermark changed in v1.1.0 but are not in these
+Shorts and the fullscreen watermark changed again in v1.2.0 but are not in these
 images yet — see [issue #1](https://github.com/engrtarun/T-YouTube/issues/1)
-and [issue #5](https://github.com/engrtarun/T-YouTube/issues/5).
+and [issue #2](https://github.com/engrtarun/T-YouTube/issues/2).
 
 ---
 
@@ -124,40 +121,34 @@ watch history.
 
 ---
 
-## v1.1.0 — stable update
+## v1.2.0 — one app, microG included
 
-**Shorts branding, the fullscreen watermark, and the download confirm button
-are now the recommended stable build.** Everything below was first shipped and
-verified as the `test-zversion-4` / `test-v1.1.0` builds, then promoted
-**without rebuilding**, so the checksum published here matches the build that
-was actually tested.
+**One download. One icon. microG installs itself on first run.** The official
+MicroG-RE 7.3.0 `-noicon` APKs ship inside the T YouTube APK; the app picks the
+right one for your phone and streams it into Android's installer. No second
+download, no file manager, no manual install order.
 
-| Fix | What changed |
+| Change | What it does |
 |:--|:--|
-| **Shorts brand loop** | The top-left Shorts back control cycles every 8 seconds: arrow -> 225 ms crossfade -> **T YouTube** -> 225 ms crossfade -> arrow. The whole 128x48 dp strip is one Back target and the title does not move. Root cause of the old stuck arrow: Shorts had **two** views with the same `reel_back_button` id - `reel_player_back_button.xml` (included by the non-video/survey pages) still shipped the plain `quantum_ic_arrow_back_white_24` arrow, so `findViewById()` could hand the player that arrow instead of the loop. Both layouts now carry the loop, and `onWindowFocusChanged` restarts the `AnimationDrawable` once the view really has focus so it can no longer freeze on the opening arrow. |
-| **Download confirm button** | Tapping the toolbar download icon actually starts the download. v1.0.1's proven `checkSelectedDownload` is restored **byte for byte** (verified with `git diff` - only 4 hunks) and gains the duplicate handling below. |
-| **Duplicate names** | Downloading the same title again just works: the app saves `Title (1).mp4` immediately with its own `createUniqueFile()` and starts downloading - no prompt, no extra tap, no overwrite. |
-| **Active downloads** | Pending and Running downloads show an information dialog with only a Cancel button and are never overwritten. |
-| **Download filename** | The dialog starts with the real video title. v1.0.1's `FilenameUtils` fix is kept (its inverted `isEmpty()` check used to replace every title with `"download"`). |
-| **Fullscreen watermark** | A subtle **14 sp** bold **T YouTube** wordmark (32 dp) anchored to the **bottom of the control row, below the scrubber line**. `onVisibilityChanged` hides it the instant the controls overlay hides - Android documents that callback as firing when the view *or an ancestor* changes visibility. It is in **both** bottom-control layouts, shows only in fullscreen while controls are visible, and is absent inline, in PiP and in Shorts. |
-| **Build marker** | The About screen shows `Play Store Version 21.20.402 (v1.1.0)` so you can confirm the installed build. The app version stays `21.26.364`. |
+| **First-run setup** | Welcome → Start setup → checklist (microG / notifications / battery) → done. Every screen has **Later**, and relaunching never loops. When microG is already installed, the setup screen is skipped automatically and T YouTube opens directly. |
+| **Bundled microG** | `microg-7.3.0-noicon-arm64-v8a.apk` and `...-armeabi-v7a.apk`, copied byte-for-byte from the official MorpheApp release. The app verifies size + SHA-256 while streaming and never re-signs or modifies them. |
+| **One visible icon** | microG is a separate Android package because Android cannot merge it into another app, but its launcher alias is disabled (`-noicon`), so only T YouTube appears in the drawer. |
+| **Settings → Setup & permissions** | New row above About. Reopens the checklist in manage mode if setup was skipped or microG was later uninstalled. |
+| **No surprise browser** | The extension's old `checkGmsCore()` opened `https://morphe.software/microg` when microG was missing. It is now a no-op, so nothing can pop up behind setup. |
+| **Issue #2: watermark** | Fullscreen **T YouTube** mark is now **11.5 sp at 0.55 alpha** (was 14 sp at 0.8). Still below the scrubber line, tied to controls visibility, absent inline/PiP/Shorts. |
+| **Build marker** | About shows `Play Store Version 21.26.364 (v1.2.0)`. Package, version code (`2147483647`) and AOSP `testkey` signature are unchanged, so it installs over v1.1.0 with data intact. |
 
-**[Download T YouTube v1.1.0](https://github.com/engrtarun/T-YouTube/releases/download/v1.1.0/T-YouTube-v1.1.0.apk)** -
-[release notes, size and checksum](https://github.com/engrtarun/T-YouTube/releases/tag/v1.1.0).
-Same package, version code and AOSP `testkey` signature as v1.0.1, so it
-installs in place over v1.0.1 (or any test build) and keeps your data. Install
-the APK as an update - do **not** uninstall the old app first.
+**[Download T YouTube v1.2.0](https://github.com/engrtarun/T-YouTube/releases)** ·
+size and SHA-256 are published on the release page. Install it as an update —
+do **not** uninstall the old app first.
 
-**Size:** 222,584,140 bytes (212.3 MiB)
-**SHA-256:** `337f55a17c8fdd1ae458a4ab9e76ca3bd1335c3865ca0bb5de055fd078496d5c`
+Rollback: install [v1.1.0](https://github.com/engrtarun/T-YouTube/releases/download/v1.1.0/T-YouTube-v1.1.0.apk)
+(or v1.0.1) over it. No data is lost; the hidden microG package can be removed
+from Android Settings → Apps.
 
-Rollback: install [v1.0.1](https://github.com/engrtarun/T-YouTube/releases/download/v1.0.1/T-YouTube-v1.0.1.apk)
-over it. No data is lost.
-
-**Also in v1.1.0 (carried over from v1.0.1):** the download crash on short
-titles stays fixed, downloads complete with unthrottled stream URLs, long-video
-seeking resumes at the selected quality, Shorts no longer stall, and dark theme
-is the default.
+**Still included from v1.1.0:** the Shorts brand loop on every Shorts page, the
+restored toolbar download button, automatic duplicate naming, and every v1.0.1
+playback/download/theme fix.
 
 YouTube links (optional): see
 [Open YouTube links in T YouTube](#open-youtube-links-in-t-youtube). You can
@@ -220,55 +211,53 @@ Android 13+ **themed icon** (previously still showing the YouTube play glyph).
 | | |
 |:--|:--|
 | **Android** | 10.0 (API 29) or newer |
-| **Architecture** | `arm64-v8a`, `armeabi-v7a`, `x86`, `x86_64` — universal APK |
-| **Google Play Services** | **Not required — and must not be active.** T YouTube runs on **microG-RE**, which cannot coexist with Google Play Services. |
-| **microG-RE** | **Required.** A GmsCore fork — see below. |
-| **Free storage** | ~350 MB (app + data) |
+| **Architecture** | `arm64-v8a` or `armeabi-v7a` for the bundled microG; the app itself is universal |
+| **Google Play Services** | **Not required.** MicroG-RE can coexist with it; disabling it is only a troubleshooting step if sign-in misbehaves. |
+| **microG-RE** | **Included.** v1.2.0 bundles the official 7.3.0 `-noicon` builds and installs one on first run. |
+| **Free storage** | ~450 MB (app + microG install) |
 
 ---
 
 ## Installation
 
-### Step 1 — Install microG-RE first
+### Step 1 — Install T YouTube
 
-microG-RE is a **GmsCore fork** that supplies the Google Play Services APIs
-YouTube needs. T YouTube declares these in its manifest, and microG reads them
-to grant the app its identity:
+1. Download the v1.2.0 test APK from the releases page.
+2. Open it and allow **"Install unknown apps"** for your browser/file manager.
+3. Tap **Install**. If you already run v1.1.0, install it as an update; do not
+   uninstall first.
 
-```
-app.revanced.android.gms.SPOOFED_PACKAGE_NAME      = com.google.android.youtube
-app.revanced.android.gms.SPOOFED_PACKAGE_SIGNATURE = 24bb24c0…
-```
+### Step 2 — Open T YouTube and run setup
 
-Grab it with the **①** button above, or from the official releases — never from
-a random APK site:
+1. Tap the T YouTube icon.
+2. Tap **Start setup**.
+3. Android asks for **"Install unknown apps"** for T YouTube. This is the one
+   permission the installer needs. Turn on **Allow from this source**.
+4. Tap **Install** in Android's installer. The microG APK is already inside
+   T YouTube, so there is no download.
+5. Optionally turn on notifications and battery exemption. Both can be changed
+   later.
+6. Tap **Open T YouTube**.
 
-> **https://github.com/MorpheApp/MicroG-RE/releases/latest**
->
-> The **universal** `microg-*.apk` (≈107 MB) works on every phone — that's what
-> the button gives you. Slimmer per-ABI builds (`-arm64-v8a`, `-armeabi-v7a`,
-> ≈42 MB) are also there if you want to save data.
->
-> microG-RE is **Apache-2.0** licensed and this repo links to it rather than
-> re-hosting it.
+That's it. Two packages are installed, but only T YouTube has a launcher icon.
+microG's settings are reachable from T YouTube's settings.
 
->  Already using **Google Play Services**? It must be **disabled/uninstalled**
-> first. microG will not install alongside it, and T YouTube will not work while
-> Play Services is still active.
+### Manual microG install (fallback)
 
-### Step 2 — Enable signature spoofing
+If you prefer to install microG yourself, or your phone is x86-only, use the
+official builds from **https://github.com/MorpheApp/MicroG-RE/releases/latest**.
+Pick the `-noicon` variant if you want the same hidden-icon setup. T YouTube
+will detect it and skip the install step.
 
-```
-microG-RE Settings → Signature spoofing → enable for T YouTube
-```
+> **Signature spoofing:** MicroG-RE reads the spoof metadata already declared by
+> T YouTube (`app.revanced.android.gms.SPOOFED_PACKAGE_NAME` and
+> `...SPOOFED_PACKAGE_SIGNATURE`), so you do **not** need a system-level
+> signature-spoofing patch. If a specific ROM still asks for it, enable it in
+> microG-RE Settings → Signature spoofing for T YouTube.
 
-Without this the app installs but sign-in, playback and most API calls fail.
-
-### Step 3 — Install T YouTube
-
-1. Download `T-YouTube-v1.1.0.apk` from the link at the top
-2. Open it — allow **"Install unknown apps"** for your file manager/browser
-3. Tap **Install**
+> **Play Services:** current MicroG-RE coexists with Google Play Services. If
+> sign-in fails with both installed, disable Play Services and try again. This
+> is troubleshooting, not a required step.
 
 ---
 
@@ -307,8 +296,9 @@ updates, avoids the problem entirely.
 
 Yes. T YouTube uses the package `com.gold.android.youtube`, while the official
 YouTube is `com.google.android.youtube`. Different packages — both can be
-installed side by side. In practice though, YouTube needs microG-RE and Play
-Services cannot coexist with it, so you will usually want only one.
+installed side by side. T YouTube talks to MicroG-RE through its spoofed Google
+identity; real Play Services can stay installed. If sign-in misbehaves with both
+present, disable Play Services and retry.
 </details>
 
 <details>
@@ -321,8 +311,10 @@ advertising is served by YouTube's servers and is a separate matter.
 <details>
 <summary><b>Why does it say "MicroG Not Installed"?</b></summary>
 
-microG-RE is not running, or signature spoofing is off. Go back to
-Steps 1–2 above.
+microG is missing, turned off, or was uninstalled. Open
+**Settings → Setup & permissions** in T YouTube and tap **Install**. In v1.2.0
+the setup screen is the only place you need; it installs the microG copy bundled
+inside the app. No browser or separate APK is involved.
 </details>
 
 <details>
@@ -360,7 +352,7 @@ endorsed by Google. See [Legal](#-legal--disclaimer).
 | Version code | `2147483647` |
 | Min SDK | 29 (Android 10) |
 | Target SDK | 37 |
-| APK size | 222,566,961 bytes (212 MB) |
+| APK size | ≈300 MB in v1.2.0 (includes two microG APKs); exact size in the release notes |
 | Entry count | 16,827 |
 | Signature scheme | APK Signature Scheme **v3** |
 | Signing certificate | AOSP `testkey` — `CN=Android, O=Android, L=Mountain View, ST=California, C=US` |
@@ -371,13 +363,16 @@ endorsed by Google. See [Legal](#-legal--disclaimer).
 
 ```powershell
 # signature
-apksigner verify --print-certs T-YouTube-v1.1.0.apk
+apksigner verify --print-certs T-YouTube-v1.2.0.apk
 
 # checksum
-Get-FileHash T-YouTube-v1.1.0.apk -Algorithm SHA256
+Get-FileHash T-YouTube-v1.2.0.apk -Algorithm SHA256
 ```
 
-**SHA-256 for v1.1.0 (current stable)**
+The release page publishes the SHA-256 for every build. Stable v1.1.0 stays
+available as a rollback with the same signing key.
+
+**SHA-256 for v1.1.0 (stable)**
 
 ```
 337f55a17c8fdd1ae458a4ab9e76ca3bd1335c3865ca0bb5de055fd078496d5c
@@ -415,6 +410,23 @@ YT Pro v59 (original APK)
 
 The rebuild was verified **byte-identical across all 10 `classes*.dex` files**
 versus the known-good build, confirming the runtime patches survived reassembly.
+
+### v1.2.0 build pipeline
+
+Everything heavy runs on GitHub Actions; the maintainer machine never decodes
+the 212 MB base APK.
+
+1. Download stable v1.0.1 and verify its SHA-256.
+2. Download the official MicroG-RE 7.3.0 `-noicon` APKs (arm64-v8a and
+   armeabi-v7a), verify both SHA-256 values and the signing certificate.
+3. Decode v1.0.1 with apktool, then run `scripts/apply-zversion.py` (Shorts,
+   downloads, watermark, build marker) and `scripts/apply-one-app.py`
+   (manifest, bundled assets, settings row, no-op `checkGmsCore`).
+4. Compile `setup-src/` with `javac --release 8` and `d8 --min-api 29` into a
+   single setup dex, then add it to the rebuilt APK as `classes11.dex`.
+5. Zipalign, sign with the AOSP testkey, and run `ci/test-one-app.py` against
+   the decoded tree, the setup dex and the signed APK before uploading.
+6. Publish the artifact; a `test-v1.2.0-*` tag also creates a prerelease.
 
 ---
 
@@ -481,8 +493,10 @@ otherwise connected to Google LLC or YouTube.
   interoperability purposes only.
 - **No source code is provided for the YouTube client itself.** The original
   authors and copyright holders retain all rights to it.
-- microG-RE is a separate project (a GmsCore fork, **Apache-2.0**) and is *not*
-  bundled or redistributed here — you download it from
+- microG-RE is a separate project (a GmsCore fork, **Apache-2.0**). Starting with
+  v1.2.0, its official 7.3.0 `-noicon` APKs are redistributed **unmodified**
+  inside the T YouTube APK with attribution. The license text ships in the app
+  at `assets/licenses/microg-RE.txt` and the source is available at
   [MorpheApp/MicroG-RE](https://github.com/MorpheApp/MicroG-RE).
 - You are responsible for complying with the laws in your jurisdiction.
 

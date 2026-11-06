@@ -261,23 +261,23 @@
 
 <div class="hero">
   <div class="wrap">
-    <span class="badge"><i></i> ~5 minute setup</span>
-    <span class="badge" style="color:#b6f0c9;border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.08)">✅ v1.1.0 stable update</span>
+    <span class="badge"><i></i> ~3 minute setup</span>
+    <span class="badge" style="color:#b6f0c9;border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.08)">✅ v1.2.0 one-app setup</span>
     <h1>Get <span>T YouTube</span><br>running on your phone</h1>
     <p class="sub">
-      Most people get stuck on one thing only: this app needs <b>microG-RE</b> instead of
-      Google Play Services, and it must be installed <b>first</b>. This page shows the whole
-      thing — a screen recording, every step, and what each screen should look like.
+      One download, one icon. <b>microG-RE is already inside the T YouTube APK</b> — open the
+      app and a short setup screen installs it for you. No second file, no file manager, no
+      manual microG hunt. This page shows the whole thing, step by step.
     </p>
     <div class="cta">
       <a class="btn btn-p" href="#video">▶ Watch the tutorial</a>
-      <a class="btn btn-s" href="#dl">⬇ Get the APKs</a>
+      <a class="btn btn-s" href="#dl">⬇ Get the APK</a>
       <a class="btn btn-s" href="#steps">Skip to written steps</a>
     </div>
     <div class="meta">
       <span><b>Android 10+</b> required</span>
-      <span><b>212 MB</b> APK</span>
-      <span><b>107 MB</b> microG-RE</span>
+      <span><b>~300 MB</b> APK</span>
+      <span><b>microG included</b></span>
       <span>Works on <b>arm64 + 32-bit</b></span>
     </div>
   </div>
@@ -301,9 +301,9 @@
           <p>▸ Tap play — the recording is under 15&nbsp;MB, so it should start quickly.</p>
       </div>
       <div class="note" style="margin-top:14px">
-        This recording predates <b>v1.1.0</b>. The install flow is unchanged, but the
-        download dialog now opens with the real video title and the fullscreen
-        watermark is smaller. A fresh recording is tracked in
+        This recording predates <b>v1.2.0</b>. The old flow had you download microG-RE
+        yourself; the new build does that part for you from inside the app. The steps
+        below match v1.2.0. A fresh recording is tracked in
         <a href="https://github.com/engrtarun/T-YouTube/issues/5">issue&nbsp;#5</a>.
       </div>
     </div>
@@ -319,20 +319,20 @@
   <div class="wrap">
     <div class="kicker">Do this</div>
     <h2>The steps</h2>
-    <p class="lede">Follow in order. Skipping step 1 or 2 is the #1 reason nothing works.</p>
+    <p class="lede">Two installs, one file to download. Android shows its own confirmation once.</p>
 
     <div class="steps">
 
       <div class="step">
         <div class="num">01</div>
         <div>
-          <h3>Download microG-RE</h3>
-          <p>Tap the first button below. It lands the official <b>MicroG RE</b> APK straight into
-             your downloads — 107&nbsp;MB, works on every phone.</p>
-          <div class="note warn">
-            <b>Before you start:</b> if Google Play Services is installed on this phone,
-            disable or uninstall it first. microG and Play Services cannot run together,
-            and T YouTube will not start while Play Services is active.
+          <h3>Download and install T YouTube</h3>
+          <p>Tap the download button below, open the APK, and tap <b>Install</b>. Android asks you
+             to allow <b>"Install unknown apps"</b> for your browser or file manager — turn it on
+             and come back. This prompt only appears once.</p>
+          <div class="note ok">
+            Updating from v1.0.1 or v1.1.0? Install it straight over the old build. Same
+            signature, same package — your logins, settings and downloads stay.
           </div>
         </div>
       </div>
@@ -340,47 +340,29 @@
       <div class="step">
         <div class="num">02</div>
         <div>
-          <h3>Install it</h3>
-          <p>Open the downloaded <span class="k">microg-7.2.1.apk</span> and tap <b>Install</b>.
-             Android will ask you to allow <b>"Install unknown apps"</b> for your browser or
-             file manager — tap <b>Allow</b> and come back. This prompt only appears once.</p>
+          <h3>Open it and tap Start setup</h3>
+          <p>The first launch shows a short welcome screen. Tap <b>Start setup</b>, then
+             <b>Install</b> on the microG row. Android asks for
+             <b>"Install unknown apps"</b> for <b>T YouTube</b> this time — turn on
+             <b>Allow from this source</b> and go back. The install continues on its own.</p>
+          <div class="note">
+            The microG APK is already inside T YouTube. Nothing is downloaded, and it works
+            offline. Android still shows its normal installer confirmation — tap <b>Install</b>.
+          </div>
         </div>
       </div>
 
       <div class="step">
         <div class="num">03</div>
         <div>
-          <h3>Turn on signature spoofing</h3>
-          <p>Open <b>microG-RE</b> → <b>Settings → Signature spoofing</b> → switch on
-             <b>T YouTube</b>. Then go back.</p>
-          <div class="note">
-            This is the step almost everyone forgets. Without it the app installs fine but
-            sign-in and video playback silently fail.
-          </div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="num">04</div>
-        <div>
-          <h3>Install T YouTube</h3>
-          <p>Tap the second button, open <span class="k">T-YouTube-v1.1.0.apk</span>, tap
-             <b>Install</b>. Allow the unknown-app prompt if it appears.</p>
+          <h3>Finish the small stuff</h3>
+          <p>Turn on <b>notifications</b> (optional) and <b>battery exemption</b> (recommended on
+             Xiaomi, Samsung and other aggressive battery managers). Then tap
+             <b>Continue → Open T YouTube</b>. Sign in and play a video.</p>
           <div class="note ok">
-            Already have YouTube Pro v59 on the phone? It installs straight on top —
-            no uninstall, and your logins and watch history stay.
-          </div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="num">05</div>
-        <div>
-          <h3>Open it — and that's it</h3>
-          <p>Launch <b>T YouTube</b> from your app drawer. Sign in, and it plays.</p>
-          <div class="note ok">
-            Two things to look for: the launcher icon is the <b>T</b> mark, and the in-app
-            header reads <b>T YouTube</b> — not "YouTube Pro".
+            Only <b>T YouTube</b> gets a launcher icon. microG is installed as a separate Android
+            package because Android cannot merge it into another app, but its icon is hidden.
+            Set it up later from <b>Settings → Setup &amp; permissions</b>.
           </div>
         </div>
       </div>
@@ -425,93 +407,92 @@
 
 <section id="dl">
   <div class="wrap">
-    <div class="kicker">Get the files</div>
+    <div class="kicker">Get the file</div>
     <h2>Download</h2>
-    <p class="lede">Both buttons go straight to the file — one tap, no extra page.</p>
+    <p class="lede">One APK. microG is already inside it.</p>
     <div class="dl">
       <div class="dcard">
-        <span class="n ok">Required · install first</span>
-        <h4>microG-RE</h4>
-        <p>The Google Play Services replacement T YouTube runs on. Nothing works without it,
-           and it must be in place <b>before</b> the app.</p>
-        <span class="sz">107 MB · universal · Apache-2.0</span>
-        <a class="btn btn-s" href="https://github.com/MorpheApp/MicroG-RE/releases/download/7.2.1/microg-7.2.1.apk">Download microG-RE</a>
+        <span class="n ok">The only file you need</span>
+        <h4>T YouTube v1.2.0</h4>
+        <p>Includes the official MicroG-RE 7.3.0 <b>-noicon</b> builds. Open the app once and
+           setup installs the right one for your phone. Installs straight over v1.0.1 / v1.1.0
+           without touching your logins, settings or downloads.</p>
+        <span class="sz">≈300 MB · Android 10+ · arm64-v8a + armeabi-v7a</span>
+        <a class="btn btn-p" href="https://github.com/engrtarun/T-YouTube/releases">Download T YouTube</a>
       </div>
       <div class="dcard">
-        <span class="n">The app · after microG-RE</span>
-        <h4>T YouTube v1.1.0</h4>
-        <p>The official stable update. Installs straight over v1.0.1 or any earlier test
-           build without touching your logins, settings or downloads.</p>
-        <span class="sz">212 MB · Android 10+ · universal</span>
-        <a class="btn btn-p" href="https://github.com/engrtarun/T-YouTube/releases/download/v1.1.0/T-YouTube-v1.1.0.apk">Download T YouTube</a>
+        <span class="n">Manual fallback · optional</span>
+        <h4>microG-RE</h4>
+        <p>You only need this if your phone is <b>x86-only</b> (some emulators), or if you would
+           rather install microG yourself. Use the official <b>-noicon</b> build so the launcher
+           stays clean; T YouTube detects it and skips the install step.</p>
+        <span class="sz">Official builds · Apache-2.0</span>
+        <a class="btn btn-s" href="https://github.com/MorpheApp/MicroG-RE/releases/latest">Get microG-RE from the source</a>
       </div>
     </div>
     <p class="lede" style="margin-top:22px;font-size:13.6px">
-      SHA-256 for T YouTube v1.1.0 (stable) ·
-      <span class="k">337f55a17c8fdd1ae458a4ab9e76ca3bd1335c3865ca0bb5de055fd078496d5c</span>
+      The SHA-256 for every build is published on its release page. v1.1.0 (rollback) is
+      <span class="k">337f55a17c8fdd1ae458a4ab9e76ca3bd1335c3865ca0bb5de055fd078496d5c</span>.
     </p>
 
     <div class="stableupdate" id="update">
-      <span class="su-tag">✅ Official stable update · v1.1.0</span>
-      <h3>Shorts branding, the watermark and the download button are now stable</h3>
+      <span class="su-tag">✅ Current update · v1.2.0</span>
+      <h3>One app on your phone: T YouTube installs microG for you</h3>
       <p>
-        Everything that was first shipped and verified as the <b>Zversion 4</b> test build is
-        now the recommended download. <b>v1.1.0</b> fixes the three things that were still
-        broken on the phone &mdash; the Shorts arrow never became the brand loop, tapping the
-        toolbar download button did nothing, and the watermark sat too high &mdash; each at its
-        actual root cause, and it keeps <b>every</b> v1.0.1 playback/download/theme fix.
+        v1.2.0 ends the old two-file routine. The official MicroG-RE APK now ships
+        <b>inside</b> T YouTube, and a short first-run setup installs it. There is no second
+        download, no file manager, and no second launcher icon.
       </p>
       <ul>
-        <li><b>Shorts brand loop, on every Shorts page.</b> Shorts had <b>two</b> views with the
-            same <code>reel_back_button</code> id: the non-video and survey pages
-            <code>&lt;include&gt;</code> a second layout that still shipped the plain white arrow,
-            so <code>findViewById()</code> could hand the player that arrow instead of the loop.
-            Both now carry the 8-second loop, and it restarts once the view really has focus so
-            it can no longer freeze on the arrow.</li>
-        <li><b>The download confirm button works again.</b> v1.0.1&rsquo;s proven
-            <code>checkSelectedDownload</code> is restored <b>byte for byte</b> (verified with a
-            diff &mdash; only 4 hunks) and only gains the duplicate handling below.</li>
-        <li><b>Automatic duplicate naming &mdash; no extra taps.</b> Downloading the same title
-            again saves <b>Title (1).mp4</b> and starts immediately. No prompt, no overwrite.
-            Pending and Running downloads only show a Cancel-only dialog and are never
-            overwritten. The filename still opens with the real video title.</li>
-        <li><b>Watermark smaller and lower.</b> A subtle 14 sp <b>T YouTube</b> wordmark (32 dp)
-            at the <b>bottom of the control row, below the scrubber line</b>, hidden in sync with
-            the controls. Fullscreen portrait and landscape only &mdash; absent inline, in PiP and
+        <li><b>One download, one icon.</b> Install T YouTube, tap <b>Start setup</b>, and the
+            bundled microG installs with Android's normal confirmation. microG's launcher icon
+            is hidden; only T YouTube appears in your app drawer.</li>
+        <li><b>Official microG bytes, unchanged.</b> MicroG-RE 7.3.0 <b>-noicon</b> for
+            <code>arm64-v8a</code> and <code>armeabi-v7a</code>. The app verifies the file and
+            installs it as-is — nothing is modified or re-signed.</li>
+        <li><b>Setup later, or again.</b> <b>Settings → Setup &amp; permissions</b> sits above
+            About and reopens the checklist in manage mode. Skipped it the first time, or
+            uninstalled microG? Fix it there.</li>
+        <li><b>No surprise browser.</b> The extension's old <code>checkGmsCore()</code> used to
+            open a microG download page when the service was missing. It is now a no-op, so
+            nothing can pop up behind the setup screen.</li>
+        <li><b>Issue #2 fixed: the fullscreen watermark.</b> The <b>T YouTube</b> wordmark is now
+            <b>11.5 sp at 0.55 alpha</b> (was 14 sp at 0.8) — smaller, dimmer, still below the
+            scrubber line and still tied to the controls' visibility. Absent inline, in PiP and
             in Shorts.</li>
-        <li><b>Installs straight over v1.0.1</b> &mdash; same signature, same version number
-            (21.26.364). The About screen shows <b>21.20.402 (v1.1.0)</b> so you can confirm it.</li>
-        <li><b>Everything in v1.0.1 is kept:</b> the short-title download crash stays fixed,
-            downloads complete, long-video seeking resumes at the chosen quality, Shorts do not
-            stall, and dark theme stays the default.</li>
-        <li><b>To go back:</b> install v1.0.1 again over it. No data is lost.</li>
+        <li><b>Installs straight over v1.1.0</b> — same package, same version number
+            (21.26.364), same AOSP testkey signature. The About screen shows
+            <b>21.26.364 (v1.2.0)</b> so you can confirm it.</li>
+        <li><b>To go back:</b> install v1.1.0 or v1.0.1 over it. No data is lost. You can remove
+            the hidden microG package from Android Settings → Apps at any time.</li>
       </ul>
       <div class="su-actions">
-        <a class="btn btn-p" href="https://github.com/engrtarun/T-YouTube/releases/download/v1.1.0/T-YouTube-v1.1.0.apk">Download stable v1.1.0 (212 MB)</a>
-        <a class="su-link" href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.1.0">Release notes &amp; checksum ↗</a>
+        <a class="btn btn-p" href="https://github.com/engrtarun/T-YouTube/releases">Download T YouTube v1.2.0</a>
+        <a class="su-link" href="https://github.com/engrtarun/T-YouTube/releases">Release notes &amp; checksum ↗</a>
       </div>
       <p class="su-sum">
-        Verified APK · promoted from test-v1.1.0 without rebuilding ·
-        SHA-256 <span class="k">337f55a17c8fdd1ae458a4ab9e76ca3bd1335c3865ca0bb5de055fd078496d5c</span>
+        Bundled microG · MicroG-RE 7.3.0 <b>-noicon</b> ·
+        package <span class="k">app.revanced.android.gms</span> · versionCode
+        <span class="k">255070304</span>
       </p>
     </div>
 
     <div class="testbuild" id="preview">
-      <span class="tb-tag">Previous stable &mdash; v1.0.1</span>
+      <span class="tb-tag">Previous stable &mdash; v1.1.0</span>
       <h3>The previous recommended download</h3>
       <p>
-        <b>v1.0.1</b> is still published and still installs in place. Install it over v1.1.0 if
-        you ever want to go back &mdash; same signature, no data loss. It fixed the download crash
-        on short titles, made downloads complete, restored long-video seeking, stopped Shorts
-        from stalling, and set the dark theme as the default.
+        <b>v1.1.0</b> is still published and still installs in place, but it expects you to
+        install microG-RE yourself first. Use it only if you want to roll back — same signature,
+        no data loss. It shipped the Shorts brand loop, the restored download confirm button and
+        the earlier 14 sp watermark.
       </p>
       <div class="tb-actions">
-        <a class="btn btn-amber" href="https://github.com/engrtarun/T-YouTube/releases/download/v1.0.1/T-YouTube-v1.0.1.apk">Download stable v1.0.1 (212 MB)</a>
-        <a class="tb-link" href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.0.1">Release notes &amp; checksum &rarr;</a>
+        <a class="btn btn-amber" href="https://github.com/engrtarun/T-YouTube/releases/download/v1.1.0/T-YouTube-v1.1.0.apk">Download stable v1.1.0 (212 MB)</a>
+        <a class="tb-link" href="https://github.com/engrtarun/T-YouTube/releases/tag/v1.1.0">Release notes &amp; checksum &rarr;</a>
       </div>
       <p class="tb-sum">
         <b>Size:</b> 222,566,961 bytes<br>
-        <b>SHA-256:</b> <code>71B0F782702129A0DDCC80EE0A7150F52FE0099671AB62692766B1C605EBE7FE</code>
+        <b>SHA-256:</b> <code>337f55a17c8fdd1ae458a4ab9e76ca3bd1335c3865ca0bb5de055fd078496d5c</code>
       </p>
     </div>
 
@@ -592,11 +573,12 @@
     <details>
       <summary>App installs, but it says “MicroG Not Installed”</summary>
       <div class="db">
-        microG-RE is not running, or signature spoofing is off.
+        microG is missing, turned off, or was uninstalled.
         <ul>
-          <li>Open microG-RE once so it finishes setting up.</li>
-          <li>Then <b>Settings → Signature spoofing → enable T YouTube</b>.</li>
-          <li>If Play Services is still installed, disable it.</li>
+          <li>Open <b>T YouTube → Settings → Setup &amp; permissions</b>.</li>
+          <li>Tap <b>Install</b> on the microG row. The APK is bundled — nothing is downloaded.</li>
+          <li>If the row says the app is turned off, tap <b>Turn on</b> and enable it in Android settings.</li>
+          <li>If Play Services causes sign-in trouble, disabling it is a troubleshooting step, not a requirement.</li>
         </ul>
       </div>
     </details>
@@ -604,17 +586,21 @@
     <details>
       <summary>Android says “for your security, your phone is not allowed to install unknown apps”</summary>
       <div class="db">
-        Expected on first install. Tap <b>Settings</b> on that screen, allow
-        <b>Install unknown apps</b> for the app you downloaded from (browser or file manager),
-        then press back and tap <b>Install</b> again.
+        Expected on first install. Tap <b>Settings</b> on that screen and allow
+        <b>Install unknown apps</b> for the app you downloaded from (browser or file manager).
+        You will see the same prompt once more during setup, this time for <b>T YouTube</b>
+        itself, because it installs the bundled microG. Turn on
+        <b>Allow from this source</b>, go back, and setup continues automatically.
       </div>
     </details>
 
     <details>
       <summary>Videos will not play / everything is blank</summary>
       <div class="db">
-        microG needs background permission on some phones. In microG-RE settings, exclude it
-        from battery optimisation, and check <b>Settings → Signature spoofing</b> is enabled.
+        microG needs to stay awake on some phones. Open
+        <b>Settings → Setup &amp; permissions</b>, make sure the microG row is green, and tap
+        <b>Allow</b> on the battery row. If sign-in still fails, open the existing
+        <b>MicroG</b> settings row and check that microG is enabled.
       </div>
     </details>
 
@@ -633,9 +619,9 @@
     <details>
       <summary>Can I keep the official YouTube too?</summary>
       <div class="db">
-        Yes — the packages differ, so both can be installed side by side. But since T YouTube
-        needs microG and Play Services cannot coexist with it, in practice you will want
-        only one.
+        Yes — the packages differ, so both can be installed side by side. Current MicroG-RE
+        coexists with Google Play Services. If sign-in misbehaves with both active, disable Play
+        Services and retry; that is troubleshooting, not a required step.
       </div>
     </details>
 

@@ -16,9 +16,72 @@ reference.
 | `test-zversion-3` | Superseded | stable v1.0.1 | Fixed the hidden-to-visible guard, listener registration and filename check so Zversion 2 actually runs |
 | `test-zversion-4` | **Promoted to v1.1.0** | stable v1.0.1 | Root-cause fixes: the second same-id Shorts back button, the silently rewritten download state machine, and a lower/smaller watermark |
 | `test-v1.1.0` | **Promoted to v1.1.0** | stable v1.0.1 | Release candidate: the same Zversion 4 fixes rebuilt with the `(v1.1.0)` About marker |
+| `test-v1.2.0-*` | **Release candidate** | stable v1.0.1 | One-app setup: bundled MicroG-RE 7.3.0 `-noicon`, first-run installer, one launcher icon, Issue #2 watermark fix |
 
-Stable **v1.1.0 is the recommended download**. Older test builds remain
-published as GitHub prereleases.
+Stable **v1.1.0 is the previous download**. **v1.2.0** is the current release
+candidate. Older test builds remain published as GitHub prereleases.
+
+---
+
+## v1.2.0 - one app, bundled microG (release candidate)
+
+**Release:** pending the first `test-v1.2.0-*` build
+
+The old flow made everyone download two files, in order, and one of them
+(microG-RE) had to be installed before T YouTube would start. v1.2.0 removes
+that whole class of setup mistakes: the official MicroG-RE APKs now ship
+**inside** the T YouTube APK, and a short first-run screen installs the right
+one.
+
+- Base APK: **stable v1.0.1**
+- Patches: `scripts/apply-zversion.py` + `scripts/apply-one-app.py`
+- Setup code: `setup-src/` compiled by CI into `classes11.dex`
+  (`javac --release 8` + `d8`, framework APIs only)
+- Bundled microG:
+  - `microg-7.3.0-noicon-arm64-v8a.apk` — 45,648,640 bytes,
+    SHA-256 `98e2de8c1543fb2736971b8ba307c2b58c092c96fb6dcebe3c3b8a4538151a23`
+  - `microg-7.3.0-noicon-armeabi-v7a.apk` — 43,445,006 bytes,
+    SHA-256 `af89d740a58136779f7406b6f00a546880ee7f3c7472b2a886239ee5a6e43a86`
+- microG package `app.revanced.android.gms`, versionCode `255070304`,
+  official signer SHA-256
+  `0b6c9515afb195fac59601696ba0a7907a0b217ccf720b43148427ccf64343e7`
+- Package, versionCode (`2147483647`), versionName (`21.26.364`) and AOSP
+  testkey signature are unchanged, so it installs over v1.1.0 with data intact.
+- About marker: `21.26.364 (v1.2.0)`
+
+### What changed
+
+1. **Launcher alias retargeted.** `Shell$HomeActivity` now points at
+   `com.gold.youtube.MicroG.MicroGActivity` instead of `MainActivity`. The setup
+   activity forwards the original intent (launcher/search/extras) as soon as
+   microG is ready, so normal launches are unchanged.
+2. **Bundled installer.** `MicroGInstaller` streams the right asset into an
+   Android `PackageInstaller` session, verifies the pinned SHA-256 and size,
+   commits, and maps result statuses to friendly screens. No silent install:
+   Android still shows one confirmation.
+3. **Checklist, not a wall.** Welcome → checklist (microG / notifications /
+   battery) → success. Every screen has Later; flags live in the existing
+   `microg_settings` SharedPreferences, so relaunching does not loop.
+4. **Settings row.** `Setup & permissions` sits above About, opens manage mode.
+5. **Extension no-op.** `GmsCoreSupportPatch.checkGmsCore` used to open
+   `https://morphe.software/microg` when microG was missing. It is now
+   `.locals 0` + `return-void`, so it cannot fight the setup screen.
+6. **Issue #2.** Fullscreen watermark is `11.5sp` at alpha `0.55` (was `14sp`
+   at `0.8`), still below the scrubber and tied to controls visibility.
+7. **Manifest.** Adds `REQUEST_INSTALL_PACKAGES`, `REQUEST_DELETE_PACKAGES`,
+   `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`, makes the setup activity
+   exported/singleTop, and declares a non-exported install result receiver.
+   `QUERY_ALL_PACKAGES` count is unchanged.
+
+### Verification
+
+- `ci/test-one-app.py` checks the decoded tree, the compiled dex and the signed
+  APK before upload: manifest anchors, preference row, asset bytes and hashes,
+  `classes11.dex` contents, 11 dex files, no AndroidX in the setup dex, and the
+  watermark values.
+- The workflow downloads the microG APKs from the official MorpheApp release,
+  verifies both SHA-256 values and checks the signer certificate before they are
+  bundled.
 
 ---
 

@@ -16,7 +16,7 @@ Zversion 4 is a separate test build on top of stable v1.0.1. It adds:
     can no longer freeze on the opening arrow.
   * Fullscreen-only "T YouTube" watermark in BOTH bottom-control layouts
     the app can inflate at runtime (legacy and video-exploder). It sits
-    at the bottom of the control row (below the scrubber line) at 14sp,
+    at the bottom of the control row (below the scrubber line) at 11.5sp,
     and onVisibilityChanged hides it the moment the controls overlay
     hides - no waiting for the next global layout pass.
   * Downloads: stable v1.0.1's proven checkSelectedDownload is restored
@@ -436,11 +436,11 @@ def watermark_element(ns: str, end_anchor: str) -> str:
     """
     return (
         '<com.gold.extension.youtube.brand.ZVersionWatermark '
-        'android:textSize="14.0sp" android:textColor="@android:color/white" '
+        'android:textSize="11.5sp" android:textColor="@android:color/white" '
         'android:gravity="center" android:tag="tyt_watermark" '
         'android:visibility="invisible" android:layout_width="0.0dip" '
         'android:layout_height="32.0dip" android:text="T YouTube" '
-        'android:alpha="0.8" android:maxLines="1" android:ellipsize="end" '
+        'android:alpha="0.55" android:maxLines="1" android:ellipsize="end" '
         'android:importantForAccessibility="no" android:clickable="false" '
         'android:focusable="false" android:layout_marginBottom="4.0dip" '
         f'{ns}:layout_constraintBottom_toBottomOf="parent" '
@@ -1274,8 +1274,8 @@ def main() -> int:
         root, ABOUT_PREFS,
         'android:key="youtube_downloads_package_name" android:summary="21.20.402"',
         'android:key="youtube_downloads_package_name" '
-        'android:summary="21.20.402 (v1.1.0)"',
-        "About: add a visible v1.1.0 build marker",
+        'android:summary="21.26.364 (v1.2.0)"',
+        "About: add a visible v1.2.0 build marker",
     ):
         return 1
 
@@ -1317,9 +1317,9 @@ def main() -> int:
         el = watermark_el(text)
         return (
             'android:tag="tyt_watermark"' in el
-            and 'android:textSize="14.0sp"' in el
+            and 'android:textSize="11.5sp"' in el
             and 'android:layout_height="32.0dip"' in el
-            and 'android:alpha="0.8"' in el
+            and 'android:alpha="0.55"' in el
             and 'android:textColor="@android:color/white"' in el
             and f'{ns}:youTubeSansFont="bold"' in el
             and f'{ns}:layout_constraintBottom_toBottomOf="parent"' in el
@@ -1401,8 +1401,8 @@ def main() -> int:
             "Shorts: the brand loop starts on the hidden-to-visible transition",
         ),
         (
-            'android:summary="21.20.402 (v1.1.0)"' in about_prefs,
-            "About: the v1.1.0 marker is visible",
+            'android:summary="21.26.364 (v1.2.0)"' in about_prefs,
+            "About: the v1.2.0 marker is visible",
         ),
         (
             'if-nez v0, :done' in watermark_view

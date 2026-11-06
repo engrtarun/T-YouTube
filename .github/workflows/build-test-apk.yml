@@ -1,4 +1,4 @@
-name: Build Zversion test APK
+name: Build T YouTube test APK
 
 # Heavy work (apktool decode/rebuild, signing) runs on GitHub's runners.
 # Trigger: push a tag named test-zversion-* or test-v* (creates a prerelease
@@ -22,6 +22,10 @@ env:
   BASE_APK_SHA256: 71b0f782702129a0ddcc80ee0a7150f52fe0099671ab62692766b1c605ebe7fe
   APKTOOL_VERSION: 2.11.1
   CERT_SHA256: a40da80a59d170caa950cf15c18c454d47a39b26989d8b640ecd745ba71bf5dc
+  MICROG_VERSION: 7.3.0
+  MICROG_CERT_SHA256: 0b6c9515afb195fac59601696ba0a7907a0b217ccf720b43148427ccf64343e7
+  MICROG_ARM64_SHA256: 98e2de8c1543fb2736971b8ba307c2b58c092c96fb6dcebe3c3b8a4538151a23
+  MICROG_V7_SHA256: af89d740a58136779f7406b6f00a546880ee7f3c7472b2a886239ee5a6e43a86
 
 jobs:
   build:
@@ -48,16 +52,60 @@ jobs:
           curl -fL --retry 3 -o apktool.jar \
             "https://github.com/iBotPeaches/Apktool/releases/download/v${APKTOOL_VERSION}/apktool_${APKTOOL_VERSION}.jar"
 
+      - name: Download official MicroG-RE ${{ env.MICROG_VERSION }} assets
+        run: |
+          mkdir -p microg-assets
+          BASE="https://github.com/MorpheApp/MicroG-RE/releases/download/${MICROG_VERSION}"
+          curl -fL --retry 3 --retry-delay 5 -o "microg-assets/microg-${MICROG_VERSION}-noicon-arm64-v8a.apk" \
+            "$BASE/microg-${MICROG_VERSION}-noicon-arm64-v8a.apk"
+          curl -fL --retry 3 --retry-delay 5 -o "microg-assets/microg-${MICROG_VERSION}-noicon-armeabi-v7a.apk" \
+            "$BASE/microg-${MICROG_VERSION}-noicon-armeabi-v7a.apk"
+          echo "$MICROG_ARM64_SHA256  microg-assets/microg-${MICROG_VERSION}-noicon-arm64-v8a.apk" | sha256sum -c -
+          echo "$MICROG_V7_SHA256  microg-assets/microg-${MICROG_VERSION}-noicon-armeabi-v7a.apk" | sha256sum -c -
+          BT="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -n1)"
+          for apk in microg-assets/*.apk; do
+            "$BT/apksigner" verify --print-certs "$apk" > "microg-assets/$(basename "$apk").certs"
+            grep -qi "$MICROG_CERT_SHA256" "microg-assets/$(basename "$apk").certs"
+          done
+          ls -lh microg-assets
+
       - name: Decode stable v1.0.1
         run: java -Xmx6g -jar apktool.jar d -f base.apk -o work
 
-      - name: Apply Zversion patches
-        run: python3 scripts/apply-zversion.py work
+      - name: Apply Zversion and one-app patches
+        run: |
+          python3 scripts/apply-zversion.py work
+          python3 scripts/apply-one-app.py work microg-assets
+
+      - name: Compile one-app setup dex
+        run: |
+          BT="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -n1)"
+          PLATFORM="$(ls -d "$ANDROID_HOME"/platforms/android-* | sort -V | tail -n1)"
+          echo "Using $BT and $PLATFORM"
+          mkdir -p build/setup-classes build/setup-dex
+          javac --release 8 -Xlint:-options \
+            -classpath "$PLATFORM/android.jar" \
+            -d build/setup-classes \
+            $(find setup-src -name '*.java')
+          "$BT/d8" --min-api 29 --lib "$PLATFORM/android.jar" \
+            --output build/setup-dex \
+            $(find build/setup-classes -name '*.class')
+          test -f build/setup-dex/classes.dex
+
+      - name: Static acceptance tests (pre-build)
+        run: |
+          python3 ci/test-one-app.py --work work --dex build/setup-dex/classes.dex
 
       - name: Rebuild APK
         run: |
           mkdir -p dist
           java -Xmx6g -jar apktool.jar b work -o dist/unsigned.apk
+
+      - name: Add classes11.dex to the APK
+        run: |
+          cp build/setup-dex/classes.dex dist/classes11.dex
+          (cd dist && zip -j -0 unsigned.apk classes11.dex)
+          unzip -l dist/unsigned.apk | grep -E 'classes11\.dex$'
 
       - name: Zipalign
         run: |
@@ -96,8 +144,18 @@ jobs:
 
           DEX_COUNT="$(unzip -l dist/T-YouTube-Zversion.apk | grep -Ec 'classes[0-9]*\.dex$')"
           echo "dex files: $DEX_COUNT"
-          test "$DEX_COUNT" -eq 10
+          test "$DEX_COUNT" -eq 11
 
+          # One-app setup: manifest, assets, settings row, no-op extension.
+          grep -q 'REQUEST_INSTALL_PACKAGES' work/AndroidManifest.xml
+          grep -q 'REQUEST_IGNORE_BATTERY_OPTIMIZATIONS' work/AndroidManifest.xml
+          grep -q 'android:targetActivity="com.gold.youtube.MicroG.MicroGActivity"' work/AndroidManifest.xml
+          grep -q 'com.gold.youtube.MicroG.InstallResultReceiver' work/AndroidManifest.xml
+          grep -q 'android:key="tyt_setup_preferences"' work/res/xml/youtube_prefs.xml
+          test -f work/assets/microg/microg-${MICROG_VERSION}-noicon-arm64-v8a.apk
+          test -f work/assets/microg/microg-${MICROG_VERSION}-noicon-armeabi-v7a.apk
+          unzip -l dist/T-YouTube-Zversion.apk | grep -q 'assets/microg/microg-.*-noicon-arm64-v8a.apk'
+          unzip -p dist/T-YouTube-Zversion.apk classes10.dex | grep -a -q "ZVersionReelBackView"
           # Prove the v1.1.0 features made it into the APK.
           grep -q "ZVersionReelBackView" work/res/layout/reel_player_static_header.xml
           # Root-cause fix: the SECOND same-id back button must carry the loop
@@ -109,7 +167,8 @@ jobs:
           grep -q "ZVersionWatermark" work/res/layout/youtube_video_exploder_controls_bottom_ui_container.xml
           # Watermark must sit below the scrubber line and be small.
           grep -q 'layout_constraintBottom_toBottomOf="parent"' work/res/layout/youtube_controls_bottom_ui_container.xml
-          grep -q 'android:textSize="14.0sp"' work/res/layout/youtube_controls_bottom_ui_container.xml
+          grep -q 'android:textSize="11.5sp"' work/res/layout/youtube_controls_bottom_ui_container.xml
+          grep -q 'android:alpha="0.55"' work/res/layout/youtube_controls_bottom_ui_container.xml
           test -f work/res/drawable/tyt_reel_back_animation.xml
           test ! -e work/res/drawable/tyt_reel_back_foreground.xml
           test "$(find work/res/drawable-xxhdpi -name 'tyt_brand_*.png' | wc -l)" -eq 8
@@ -136,8 +195,11 @@ jobs:
           grep -q 'onWindowFocusChanged(Z)V' work/smali_classes10/com/gold/extension/youtube/brand/ZVersionReelBackView.smali
           grep -q 'if-nez v0, :done' work/smali_classes10/com/gold/extension/youtube/brand/ZVersionWatermark.smali
           grep -q 'onVisibilityChanged(Landroid/view/View;I)V' work/smali_classes10/com/gold/extension/youtube/brand/ZVersionWatermark.smali
-          grep -q "21.20.402 (v1.1.0)" work/res/xml/youtube_prefs.xml
+          grep -q "21.26.364 (v1.2.0)" work/res/xml/youtube_prefs.xml
           unzip -p dist/T-YouTube-Zversion.apk classes10.dex | grep -a -q "ZVersionReelBackView"
+
+          python3 ci/test-one-app.py --work work --dex build/setup-dex/classes.dex \
+            --apk dist/T-YouTube-Zversion.apk
 
           SIZE="$(stat -c%s dist/T-YouTube-Zversion.apk)"
           SHA="$(sha256sum dist/T-YouTube-Zversion.apk | cut -d' ' -f1)"
@@ -171,7 +233,7 @@ jobs:
           else
             gh release create "$GITHUB_REF_NAME" \
               --title "T YouTube test build $GITHUB_REF_NAME" \
-              --notes "Release candidate for stable v1.1.0, built from stable v1.0.1 at commit $GITHUB_SHA. Shorts: fixes the real cause of the stuck plain arrow - a SECOND view with the same reel_back_button id (reel_player_back_button.xml) still shipped quantum_ic_arrow_back_white_24, so findViewById() could hand the player the arrow instead of the brand loop; both layouts now carry the 8s T YouTube loop, and onWindowFocusChanged restarts the AnimationDrawable once attached so it can no longer freeze on frame 0. Fullscreen watermark: now smaller (14sp, 32dp) and lower - anchored to the bottom of the control row below the scrubber line - and hidden in sync with the controls via onVisibilityChanged (fires when the view OR an ancestor changes visibility). Downloads: stable v1.0.1's proven checkSelectedDownload is restored unchanged (Zversion 3's rewrite had inverted conditionals and broke even the first download), plus two surgical changes: an existing file with no mission and a finished duplicate both fall through to createUniqueFile() and start downloading immediately - no taps, no overwrite - while pending/running missions only show a cancel-only dialog and are never overwritten; the filename still starts with the real video title. About screen shows '21.20.402 (v1.1.0)' so the installed build is easy to identify. Package, version code and AOSP testkey signature are unchanged, so it installs over v1.0.1 with data intact. See T-YouTube-Zversion-TEST-README.txt for the checklist." \
+              --notes "v1.2.0 one-app setup test build, built from stable v1.0.1 at commit $GITHUB_SHA. One visible app: the launcher now opens a short setup screen that installs the official MicroG-RE 7.3.0 -noicon APK already bundled inside T YouTube. No separate download, no second icon. Two packages are installed; microG's icon is hidden, and Settings > Setup & permissions reopens the checklist later. Adds install-unknown-apps and battery-exemption prompts, keeps the existing microG settings row, and makes the extension's old checkGmsCore a no-op so it cannot open a browser behind setup. Issue #2: the fullscreen watermark is now 11.5sp at 0.55 alpha. Package, version code and AOSP testkey signature are unchanged, so it installs over v1.1.0 with data intact. See T-YouTube-Zversion-TEST-README.txt for the device checklist." \
               --prerelease \
               dist/T-YouTube-Zversion.apk \
               dist/T-YouTube-Zversion-TEST-README.txt
