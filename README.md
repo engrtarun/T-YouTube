@@ -22,7 +22,7 @@ step-by-step, and check what each screen should look like.
 **Start setup**. The app installs the bundled official MicroG-RE build for you.
 
   <a href="https://github.com/engrtarun/T-YouTube/releases">
-    <img src="https://img.shields.io/badge/Download%20T%20YouTube%20v1.2.0%20test-FF1744?style=for-the-badge&logo=android&logoColor=white" alt="Download T YouTube APK">
+    <img src="https://img.shields.io/badge/Download%20T%20YouTube%20v1.2.0-FF1744?style=for-the-badge&logo=android&logoColor=white" alt="Download T YouTube APK">
   </a>
 
   <br>
@@ -222,7 +222,7 @@ Android 13+ **themed icon** (previously still showing the YouTube play glyph).
 
 ### Step 1 — Install T YouTube
 
-1. Download the v1.2.0 test APK from the releases page.
+1. Download the v1.2.0 APK from the releases page.
 2. Open it and allow **"Install unknown apps"** for your browser/file manager.
 3. Tap **Install**. If you already run v1.1.0, install it as an update; do not
    uninstall first.
