@@ -203,7 +203,7 @@ public final class MicroGActivity extends Activity {
             showChecklist();
             return;
         }
-        if (MicroGInstaller.isReady(this)) {
+        if (MicroGInstaller.isInstalled(this) && MicroGInstaller.isEnabled(this)) {
             SetupPrefs.putBoolean(this, SetupPrefs.KEY_WELCOME_SEEN, true);
             SetupPrefs.putBoolean(this, SetupPrefs.KEY_SETUP_COMPLETE, true);
             openApp();
@@ -288,7 +288,7 @@ public final class MicroGActivity extends Activity {
         content.addView(body, matchLp(16));
 
         TextView preview = label(
-                "Install microG  Â·  Notifications  Â·  Battery",
+                "Install microG  ·  Notifications  ·  Battery",
                 13, DIM, Typeface.BOLD);
         preview.setGravity(Gravity.CENTER);
         content.addView(preview, matchLp(20));
@@ -319,7 +319,7 @@ public final class MicroGActivity extends Activity {
         footnote.setLineSpacing(dp(2), 1f);
         content.addView(footnote, matchLp(24));
 
-        TextView caption = label("About a minute Â· works offline", 12, DIM, Typeface.NORMAL);
+        TextView caption = label("About a minute · works offline", 12, DIM, Typeface.NORMAL);
         caption.setGravity(Gravity.CENTER);
         content.addView(caption, matchLp(12));
     }
@@ -449,7 +449,7 @@ public final class MicroGActivity extends Activity {
                 }
             };
         } else if (outdated) {
-            subtitle = "Update available Â· " + versionName + " > 7.3.0";
+            subtitle = "Update available · " + versionName + " > 7.3.0";
             action = "Update";
             actionRun = new Runnable() {
                 @Override
@@ -458,7 +458,7 @@ public final class MicroGActivity extends Activity {
                 }
             };
         } else if (!official) {
-            subtitle = "Installed Â· " + versionName + " (different build).";
+            subtitle = "Installed · " + versionName + " (different build).";
             action = "Details";
             actionRun = new Runnable() {
                 @Override
@@ -467,7 +467,7 @@ public final class MicroGActivity extends Activity {
                 }
             };
         } else {
-            subtitle = "Installed Â· " + versionName;
+            subtitle = "Installed · " + versionName;
             action = "Settings";
             actionRun = new Runnable() {
                 @Override
@@ -755,7 +755,7 @@ public final class MicroGActivity extends Activity {
     }
 
     private TextView addStep(String text) {
-        TextView view = label("â—‹  " + text, 14, DIM, Typeface.NORMAL);
+        TextView view = label("○  " + text, 14, DIM, Typeface.NORMAL);
         view.setPadding(0, dp(8), 0, dp(8));
         content.addView(view, matchLp(0));
         return view;
@@ -772,7 +772,7 @@ public final class MicroGActivity extends Activity {
                 "Opening Android installer",
         };
         for (int i = 0; i < 3; i++) {
-            String mark = i < done ? "âœ“" : "â—‹";
+            String mark = i < done ? "✓" : "○";
             stepViews[i].setText(mark + "  " + labels[i]);
             stepViews[i].setTextColor(i < done ? CYAN : DIM);
         }
@@ -1032,7 +1032,7 @@ public final class MicroGActivity extends Activity {
         SetupPrefs.putBoolean(this, SetupPrefs.KEY_WELCOME_SEEN, true);
         prepareContent();
 
-        TextView ring = label("âœ“", 34, BG, Typeface.BOLD);
+        TextView ring = label("✓", 34, BG, Typeface.BOLD);
         ring.setGravity(Gravity.CENTER);
         ring.setBackground(rounded(CYAN, 32, 0));
         LinearLayout.LayoutParams ringLp = new LinearLayout.LayoutParams(dp(64), dp(64));
@@ -1101,7 +1101,7 @@ public final class MicroGActivity extends Activity {
         bar.setOrientation(LinearLayout.HORIZONTAL);
         bar.setGravity(Gravity.CENTER_VERTICAL);
 
-        TextView back = label("â€¹", 30, TEXT, Typeface.NORMAL);
+        TextView back = label("‹", 30, TEXT, Typeface.NORMAL);
         back.setGravity(Gravity.CENTER);
         back.setContentDescription("Back");
         back.setOnClickListener(new View.OnClickListener() {
@@ -1193,7 +1193,7 @@ public final class MicroGActivity extends Activity {
             actionLp.leftMargin = dp(10);
             card.addView(actionView, actionLp);
         } else {
-            TextView check = label("âœ“", 16, CYAN, Typeface.BOLD);
+            TextView check = label("✓", 16, CYAN, Typeface.BOLD);
             check.setGravity(Gravity.CENTER);
             LinearLayout.LayoutParams checkLp = new LinearLayout.LayoutParams(dp(32), dp(32));
             checkLp.leftMargin = dp(8);

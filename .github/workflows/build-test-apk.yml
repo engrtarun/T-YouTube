@@ -83,7 +83,7 @@ jobs:
           PLATFORM="$(ls -d "$ANDROID_HOME"/platforms/android-* | sort -V | tail -n1)"
           echo "Using $BT and $PLATFORM"
           mkdir -p build/setup-classes build/setup-dex
-          javac --release 8 -Xlint:-options \
+          javac --release 8 -encoding UTF-8 -Xlint:-options \
             -classpath "$PLATFORM/android.jar" \
             -d build/setup-classes \
             $(find setup-src -name '*.java')
