@@ -7,6 +7,7 @@ ROOT="${1:?decoded dir required}"
 OUT="${2:?output dir required}"
 
 mkdir -p "$OUT"
+OUT="$(cd "$OUT" && pwd)"
 cd "$ROOT"
 
 MANIFEST="AndroidManifest.xml"
