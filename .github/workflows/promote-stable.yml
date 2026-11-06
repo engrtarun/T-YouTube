@@ -1,8 +1,8 @@
 name: Promote verified APK to stable
 
-# Trigger: push a stable tag such as v1.1.0.
+# Trigger: push a stable tag such as v1.2.0.
 # This does NOT rebuild. It copies the exact APK that was tested in the
-# test-v1.1.0 release, verifies its checksum, and publishes it as the latest
+# test-v1.2.0-2 release, verifies its checksum, and publishes it as the latest
 # stable release under the stable tag. The published SHA-256 therefore matches
 # the build testers actually installed.
 
@@ -19,9 +19,9 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  SOURCE_TAG: test-v1.1.0
+  SOURCE_TAG: test-v1.2.0-2
   SOURCE_ASSET: T-YouTube-Zversion.apk
-  SOURCE_SHA256: 337f55a17c8fdd1ae458a4ab9e76ca3bd1335c3865ca0bb5de055fd078496d5c
+  SOURCE_SHA256: 7f43429321d918957dede2dad2d96f1b47c68a42c6e2a5cc1315ab2a4eee74f2
 
 jobs:
   promote:

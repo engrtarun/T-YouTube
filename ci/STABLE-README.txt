@@ -1,90 +1,92 @@
-T YouTube v1.1.0 - stable update
-================================
+T YouTube v1.2.0 - one app, microG included
+==========================================
 
 Package: com.gold.android.youtube
 Base: T YouTube v1.0.1 (YouTube 21.26.364) - same package + versionCode
-Signature: same AOSP testkey as v1.0.1, installs as an in-place update
+Signature: same AOSP testkey as v1.1.0, installs as an in-place update
 Min Android: 10 (API 29)
-Size: 222,584,140 bytes (212.3 MiB)
-SHA-256: 337f55a17c8fdd1ae458a4ab9e76ca3bd1335c3865ca0bb5de055fd078496d5c
+Size: 311,639,792 bytes (297.2 MiB)
+SHA-256: 7f43429321d918957dede2dad2d96f1b47c68a42c6e2a5cc1315ab2a4eee74f2
 
-WHAT CHANGED (all four fixes were first shipped and verified as Zversion 4)
----------------------------------------------------------------------------
-1) Shorts brand loop (root cause: a second view with the same id)
-   Shorts had TWO views with the id reel_back_button. The patched header
-   (reel_player_static_header.xml) was fine, but reel_player_back_button.xml
-   (included by reel_non_video_page.xml, reel_non_video_page_v2.xml and
-   reel_watch_survey_page.xml) still shipped the plain
-   quantum_ic_arrow_back_white_24 arrow, so findViewById() could hand the
-   player that arrow instead of the brand loop. Both layouts now carry the
-   brand loop, and onWindowFocusChanged restarts the AnimationDrawable once
-   the view really has window focus, so it can no longer freeze on frame 0.
-   Loop: arrow 4.8s -> 225ms crossfade -> "T YouTube" 2.75s -> 225ms
-   crossfade. The whole 128x48dp strip is one Back target; the title stays at
-   65dp and does not move. TalkBack description is unchanged.
+WHAT CHANGED
+------------
+1) One download, one icon
+   microG-RE 7.3.0 -noicon is inside the T YouTube APK for arm64-v8a and
+   armeabi-v7a. First launch opens a short setup screen, picks the build for
+   the phone, verifies it and hands it to Android's installer. There is no
+   second file to download and no second launcher icon.
 
-2) Download confirm button (root cause: a rewritten state machine)
-   A previous test build had replaced checkSelectedDownload (305 -> 266
-   lines) and its catch block was just "return-void", so tapping the toolbar
-   download button did nothing at all. v1.1.0 restores the original v1.0.1
-   method byte for byte (checked with a diff - only 4 hunks differ) and adds
-   the duplicate handling on top of it. The filename still starts with the
-   real video title (the FilenameUtils fix is kept).
-   Duplicate finished file, or a file with no mission -> the app's own
-   createUniqueFile() runs and the download starts immediately: no prompt,
-   no extra tap, no overwrite. Pending/Running -> information dialog with
-   only a Cancel button, never overwritten.
+2) Bundled bytes, checked while streaming
+   The microG APK is never unpacked into memory or re-signed. The app streams
+   the asset into a PackageInstaller session, computes SHA-256 as it writes,
+   and refuses to commit if the size or digest does not match. The pinned
+   values come from the official MorpheApp/MicroG-RE 7.3.0 release.
 
-3) Fullscreen watermark (lower and smaller)
-   14sp bold white 80%, 32dp tall, anchored to the BOTTOM of the control row
-   so it sits below the scrubber line, with a 4dp margin. It is hidden
-   through onVisibilityChanged, which Android documents as firing when the
-   view OR an ancestor changes visibility, so it disappears with the controls
-   instead of one layout pass later. Controls-only, portrait and landscape,
-   not clickable, no layout shift, absent inline/PiP/Shorts.
+3) Setup, later
+   Welcome -> checklist (microG / notifications / battery) -> done. Every
+   screen has Later, and relaunching does not loop. Settings > Setup &
+   permissions reopens the same checklist in manage mode if setup was skipped
+   or microG was later removed. If microG is already installed and enabled,
+   the app opens straight into YouTube, even when the installed build is older;
+   the manage screen then offers the update.
 
-4) Build marker
-   The About screen now shows "Play Store Version 21.20.402 (v1.1.0)" so you
-   can confirm the new build is installed. The actual app version remains
-   21.26.364.
+4) Issue #2 - watermark
+   The fullscreen T YouTube mark is 11.5sp at 0.55 alpha (was 14sp at 0.8).
+   It stays below the scrubber line, still hides with the controls through
+   onVisibilityChanged, and is still absent inline, in PiP and in Shorts.
+   Not clickable, no layout shift.
 
-EVERYTHING IN v1.0.1 IS KEPT
+5) No surprise browser
+   The extension's checkGmsCore() used to open https://morphe.software when
+   microG was missing. It is now a no-op, so nothing can open behind setup.
+
+6) Build marker
+   About shows "Play Store Version 21.26.364 (v1.2.0)". The app version stays
+   21.26.364. Package, versionCode (2147483647) and the AOSP testkey signature
+   are unchanged.
+
+EVERYTHING IN v1.1.0 IS KEPT
 ----------------------------
-- Download crash on short titles stays fixed (80-char cap only when the title
-  is really longer than 80 characters).
-- Filenames are cleaned with the app's charset and the downloader's iOS
-  stream source is enabled, so downloads complete.
-- Seeking long videos resumes at the selected quality (visionOS client).
-- Shorts no longer stall; Shorts downloads keep working.
-- Dark theme by default.
-- Auto-brightness, PiP default, notification channels, theme colours.
+- Shorts brand loop on every Shorts page, including the second layout with
+  the same reel_back_button id.
+- Toolbar download button starts the download; duplicate names are automatic.
+- Every v1.0.1 playback, download, Shorts and theme fix.
 
-DOWNLOAD FOLDER ERROR
----------------------
-If the download dialog says "The destination folder can not be created",
-the app's saved download folder is no longer writable (common after changing
-phones, removing an SD card, or clearing app data). Fix it once:
-  Settings -> Downloads -> Video download folder -> pick a folder on
-  internal storage (for example Download/T YouTube) -> Use this folder ->
-  Allow. Then try the download again.
-This is a storage-folder setting, not a naming bug.
+FIRST-RUN CHECKLIST (please test on the phone)
+----------------------------------------------
+[ ] Installs over v1.1.0 as an update; logins, watch history and downloads
+    are still there.
+[ ] Only one app icon appears in the drawer. microG has no icon.
+[ ] First launch shows the setup screen, not the YouTube home feed.
+[ ] Start setup -> Install -> Android shows one installer confirmation.
+[ ] After Install, the checklist turns green and Open T YouTube works.
+[ ] Force-stop and relaunch: it opens YouTube directly, no welcome loop.
+[ ] Settings > Setup & permissions opens the checklist in manage mode.
+[ ] Fullscreen portrait and landscape: watermark is small and faint, below
+    the scrubber, and disappears with the controls.
+[ ] Inline, PiP and Shorts show no watermark.
+[ ] Airplane mode: setup still installs microG, because nothing is downloaded.
 
 HOW TO INSTALL
 --------------
 Open the APK on the phone and install it as an update over the existing
-T YouTube v1.0.1 (or any test build). Do NOT uninstall the old app first
-(you would lose downloads and settings). If Android says "App not
-installed", stop and report it - do not uninstall.
+T YouTube v1.1.0 (or any test build). Do NOT uninstall the old app first
+(you would lose downloads and settings). If Android says "App not installed",
+stop and report it - do not uninstall.
+
+Android will ask once for "Install unknown apps" for T YouTube during setup.
+That is Android's normal confirmation for installing the bundled microG.
 
 ROLLBACK
 --------
-Install T YouTube v1.0.1 over this build - same signature, no data loss.
-https://github.com/engrtarun/T-YouTube/releases/download/v1.0.1/T-YouTube-v1.0.1.apk
+Install T YouTube v1.1.0 over this build - same signature, no data loss.
+https://github.com/engrtarun/T-YouTube/releases/download/v1.1.0/T-YouTube-v1.1.0.apk
+The hidden microG package can be removed from Android Settings > Apps.
 
 IF SOMETHING FAILS
 ------------------
 Send the phone model, Android version, a screenshot/recording and the exact
-step. For the Shorts loop, include the header. For the watermark, include
-fullscreen portrait and landscape with controls shown. For downloads,
-include the video title/link and whether the folder was re-picked. If you
-ran scripts/device-proof.ps1, send the whole proof/<timestamp> folder.
+step. For setup, include what the microG row says and the Android installer
+message. For the watermark, include fullscreen portrait and landscape with
+controls shown. If you ran scripts/device-proof.ps1, send the whole
+proof/<timestamp> folder.

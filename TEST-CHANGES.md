@@ -16,7 +16,8 @@ reference.
 | `test-zversion-3` | Superseded | stable v1.0.1 | Fixed the hidden-to-visible guard, listener registration and filename check so Zversion 2 actually runs |
 | `test-zversion-4` | **Promoted to v1.1.0** | stable v1.0.1 | Root-cause fixes: the second same-id Shorts back button, the silently rewritten download state machine, and a lower/smaller watermark |
 | `test-v1.1.0` | **Promoted to v1.1.0** | stable v1.0.1 | Release candidate: the same Zversion 4 fixes rebuilt with the `(v1.1.0)` About marker |
-| `test-v1.2.0-*` | **Release candidate** | stable v1.0.1 | One-app setup: bundled MicroG-RE 7.3.0 `-noicon`, first-run installer, one launcher icon, Issue #2 watermark fix |
+| `test-v1.2.0-1` | Superseded | stable v1.0.1 | First one-app build; setup UI strings were double-encoded |
+| `test-v1.2.0-2` | **Release candidate** | stable v1.0.1 | One-app setup: bundled MicroG-RE 7.3.0 `-noicon`, first-run installer, one launcher icon, Issue #2 watermark fix |
 
 Stable **v1.1.0 is the previous download**. **v1.2.0** is the current release
 candidate. Older test builds remain published as GitHub prereleases.
@@ -25,7 +26,13 @@ candidate. Older test builds remain published as GitHub prereleases.
 
 ## v1.2.0 - one app, bundled microG (release candidate)
 
-**Release:** pending the first `test-v1.2.0-*` build
+**Release:** https://github.com/engrtarun/T-YouTube/releases/tag/test-v1.2.0-2
+
+`test-v1.2.0-1` proved the pipeline end to end but shipped double-encoded
+UTF-8 in the setup screen (`Â·`, `âœ“`); it is superseded. `test-v1.2.0-2`
+rebuilds from the same base with the strings fixed, compiles the setup dex
+with an explicit `-encoding UTF-8`, and skips the welcome screen when microG is
+already installed and enabled.
 
 The old flow made everyone download two files, in order, and one of them
 (microG-RE) had to be installed before T YouTube would start. v1.2.0 removes
@@ -82,6 +89,12 @@ one.
 - The workflow downloads the microG APKs from the official MorpheApp release,
   verifies both SHA-256 values and checks the signer certificate before they are
   bundled.
+- Build `test-v1.2.0-2`: **311,639,792 bytes (297.2 MiB)**, SHA-256
+  `7f43429321d918957dede2dad2d96f1b47c68a42c6e2a5cc1315ab2a4eee74f2`.
+  The published artifact was checked locally with `apksigner` and `aapt2`:
+  AOSP testkey cert, package `com.gold.android.youtube`, versionCode
+  `2147483647`, versionName `21.26.364`, 11 dex files, both bundled microG APKs
+  stored and byte-identical, and the setup dex contains the corrected UI text.
 
 ---
 

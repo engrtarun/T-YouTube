@@ -56,7 +56,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done, `[!]` blocked
 - [x] Run `ci/test-one-app.py` in the workflow.
 - [x] Update existing verification greps (dex count 11, watermark values).
 - [x] Keep artifact + prerelease publishing.
-- [ ] First real workflow run (needs a tag push).
+- [x] First real workflow run (`test-v1.2.0-1`, then fixed `test-v1.2.0-2`).
 
 ## 5. Docs / release
 - [x] README: remove "install microG first" as a required manual step; explain
@@ -68,9 +68,11 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done, `[!]` blocked
 - [ ] Close/mention issue #2 (watermark) after a successful verified build.
 
 ## 6. Build and verify
-- [ ] Push `test-v1.2.0-*` tag; watch CI.
-- [ ] Inspect verification report + asset hashes + dex count.
-- [ ] Download artifact, check `aapt2 badging` and `apksigner`.
+- [x] Push `test-v1.2.0-1` tag; CI passed end to end.
+- [x] Fix setup-string mojibake + skip setup for an existing microG.
+- [x] Push `test-v1.2.0-2` tag; CI passed end to end.
+- [x] Inspect CI verification report + asset hashes + dex count.
+- [x] Download artifact, check `aapt2 badging` and `apksigner`.
 - [ ] Hand the device checklist to the user; cannot test on-device remotely.
 
 ## Blocked / notes
